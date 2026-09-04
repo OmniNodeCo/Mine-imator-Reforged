@@ -1,5 +1,7 @@
 # Mine-imator Reforged
 
+[![Build check](https://github.com/OmniNodeCo/Mine-imator/actions/workflows/build.yml/badge.svg)](https://github.com/OmniNodeCo/Mine-imator/actions/workflows/build.yml)
+
 <p align="center">
   <img src="Branding/logo.png" width="600"/>
   <br/>

@@ -1,5 +1,7 @@
 build*/
 /install*/
+/staging/
+/dist/
 /CppGen/Logs/
 /CppGen/*/Logs/
 /CppProject/Generated/

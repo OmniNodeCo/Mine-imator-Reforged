@@ -1,0 +1,397 @@
+# Mine-imator Reforged - release automation.
+#
+# What it does:
+#   1. Fetches Minecraft Java assets (piston-meta -> client jars -> Mine-imator
+#      .zip/.midata packages) for the configured range (default 1.21 through
+#      26.3) plus the auto-resolved latest release.
+#   2. Builds the app on Windows x64, Linux x64 and macOS x86_64 via the repo's
+#      Setup.ps1/Setup.sh scripts (Qt is built from source once, then cached),
+#      bundling the fetched assets and stamping the default assets version.
+#   3. Publishes a GitHub Release with per-platform builds + the assets bundle.
+#
+# How to cut a release:
+#   * Bump `mineimator_version_sub` in GmProject/scripts/macros/macros.gml and
+#     add a CHANGELOG.md entry, then push tag `reforged-v<version>`
+#     (e.g. `git tag reforged-v1.1.0 && git push origin reforged-v1.1.0`).
+#   * Or run this workflow manually (Actions -> Release -> Run workflow).
+#
+# First runs take hours (Qt compiles from source per OS); subsequent runs reuse
+# the Qt + Minecraft jar caches and take ~30-60 minutes.
+
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (default: reforged-v<fork version from macros>)"
+        required: false
+        default: ""
+      mc_range:
+        description: "Minecraft assets range (start:end, empty end = latest)"
+        required: false
+        default: "1.21:26.3"
+      no_latest:
+        description: "Do NOT auto-include the latest Minecraft release"
+        required: false
+        type: boolean
+        default: false
+      platforms:
+        description: "Comma-separated: windows,linux,macos"
+        required: false
+        default: "windows,linux,macos"
+      publish:
+        description: "Publish the GitHub Release (else artifacts only)"
+        required: false
+        type: boolean
+        default: true
+      prerelease:
+        description: "Mark the GitHub Release as a pre-release"
+        required: false
+        type: boolean
+        default: false
+  push:
+    tags:
+      - "reforged-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  plan:
+    name: Plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      tag: ${{ steps.plan.outputs.tag }}
+      fork_version: ${{ steps.plan.outputs.fork_version }}
+      mc_range: ${{ steps.plan.outputs.mc_range }}
+      latest_flag: ${{ steps.plan.outputs.latest_flag }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+      publish: ${{ steps.plan.outputs.publish }}
+      prerelease: ${{ steps.plan.outputs.prerelease }}
+      bundle: ${{ steps.plan.outputs.bundle }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Resolve versions, tag and build matrix
+        id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_RANGE: ${{ inputs.mc_range }}
+          INPUT_NO_LATEST: ${{ inputs.no_latest }}
+          INPUT_PLATFORMS: ${{ inputs.platforms }}
+          INPUT_PUBLISH: ${{ inputs.publish }}
+          INPUT_PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, re, sys
+
+          macros = open("GmProject/scripts/macros/macros.gml").read()
+          m = re.search(r'#macro mineimator_version_sub\s+"Reforged ([^"]+)"', macros)
+          if not m:
+              sys.exit("error: cannot find Reforged version in macros.gml")
+          fork_version = m.group(1)
+
+          event = os.environ["EVENT"]
+          ref = os.environ.get("REF", "")
+          inp = lambda k: os.environ.get(k, "").strip()
+
+          tag = inp("INPUT_TAG") or (ref if event == "push" else "") or ("reforged-v" + fork_version)
+          if event == "push" and tag != "reforged-v" + fork_version:
+              sys.exit("error: tag %s does not match macros version Reforged %s" % (tag, fork_version))
+
+          mc_range = inp("INPUT_RANGE") or "1.21:26.3"
+          include_latest = inp("INPUT_NO_LATEST").lower() != "true"
+          wanted = [p.strip().lower() for p in (inp("INPUT_PLATFORMS") or "windows,linux,macos").split(",")]
+          known = {
+              "windows": {"id": "windows", "os": "windows-2025",
+                          "artifact": "Mine-imator-Reforged-%s-Windows-x64" % fork_version},
+              "linux": {"id": "linux", "os": "ubuntu-24.04",
+                        "artifact": "Mine-imator-Reforged-%s-Linux-x64" % fork_version},
+              "macos": {"id": "macos", "os": "macos-15",
+                        "artifact": "Mine-imator-Reforged-%s-macOS-x64" % fork_version},
+          }
+          unknown = [p for p in wanted if p not in known]
+          if unknown:
+              sys.exit("error: unknown platform(s): %s" % ", ".join(unknown))
+          matrix = {"include": [known[p] for p in wanted]}
+
+          publish = "true" if event == "push" else ("true" if inp("INPUT_PUBLISH").lower() == "true" else "false")
+          prerelease = "false" if event == "push" else ("true" if inp("INPUT_PRERELEASE").lower() == "true" else "false")
+
+          out = {
+              "tag": tag,
+              "fork_version": fork_version,
+              "mc_range": mc_range,
+              "latest_flag": "--latest" if include_latest else "",
+              "matrix": json.dumps(matrix),
+              "publish": publish,
+              "prerelease": prerelease,
+              "bundle": "minecraft-assets-" + mc_range.replace(":", "-"),
+          }
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              for k, v in out.items():
+                  f.write("%s=%s\n" % (k, v))
+          print(json.dumps(out, indent=2))
+          EOF
+
+  assets:
+    name: Fetch Minecraft assets
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cache client jars + manifest
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mine-imator-reforged
+          key: mc-assets-v1-${{ needs.plan.outputs.mc_range }}-${{ hashFiles('Tools/fetch_minecraft_assets.py') }}
+          restore-keys: mc-assets-v1-
+
+      - name: Fetch + package assets (${{ needs.plan.outputs.mc_range }})
+        run: |
+          python3 Tools/fetch_minecraft_assets.py \
+            --range "${{ needs.plan.outputs.mc_range }}" \
+            ${{ needs.plan.outputs.latest_flag }} \
+            --out staging/minecraft-assets \
+            --workers 4
+          ls -la staging/minecraft-assets | head -n 20
+
+      - name: Upload assets artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minecraft-assets
+          path: staging/minecraft-assets
+          retention-days: 30
+
+  build:
+    name: Build (${{ matrix.id }})
+    needs: [plan, assets]
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 360
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download Minecraft assets
+        uses: actions/download-artifact@v4
+        with:
+          name: minecraft-assets
+          path: staging/minecraft-assets
+
+      # IMPORTANT: only the per-version files go into Data/Minecraft. The feed
+      # files (versions.midata, assets-index.json, minecraft_latest.txt) must
+      # NOT be copied: the app lists every *.midata in that folder as a
+      # selectable Minecraft version.
+      - name: Bundle assets into datafiles
+        shell: bash
+        run: |
+          ls staging/minecraft-assets
+          cp staging/minecraft-assets/[0-9]*.zip staging/minecraft-assets/[0-9]*.midata \
+            GmProject/datafiles/Data/Minecraft/
+          ls GmProject/datafiles/Data/Minecraft/
+
+      - name: Stamp default assets version
+        shell: bash
+        run: |
+          python3 Tools/stamp_minecraft_version.py "$(cat staging/minecraft-assets/minecraft_latest.txt)"
+
+      - name: Set up Windows build environment
+        if: matrix.id == 'windows'
+        shell: pwsh
+        run: |
+          echo "DEV_DIR=C:\Dev" >> $env:GITHUB_ENV
+          choco install strawberryperl -y --no-progress
+
+      - name: Cache Qt (Windows)
+        if: matrix.id == 'windows'
+        uses: actions/cache@v4
+        with:
+          path: |
+            C:/Dev/Qt/5.15.19/install
+            C:/Dev/Qt/5.15.19/qt5
+          key: qt-windows-x64-v1-${{ hashFiles('Setup.ps1', 'WinUtils.ps1') }}
+
+      - name: Set up Linux build environment
+        if: matrix.id == 'linux'
+        run: |
+          echo "DEV_DIR=$HOME/Dev" >> $GITHUB_ENV
+          sudo apt update
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository -y --enable-source || \
+            sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt update
+          sudo apt build-dep -y qtbase5-dev
+          sudo apt install -y git cmake perl clang libomp-dev
+
+      - name: Cache Qt (Linux)
+        if: matrix.id == 'linux'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Dev/Qt/5.15.19/install
+            ~/Dev/Qt/5.15.19/qt5
+          key: qt-linux-x64-v1-${{ hashFiles('Setup.sh') }}
+
+      - name: Set up macOS build environment
+        if: matrix.id == 'macos'
+        run: |
+          echo "DEV_DIR=$HOME/Dev" >> $GITHUB_ENV
+          brew install cmake libomp
+          # Best effort: lets any x86_64 helper binary run on ARM runners.
+          sudo softwareupdate --install-rosetta --agree-to-license || true
+          # The committed CppGen is x86_64-only; build a native one instead.
+          cmake -S CppGen -B build-cppgen -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-cppgen --parallel
+          cp build-cppgen/CppGen CppGen/Mac/CppGen
+
+      - name: Cache Qt (macOS)
+        if: matrix.id == 'macos'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Dev/Qt/5.15.19/install
+            ~/Dev/Qt/5.15.19/qt5
+          key: qt-macos-x86_64-v1-${{ hashFiles('Setup.sh') }}
+
+      - name: Build dependencies + Qt (Windows)
+        if: matrix.id == 'windows'
+        shell: pwsh
+        run: |
+          # Answer "N" if a cached Qt exists so a non-interactive run skips the rebuild.
+          echo "N" | ./Setup.ps1 Qt
+
+      - name: Build dependencies + Qt (Unix)
+        if: matrix.id != 'windows' && matrix.id == 'linux'
+        run: ./Setup.sh Qt
+
+      - name: Build dependencies + Qt (macOS x86_64)
+        if: matrix.id == 'macos'
+        run: ./Setup.sh Qt x86_64
+
+      - name: Release build (Windows)
+        if: matrix.id == 'windows'
+        shell: pwsh
+        run: ./Setup.ps1 Release
+
+      - name: Release build (Linux)
+        if: matrix.id == 'linux'
+        run: ./Setup.sh Release
+
+      - name: Release build (macOS x86_64)
+        if: matrix.id == 'macos'
+        run: ./Setup.sh Release x86_64
+
+      - name: Package (Windows)
+        if: matrix.id == 'windows'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path install/Mine-imator/* `
+            -DestinationPath "${{ matrix.artifact }}.zip" -Force
+
+      - name: Package (Unix)
+        if: matrix.id != 'windows'
+        run: |
+          cd install && zip -qr "../${{ matrix.artifact }}.zip" Mine-imator && cd ..
+          ls -la "${{ matrix.artifact }}.zip"
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}.zip
+          retention-days: 30
+
+  release:
+    name: Publish GitHub Release
+    needs: [plan, assets, build]
+    if: needs.plan.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+
+      - name: Bundle Minecraft assets + write release notes
+        run: |
+          python3 - <<'EOF'
+          import glob, json, os, zipfile
+
+          tag = os.environ["TAG"]
+          fork_version = os.environ["FORK_VERSION"]
+          bundle = os.environ["BUNDLE"] + ".zip"
+
+          with zipfile.ZipFile("dist/" + bundle, "w", zipfile.ZIP_DEFLATED, compresslevel=6) as z:
+              for path in sorted(glob.glob("dist/minecraft-assets/*")):
+                  z.write(path, os.path.basename(path))
+
+          index = json.load(open("dist/minecraft-assets/assets-index.json"))
+          versions = sorted(index["versions"])
+          latest = open("dist/minecraft-assets/minecraft_latest.txt").read().strip()
+
+          notes = []
+          notes.append("# Mine-imator Reforged %s" % fork_version)
+          notes.append("")
+          try:
+              changelog = open("CHANGELOG.md").read().splitlines()
+              section = []
+              for line in changelog[1:]:
+                  if line.startswith("## ") and section:
+                      break
+                  section.append(line)
+              notes.extend(section)
+              notes.append("")
+          except OSError:
+              pass
+          notes.append("## Minecraft assets (%d versions, latest %s)" % (len(versions), latest))
+          notes.append("")
+          notes.append("Bundled and selectable in Settings: " + ", ".join(versions))
+          notes.append("")
+          notes.append("Install: extract the archive for your platform and run "
+                       "Mine-imator (Windows: Mine-imator.exe). Your projects live in "
+                       "Projects/ next to the executable (Windows) or ~/Mine-imator "
+                       "(macOS/Linux).")
+          open("dist/RELEASE_NOTES.md", "w").write("\n".join(notes) + "\n")
+          print("\n".join(notes))
+          EOF
+        env:
+          TAG: ${{ needs.plan.outputs.tag }}
+          FORK_VERSION: ${{ needs.plan.outputs.fork_version }}
+          BUNDLE: ${{ needs.plan.outputs.bundle }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.plan.outputs.tag }}
+          name: Mine-imator Reforged ${{ needs.plan.outputs.fork_version }}
+          body_path: dist/RELEASE_NOTES.md
+          prerelease: ${{ needs.plan.outputs.prerelease }}
+          files: |
+            dist/*.zip
+            dist/*/*.zip

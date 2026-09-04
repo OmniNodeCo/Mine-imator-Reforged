@@ -1,0 +1,64 @@
+# Mine-imator Reforged - fast continuous-integration checks.
+#
+# Runs on every push and pull request. This validates the GML sources (via
+# the committed CppGen converter), the CppGen sources themselves, and the
+# Minecraft asset pipeline - no Qt build required, finishes in minutes.
+# Full platform builds + Minecraft asset fetching happen in release.yml.
+
+name: Build check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  cppgen:
+    name: CppGen (convert + compile)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Convert GML to C++ (validates all game sources)
+        run: |
+          chmod +x CppGen/Linux/CppGen
+          ./CppGen/Linux/CppGen "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/CppGen/gml.json"
+          test -f CppProject/Generated/Scripts.hpp
+
+      - name: Compile CppGen from source
+        run: |
+          cmake -S CppGen -B build-cppgen -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-cppgen --parallel
+
+  assets:
+    name: Asset pipeline
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Offline self-test (packaging round-trip + range logic)
+        run: python3 Tools/fetch_minecraft_assets.py --self-test
+
+      - name: Live manifest check (resolves latest, downloads nothing)
+        run: python3 Tools/fetch_minecraft_assets.py --latest --dry-run
+
+      - name: Validate workflow YAML
+        run: |
+          python3 -c "import yaml" 2>/dev/null || pip install pyyaml
+          python3 -c "
+          import glob, yaml
+          for path in sorted(glob.glob('.github/workflows/*.yml')):
+              yaml.safe_load(open(path))
+              print('OK', path)
+          "

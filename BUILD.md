@@ -9,6 +9,12 @@ For Mac OS/Linux:
 
 To change the third-party source code location, set the `DEV_DIR` environment variable. To avoid command-length issues with Qt, it's recommended to be a short path.
 
+## Automated builds (GitHub Actions)
+
+* `Build check` (`.github/workflows/build.yml`) runs on every push/PR: GML→C++ conversion, CppGen compilation, and the asset-pipeline self-test. No Qt build, finishes in minutes.
+* `Release` (`.github/workflows/release.yml`) fetches Minecraft assets (default range `1.21:26.3` plus the auto-resolved latest release), builds Windows x64 / Linux x64 / macOS x86_64 installers with the assets bundled, and publishes a GitHub Release. First runs take hours (Qt compiles from source per OS); later runs reuse caches.
+* To cut a release: bump `mineimator_version_sub` in `GmProject/scripts/macros/macros.gml`, add a `CHANGELOG.md` entry, then push tag `reforged-v<version>` — or run the Release workflow manually with overrides.
+
 ## Building Mine-imator (Windows 64-bit)
 1. Set up environment and `DEV_DIR` variable
     1. Open command prompt (via Start menu, right click and run as Administrator)
