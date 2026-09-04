@@ -108,12 +108,9 @@ jobs:
           include_latest = inp("INPUT_NO_LATEST").lower() != "true"
           wanted = [p.strip().lower() for p in (inp("INPUT_PLATFORMS") or "windows,linux,macos").split(",")]
           known = {
-              "windows": {"id": "windows", "os": "windows-2025",
-                          "artifact": "Mine-imator-Reforged-%s-Windows-x64" % fork_version},
-              "linux": {"id": "linux", "os": "ubuntu-24.04",
-                        "artifact": "Mine-imator-Reforged-%s-Linux-x64" % fork_version},
-              "macos": {"id": "macos", "os": "macos-15",
-                        "artifact": "Mine-imator-Reforged-%s-macOS-x64" % fork_version},
+              "windows": {"id": "windows", "os": "windows-2025"},
+              "linux": {"id": "linux", "os": "ubuntu-24.04"},
+              "macos": {"id": "macos", "os": "macos-15"},
           }
           unknown = [p for p in wanted if p not in known]
           if unknown:
@@ -217,111 +214,11 @@ jobs:
         run: |
           python3 Tools/stamp_minecraft_version.py "$(cat staging/minecraft-assets/minecraft_latest.txt)"
 
-      - name: Set up Windows build environment
-        if: matrix.id == 'windows'
-        shell: pwsh
-        run: |
-          echo "DEV_DIR=C:\Dev" >> $env:GITHUB_ENV
-          choco install strawberryperl -y --no-progress
-
-      - name: Cache Qt (Windows)
-        if: matrix.id == 'windows'
-        uses: actions/cache@v4
+      - name: Build + package
+        uses: ./.github/actions/build-app
         with:
-          path: |
-            C:/Dev/Qt/5.15.19/install
-            C:/Dev/Qt/5.15.19/qt5
-          key: qt-windows-x64-v1-${{ hashFiles('Setup.ps1', 'WinUtils.ps1') }}
-
-      - name: Set up Linux build environment
-        if: matrix.id == 'linux'
-        run: |
-          echo "DEV_DIR=$HOME/Dev" >> $GITHUB_ENV
-          sudo apt update
-          sudo apt-get install -y software-properties-common
-          sudo add-apt-repository -y --enable-source || \
-            sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
-          sudo apt update
-          sudo apt build-dep -y qtbase5-dev
-          sudo apt install -y git cmake perl clang libomp-dev
-
-      - name: Cache Qt (Linux)
-        if: matrix.id == 'linux'
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/Dev/Qt/5.15.19/install
-            ~/Dev/Qt/5.15.19/qt5
-          key: qt-linux-x64-v1-${{ hashFiles('Setup.sh') }}
-
-      - name: Set up macOS build environment
-        if: matrix.id == 'macos'
-        run: |
-          echo "DEV_DIR=$HOME/Dev" >> $GITHUB_ENV
-          brew install cmake libomp
-          # Best effort: lets any x86_64 helper binary run on ARM runners.
-          sudo softwareupdate --install-rosetta --agree-to-license || true
-          # The committed CppGen is x86_64-only; build a native one instead.
-          cmake -S CppGen -B build-cppgen -DCMAKE_BUILD_TYPE=Release
-          cmake --build build-cppgen --parallel
-          cp build-cppgen/CppGen CppGen/Mac/CppGen
-
-      - name: Cache Qt (macOS)
-        if: matrix.id == 'macos'
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/Dev/Qt/5.15.19/install
-            ~/Dev/Qt/5.15.19/qt5
-          key: qt-macos-x86_64-v1-${{ hashFiles('Setup.sh') }}
-
-      - name: Build dependencies + Qt (Windows)
-        if: matrix.id == 'windows'
-        shell: pwsh
-        run: |
-          # Answer "N" if a cached Qt exists so a non-interactive run skips the rebuild.
-          echo "N" | ./Setup.ps1 Qt
-
-      - name: Build dependencies + Qt (Unix)
-        if: matrix.id != 'windows' && matrix.id == 'linux'
-        run: ./Setup.sh Qt
-
-      - name: Build dependencies + Qt (macOS x86_64)
-        if: matrix.id == 'macos'
-        run: ./Setup.sh Qt x86_64
-
-      - name: Release build (Windows)
-        if: matrix.id == 'windows'
-        shell: pwsh
-        run: ./Setup.ps1 Release
-
-      - name: Release build (Linux)
-        if: matrix.id == 'linux'
-        run: ./Setup.sh Release
-
-      - name: Release build (macOS x86_64)
-        if: matrix.id == 'macos'
-        run: ./Setup.sh Release x86_64
-
-      - name: Package (Windows)
-        if: matrix.id == 'windows'
-        shell: pwsh
-        run: |
-          Compress-Archive -Path install/Mine-imator/* `
-            -DestinationPath "${{ matrix.artifact }}.zip" -Force
-
-      - name: Package (Unix)
-        if: matrix.id != 'windows'
-        run: |
-          cd install && zip -qr "../${{ matrix.artifact }}.zip" Mine-imator && cd ..
-          ls -la "${{ matrix.artifact }}.zip"
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.artifact }}
-          path: ${{ matrix.artifact }}.zip
-          retention-days: 30
+          platform: ${{ matrix.id }}
+          retention-days: 14
 
   release:
     name: Publish GitHub Release

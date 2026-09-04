@@ -1,18 +1,29 @@
-# Mine-imator Reforged - fast continuous-integration checks.
+# Mine-imator Reforged - continuous integration.
 #
-# Runs on every push and pull request. This validates the GML sources (via
-# the committed CppGen converter), the CppGen sources themselves, and the
-# Minecraft asset pipeline - no Qt build required, finishes in minutes.
-# Full platform builds + Minecraft asset fetching happen in release.yml.
+# Fast checks (minutes, no Qt): GML->C++ conversion, CppGen compilation, asset
+# pipeline self-test + live manifest checks, workflow YAML validation.
+# Full builds: real Windows x64 / Linux x64 / macOS x86_64 Release builds via
+# the shared build-app action (same build release.yml uses). Qt compiles from
+# source on the first run and is cached afterwards.
 
 name: Build check
 
 on:
   push:
+    paths-ignore:
+      - "**.md"
+      - "Branding/**"
   pull_request:
+    paths-ignore:
+      - "**.md"
+      - "Branding/**"
 
 permissions:
   contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   cppgen:
@@ -53,12 +64,35 @@ jobs:
       - name: Live manifest check (resolves latest, downloads nothing)
         run: python3 Tools/fetch_minecraft_assets.py --latest --dry-run
 
-      - name: Validate workflow YAML
+      - name: Live range check (validates release.yml's default range)
+        run: python3 Tools/fetch_minecraft_assets.py --range 1.21:26.3 --dry-run
+
+      - name: Validate workflow/action YAML
         run: |
           python3 -c "import yaml" 2>/dev/null || pip install pyyaml
           python3 -c "
           import glob, yaml
-          for path in sorted(glob.glob('.github/workflows/*.yml')):
+          for path in sorted(glob.glob('.github/workflows/*.yml') + glob.glob('.github/actions/*/action.yml')):
               yaml.safe_load(open(path))
               print('OK', path)
           "
+
+  build:
+    name: Build (${{ matrix.id }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { id: windows, os: windows-2025 }
+          - { id: linux, os: ubuntu-24.04 }
+          - { id: macos, os: macos-15 }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 360
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Build + package
+        uses: ./.github/actions/build-app
+        with:
+          platform: ${{ matrix.id }}
