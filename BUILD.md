@@ -11,9 +11,9 @@ To change the third-party source code location, set the `DEV_DIR` environment va
 
 ## Automated builds (GitHub Actions)
 
-* `Build check` (`.github/workflows/build.yml`) runs on every push/PR: fast checks (GML→C++ conversion, CppGen compile, asset-pipeline self-test) plus real Windows x64 / Linux x64 / macOS x86_64 Release builds with artifacts. Qt is cached after the first run.
-* `Release` (`.github/workflows/release.yml`) fetches Minecraft assets (default range `1.21:26.3` plus the auto-resolved latest release), builds Windows x64 / Linux x64 / macOS x86_64 installers with the assets bundled, and publishes a GitHub Release. First runs take hours (Qt compiles from source per OS); later runs reuse caches.
-* To cut a release: bump `mineimator_version_sub` in `GmProject/scripts/macros/macros.gml`, add a `CHANGELOG.md` entry, then push tag `reforged-v<version>` — or run the Release workflow manually with overrides.
+* `Build check` (`.github/workflows/build.yml`) runs on every push/PR (tags excluded): fast checks (GML→C++ conversion, CppGen compile, asset-pipeline self-test) plus real Windows x64 / Linux x64 / macOS x86_64 Release builds. Qt is cached after the first run; build artifacts are kept 30 days so releases can reuse them.
+* `Release` (`.github/workflows/release.yml`) takes the newest green Build check for the release commit (or an explicit run id), fetches fresh Minecraft assets (default range `1.21:26.3` plus the auto-resolved latest release), injects them into each platform zip, and publishes a GitHub Release. Takes minutes plus the asset fetch — no recompilation.
+* To cut a release: bump `mineimator_version_sub` in `GmProject/scripts/macros/macros.gml`, add a `CHANGELOG.md` entry, push, and wait for a green Build check on that commit — then push tag `reforged-v<version>`. (If a tag push races the build, run the Release workflow manually with the same tag.) Manual runs also accept MC range / platform / build-run overrides.
 * CI runs the Setup scripts with `SETUP_NON_INTERACTIVE=1`, which reuses an existing Qt build instead of prompting to erase it. Set it for any non-interactive run.
 
 ## Building Mine-imator (Windows 64-bit)

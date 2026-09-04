@@ -1,22 +1,27 @@
 # Mine-imator Reforged - release automation.
 #
 # What it does:
-#   1. Fetches Minecraft Java assets (piston-meta -> client jars -> Mine-imator
+#   1. Resolves the newest successful "Build check" run for the release commit
+#      (or an explicit run id) and verifies its platform artifacts exist.
+#   2. Fetches Minecraft Java assets (piston-meta -> client jars -> Mine-imator
 #      .zip/.midata packages) for the configured range (default 1.21 through
 #      26.3) plus the auto-resolved latest release.
-#   2. Builds the app on Windows x64, Linux x64 and macOS x86_64 via the repo's
-#      Setup.ps1/Setup.sh scripts (Qt is built from source once, then cached),
-#      bundling the fetched assets and stamping the default assets version.
-#   3. Publishes a GitHub Release with per-platform builds + the assets bundle.
+#   3. Injects the fetched assets into each platform zip from that build run
+#      (no recompilation) and publishes a GitHub Release with per-platform
+#      builds + the assets bundle.
 #
 # How to cut a release:
 #   * Bump `mineimator_version_sub` in GmProject/scripts/macros/macros.gml and
-#     add a CHANGELOG.md entry, then push tag `reforged-v<version>`
+#     add a CHANGELOG.md entry, push, and wait for a green "Build check" on
+#     that commit - then push tag `reforged-v<version>`
 #     (e.g. `git tag reforged-v1.1.0 && git push origin reforged-v1.1.0`).
-#   * Or run this workflow manually (Actions -> Release -> Run workflow).
+#     The tag MUST point at a commit with green builds; if a tag push races
+#     the build, just run this workflow manually with the same tag afterwards.
+#   * Or run this workflow manually (Actions -> Release -> Run workflow),
+#     optionally overriding the tag, MC range, platforms, or build run id.
 #
-# First runs take hours (Qt compiles from source per OS); subsequent runs reuse
-# the Qt + Minecraft jar caches and take ~30-60 minutes.
+# Releases take minutes plus the asset fetch (~10-30 min with a warm cache);
+# the heavy Qt/app compilation happens in Build check, not here.
 
 name: Release
 
@@ -40,6 +45,10 @@ on:
         description: "Comma-separated: windows,linux,macos"
         required: false
         default: "windows,linux,macos"
+      build_run_id:
+        description: "Build check run id to release (default: newest green run for this commit)"
+        required: false
+        default: ""
       publish:
         description: "Publish the GitHub Release (else artifacts only)"
         required: false
@@ -56,6 +65,7 @@ on:
 
 permissions:
   contents: write
+  actions: read
 
 jobs:
   plan:
@@ -71,24 +81,35 @@ jobs:
       publish: ${{ steps.plan.outputs.publish }}
       prerelease: ${{ steps.plan.outputs.prerelease }}
       bundle: ${{ steps.plan.outputs.bundle }}
+      build_run: ${{ steps.plan.outputs.build_run }}
+      artifacts: ${{ steps.plan.outputs.artifacts }}
     steps:
       - name: Check out
         uses: actions/checkout@v4
 
-      - name: Resolve versions, tag and build matrix
+      - name: Resolve tag, build run and platform matrix
         id: plan
         env:
           EVENT: ${{ github.event_name }}
           REF: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ github.token }}
           INPUT_TAG: ${{ inputs.tag }}
           INPUT_RANGE: ${{ inputs.mc_range }}
           INPUT_NO_LATEST: ${{ inputs.no_latest }}
           INPUT_PLATFORMS: ${{ inputs.platforms }}
+          INPUT_BUILD_RUN: ${{ inputs.build_run_id }}
           INPUT_PUBLISH: ${{ inputs.publish }}
           INPUT_PRERELEASE: ${{ inputs.prerelease }}
         run: |
           python3 - <<'EOF'
-          import json, os, re, sys
+          import json, os, re, sys, urllib.request, urllib.error
+
+          API = "https://api.github.com"
+          repo = os.environ["REPO"]
+          token = os.environ["GITHUB_TOKEN"]
+          sha = os.environ["SHA"]
 
           macros = open("GmProject/scripts/macros/macros.gml").read()
           m = re.search(r'#macro mineimator_version_sub\s+"Reforged ([^"]+)"', macros)
@@ -107,18 +128,78 @@ jobs:
           mc_range = inp("INPUT_RANGE") or "1.21:26.3"
           include_latest = inp("INPUT_NO_LATEST").lower() != "true"
           wanted = [p.strip().lower() for p in (inp("INPUT_PLATFORMS") or "windows,linux,macos").split(",")]
-          known = {
-              "windows": {"id": "windows", "os": "windows-2025"},
-              "linux": {"id": "linux", "os": "ubuntu-24.04"},
-              "macos": {"id": "macos", "os": "macos-15"},
-          }
-          unknown = [p for p in wanted if p not in known]
+          labels = {"windows": "Windows-x64", "linux": "Linux-x64", "macos": "macOS-x64"}
+          unknown = [p for p in wanted if p not in labels]
           if unknown:
               sys.exit("error: unknown platform(s): %s" % ", ".join(unknown))
-          matrix = {"include": [known[p] for p in wanted]}
+          matrix = {"include": [{"id": p} for p in wanted]}
 
           publish = "true" if event == "push" else ("true" if inp("INPUT_PUBLISH").lower() == "true" else "false")
           prerelease = "false" if event == "push" else ("true" if inp("INPUT_PRERELEASE").lower() == "true" else "false")
+
+          def api(path):
+              req = urllib.request.Request(API + path, headers={
+                  "Authorization": "Bearer " + token,
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "Mine-imator-Reforged-release",
+              })
+              try:
+                  with urllib.request.urlopen(req, timeout=30) as resp:
+                      return json.load(resp)
+              except urllib.error.HTTPError as e:
+                  sys.exit("error: GitHub API %s failed: HTTP %s: %s"
+                           % (path, e.code, e.read()[:200]))
+
+          override = inp("INPUT_BUILD_RUN")
+          if override:
+              try:
+                  run_id = int(override)
+              except ValueError:
+                  sys.exit("error: build_run_id must be a workflow run id, got '%s'" % override)
+              run = api("/repos/%s/actions/runs/%d" % (repo, run_id))
+              if not run.get("path", "").endswith("/build.yml"):
+                  sys.exit("error: run %d is from %s, not build.yml"
+                           % (run_id, run.get("path")))
+              state = "%s/%s" % (run.get("status"), run.get("conclusion"))
+              if state != "completed/success":
+                  sys.exit("error: build run %d is %s; need a completed/success run"
+                           % (run_id, state))
+          else:
+              data = api("/repos/%s/actions/workflows/build.yml/runs?status=completed&per_page=50" % repo)
+              run = next((r for r in data.get("workflow_runs", [])
+                          if r.get("conclusion") == "success" and r.get("head_sha") == sha), None)
+              if run is None:
+                  sys.exit("error: no successful 'Build check' run for commit %s. "
+                           "Push the release commit and wait for green builds first "
+                           "(commits touching only *.md/Branding skip Build check), "
+                           "then retry - or pass an explicit build_run_id." % sha)
+              run_id = run["id"]
+
+          print("Build run: %s (commit %s, ref %s)"
+                % (run.get("html_url"), run.get("head_sha"), run.get("head_branch")))
+
+          arts = api("/repos/%s/actions/runs/%d/artifacts?per_page=100" % (repo, run_id))
+          arts = arts.get("artifacts", [])
+          mapping, problems = {}, []
+          for pid in wanted:
+              matches = [a for a in arts
+                         if a["name"].startswith("Mine-imator-Reforged-")
+                         and a["name"].endswith("-" + labels[pid])]
+              live = [a["name"] for a in matches if not a.get("expired")]
+              if len(live) == 1:
+                  mapping[pid] = live[0]
+              elif matches and not live:
+                  problems.append("%s: artifacts expired (Build check keeps them 30 days)" % pid)
+              elif not matches:
+                  problems.append("%s: no matching artifact (was that platform's build green?)" % pid)
+              else:
+                  problems.append("%s: multiple matching artifacts: %s" % (pid, ", ".join(live)))
+          if problems:
+              have = ", ".join(sorted(a["name"] for a in arts)) or "(none)"
+              sys.exit("error: build run %d unusable:\n  %s\n  artifacts in run: %s\n"
+                       "  Fix: re-run Build check for this commit, or pass another build_run_id."
+                       % (run_id, "\n  ".join(problems), have))
 
           out = {
               "tag": tag,
@@ -129,6 +210,8 @@ jobs:
               "publish": publish,
               "prerelease": prerelease,
               "bundle": "minecraft-assets-" + mc_range.replace(":", "-"),
+              "build_run": str(run_id),
+              "artifacts": json.dumps(mapping),
           }
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:
               for k, v in out.items():
@@ -173,56 +256,85 @@ jobs:
           path: staging/minecraft-assets
           retention-days: 30
 
-  build:
-    name: Build (${{ matrix.id }})
+  fetch:
+    name: Fetch latest build (${{ matrix.id }})
     needs: [plan, assets]
     strategy:
       fail-fast: false
       matrix:
         include: ${{ fromJSON(needs.plan.outputs.matrix) }}
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 360
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - name: Check out
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
       - name: Download Minecraft assets
         uses: actions/download-artifact@v4
         with:
           name: minecraft-assets
           path: staging/minecraft-assets
 
-      # IMPORTANT: only the per-version files go into Data/Minecraft. The feed
-      # files (versions.midata, assets-index.json, minecraft_latest.txt) must
-      # NOT be copied: the app lists every *.midata in that folder as a
-      # selectable Minecraft version.
-      - name: Bundle assets into datafiles
-        shell: bash
-        run: |
-          ls staging/minecraft-assets
-          cp staging/minecraft-assets/[0-9]*.zip staging/minecraft-assets/[0-9]*.midata \
-            GmProject/datafiles/Data/Minecraft/
-          ls GmProject/datafiles/Data/Minecraft/
-
-      - name: Stamp default assets version
-        shell: bash
-        run: |
-          python3 Tools/stamp_minecraft_version.py "$(cat staging/minecraft-assets/minecraft_latest.txt)"
-
-      - name: Build + package
-        uses: ./.github/actions/build-app
+      - name: Download ${{ matrix.id }} build (run ${{ needs.plan.outputs.build_run }})
+        uses: actions/download-artifact@v4
         with:
-          platform: ${{ matrix.id }}
+          name: ${{ fromJSON(needs.plan.outputs.artifacts)[matrix.id] }}
+          run-id: ${{ needs.plan.outputs.build_run }}
+          github-token: ${{ github.token }}
+          path: staging/build
+
+      # Same guard as the old bundle step: only per-version files go into
+      # Data/Minecraft, never the feed files (versions.midata,
+      # assets-index.json, minecraft_latest.txt) - the app lists every
+      # *.midata there as a selectable version. Windows zips store Data/ at
+      # the root while Unix zips nest it under Mine-imator/, so the prefix is
+      # detected from the committed 1.20.2 anchor present in every build.
+      - name: Inject assets into platform zip
+        run: |
+          python3 - <<'EOF'
+          import glob, os, re, sys, zipfile
+
+          zips = glob.glob("staging/build/*.zip")
+          if len(zips) != 1:
+              sys.exit("error: expected 1 platform zip, found: %s" % zips)
+          zpath = zips[0]
+
+          with zipfile.ZipFile(zpath) as z:
+              names = z.namelist()
+          anchor = next((n for n in names
+                         if re.fullmatch(r"(.*/)?Data/Minecraft/1\.20\.2\.midata", n)), None)
+          if anchor is None:
+              sys.exit("error: no Data/Minecraft/1.20.2.midata in %s; first entries: %s"
+                       % (zpath, names[:30]))
+          prefix = anchor[:anchor.index("Data/Minecraft/")]
+
+          files = sorted(glob.glob("staging/minecraft-assets/[0-9]*.zip") +
+                         glob.glob("staging/minecraft-assets/[0-9]*.midata"))
+          if not files:
+              sys.exit("error: no per-version asset files in staging/minecraft-assets")
+          have = set(names)
+          added, skipped = 0, 0
+          with zipfile.ZipFile(zpath, "a", zipfile.ZIP_DEFLATED, compresslevel=6) as z:
+              for path in files:
+                  arc = prefix + "Data/Minecraft/" + os.path.basename(path)
+                  if arc in have:
+                      skipped += 1
+                      continue
+                  z.write(path, arc)
+                  have.add(arc)
+                  added += 1
+          print("Injected %d file(s) into %s (%d already present, skipped)"
+                % (added, zpath, skipped))
+          EOF
+          ls -la staging/build/
+
+      - name: Upload ${{ matrix.id }} release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ fromJSON(needs.plan.outputs.artifacts)[matrix.id] }}
+          path: staging/build/*.zip
           retention-days: 14
 
   release:
     name: Publish GitHub Release
-    needs: [plan, assets, build]
+    needs: [plan, assets, fetch]
     if: needs.plan.outputs.publish == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30

@@ -3,13 +3,17 @@
 # Fast checks (minutes, no Qt): GML->C++ conversion, CppGen compilation, asset
 # pipeline self-test + live manifest checks, workflow YAML validation.
 # Full builds: real Windows x64 / Linux x64 / macOS x86_64 Release builds via
-# the shared build-app action (same build release.yml uses). Qt compiles from
-# source on the first run and is cached afterwards.
+# the shared build-app action. Qt compiles from source on the first run and is
+# cached afterwards. Build artifacts are kept 30 days: release.yml publishes
+# the newest green build for the release commit instead of recompiling.
+# Tag pushes are ignored here - the Release workflow owns tags.
 
 name: Build check
 
 on:
   push:
+    tags-ignore:
+      - "**"
     paths-ignore:
       - "**.md"
       - "Branding/**"
@@ -17,6 +21,7 @@ on:
     paths-ignore:
       - "**.md"
       - "Branding/**"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -96,3 +101,4 @@ jobs:
         uses: ./.github/actions/build-app
         with:
           platform: ${{ matrix.id }}
+          retention-days: 30
