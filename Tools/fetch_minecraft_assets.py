@@ -28,8 +28,11 @@ Examples:
   # Full supported range, Minecraft 1.21 through 26.3
   python3 Tools/fetch_minecraft_assets.py --range 1.21:26.3
 
-  # Explicit versions
+  # Explicit versions (pre-release ids work too: --mc-version 26.3-pre-2)
   python3 Tools/fetch_minecraft_assets.py --mc-version 1.21,26.3 --latest
+
+  # List every known version, newest first
+  python3 Tools/fetch_minecraft_assets.py --list
 
   # Offline self-test (no network needed)
   python3 Tools/fetch_minecraft_assets.py --self-test
@@ -39,6 +42,7 @@ Only the Python standard library is used so this runs on any CI runner.
 
 import argparse
 import datetime
+import difflib
 import hashlib
 import io
 import json
@@ -199,16 +203,52 @@ def load_version_manifest(args):
     return manifest
 
 
-def releases_by_time(manifest):
-    releases = [v for v in manifest["versions"] if v.get("type") == "release"]
-    releases.sort(key=lambda v: parse_time(v["releaseTime"]))
-    return releases
+def entries_by_time(manifest, types=("release", "snapshot")):
+    entries = [v for v in manifest["versions"] if v.get("type") in types]
+    entries.sort(key=lambda v: parse_time(v["releaseTime"]))
+    return entries
+
+
+def resolve_id(vid, by_id, chrono, what):
+    """Resolve a version id to a manifest entry.
+
+    Exact matches win. Otherwise the id falls back to its newest '{id}-*'
+    pre-release (e.g. 26.3 -> 26.3-pre-2), which is then treated exactly like
+    a release. The dash keeps partial versions safe: '1.2' never matches
+    '1.20.2'.
+    """
+    if vid in by_id:
+        return by_id[vid]
+    prefix = vid + "-"
+    cands = [e for e in chrono if e["id"].startswith(prefix)]
+    if cands:
+        best = max(cands, key=lambda e: parse_time(e["releaseTime"]))
+        log("note: '%s' is not a known release; using pre-release '%s' "
+            "instead" % (vid, best["id"]))
+        return best
+    suggestions = difflib.get_close_matches(vid, list(by_id), n=3)
+    newest_rel = [e["id"] for e in chrono if e.get("type") == "release"][-5:]
+    newest_pre = [e["id"] for e in chrono if e.get("type") != "release"][-3:]
+    msg = "error: %s '%s' is not a known version." % (what, vid)
+    if suggestions:
+        msg += " Did you mean: %s?" % ", ".join(suggestions)
+    msg += " Newest releases: %s." % ", ".join(newest_rel)
+    if newest_pre:
+        msg += " Newest pre-releases: %s." % ", ".join(newest_pre)
+    msg += " Run with --list to see everything."
+    raise SystemExit(msg)
 
 
 def select_versions(manifest, args):
-    """Return [(id, releaseTime, url, ...)] in chronological order."""
-    releases = releases_by_time(manifest)
-    by_id = {v["id"]: v for v in releases}
+    """Return manifest entries in chronological order.
+
+    Explicit ids and range endpoints resolve against every manifest entry
+    (releases, pre-releases, snapshots, ...). Range bodies cover releases
+    only unless --include-snapshots is given; pre-release endpoints are
+    always included themselves.
+    """
+    chrono = entries_by_time(manifest)
+    by_id = {v["id"]: v for v in chrono}
     selected = {}
 
     def add(entry):
@@ -217,14 +257,8 @@ def select_versions(manifest, args):
     if args.mc_version:
         for vid in args.mc_version.split(","):
             vid = vid.strip()
-            if not vid:
-                continue
-            if vid not in by_id:
-                known = ", ".join(v["id"] for v in releases[-8:])
-                raise SystemExit(
-                    "error: Minecraft version '%s' is not a known release. "
-                    "Most recent releases: %s" % (vid, known))
-            add(by_id[vid])
+            if vid:
+                add(resolve_id(vid, by_id, chrono, "version"))
 
     if args.range:
         if ":" not in args.range:
@@ -232,24 +266,33 @@ def select_versions(manifest, args):
         start_id, _, end_id = args.range.partition(":")
         start_id = start_id.strip()
         end_id = end_id.strip() or manifest["latest"]["release"]
-        if start_id not in by_id:
-            raise SystemExit("error: range start '%s' is not a known release"
-                             % start_id)
-        if end_id not in by_id:
-            raise SystemExit("error: range end '%s' is not a known release"
-                             % end_id)
-        start_t = parse_time(by_id[start_id]["releaseTime"])
-        end_t = parse_time(by_id[end_id]["releaseTime"])
+        start = resolve_id(start_id, by_id, chrono, "range start")
+        end = resolve_id(end_id, by_id, chrono, "range end")
+        start_t = parse_time(start["releaseTime"])
+        end_t = parse_time(end["releaseTime"])
         if end_t < start_t:
             raise SystemExit("error: range end %s predates start %s"
-                             % (end_id, start_id))
+                             % (end["id"], start["id"]))
+        if getattr(args, "include_snapshots", False):
+            pool = chrono
+            kind = "version(s)"
+        else:
+            pool = [e for e in chrono if e.get("type") == "release"]
+            kind = "release(s)"
         count = 0
-        for entry in releases:
+        for entry in pool:
             t = parse_time(entry["releaseTime"])
             if start_t <= t <= end_t:
                 add(entry)
                 count += 1
-        log("Range %s:%s covers %d release(s)" % (start_id, end_id, count))
+        pre_endpoints = [e["id"] for e in (start, end)
+                         if e.get("type") != "release"]
+        add(start)
+        add(end)
+        log("Range %s:%s covers %d %s%s"
+            % (start["id"], end["id"], count, kind,
+               " + pre-release endpoint(s): %s" % ", ".join(pre_endpoints)
+               if pre_endpoints else ""))
 
     if args.latest:
         latest_id = manifest["latest"]["release"]
@@ -259,12 +302,28 @@ def select_versions(manifest, args):
         add(by_id[latest_id])
         log("Latest release: %s" % latest_id)
 
+    if getattr(args, "latest_snapshot", False):
+        snap_id = manifest["latest"]["snapshot"]
+        if snap_id not in by_id:
+            raise SystemExit("error: latest snapshot '%s' missing from manifest"
+                             % snap_id)
+        add(by_id[snap_id])
+        log("Latest snapshot: %s" % snap_id)
+
     if not selected:
-        raise SystemExit("error: specify --latest, --range A:B and/or "
-                         "--mc-version X[,Y...] (or --self-test)")
+        raise SystemExit("error: specify --latest, --latest-snapshot, "
+                         "--range A:B and/or --mc-version X[,Y...] "
+                         "(or --self-test)")
     ordered = sorted(selected.values(),
                      key=lambda v: parse_time(v["releaseTime"]))
     return ordered
+
+
+def list_versions(manifest):
+    chrono = entries_by_time(manifest)
+    for e in reversed(chrono):
+        print("%-24s %-8s %s"
+              % (e["id"], e.get("type"), e["releaseTime"][:10]))
 
 
 def resolve_client_jar(entry, args):
@@ -576,16 +635,20 @@ def run_self_test(args):
         if not cond:
             failures.append(name)
 
-    # 1. Range selection over a fixture manifest.
+    # 1. Version selection over a fixture manifest mirroring live reality:
+    # no final 26.3 yet; 26.3-pre-2 is the latest snapshot (type snapshot).
     fixture = {
-        "latest": {"release": "26.3", "snapshot": "26.3-pre1"},
+        "latest": {"release": "26.2", "snapshot": "26.3-pre-2"},
         "versions": [
-            {"id": "26.3", "type": "release",
-             "url": "https://example.invalid/26.3.json",
-             "releaseTime": "2026-03-10T10:00:00+00:00"},
-            {"id": "26.3-pre1", "type": "snapshot",
-             "url": "https://example.invalid/26.3-pre1.json",
-             "releaseTime": "2026-03-01T10:00:00+00:00"},
+            {"id": "26.3-pre-2", "type": "snapshot",
+             "url": "https://example.invalid/26.3-pre-2.json",
+             "releaseTime": "2026-08-28T10:00:00+00:00"},
+            {"id": "26.3-pre-1", "type": "snapshot",
+             "url": "https://example.invalid/26.3-pre-1.json",
+             "releaseTime": "2026-08-21T10:00:00+00:00"},
+            {"id": "26.2", "type": "release",
+             "url": "https://example.invalid/26.2.json",
+             "releaseTime": "2026-07-15T10:00:00+00:00"},
             {"id": "25.1", "type": "release",
              "url": "https://example.invalid/25.1.json",
              "releaseTime": "2025-06-01T10:00:00+00:00"},
@@ -602,23 +665,56 @@ def run_self_test(args):
         mc_version = None
         range = "1.21:26.3"
         latest = False
+        latest_snapshot = False
+        include_snapshots = False
     got = [e["id"] for e in select_versions(fixture, Opts)]
-    check("range 1.21:26.3", got == ["1.21", "25.1", "26.3"], str(got))
+    check("range 1.21:26.3 falls back to 26.3-pre-2 endpoint",
+          got == ["1.21", "25.1", "26.2", "26.3-pre-2"], str(got))
+
+    class OptsSnap(Opts):
+        include_snapshots = True
+    got = [e["id"] for e in select_versions(fixture, OptsSnap)]
+    check("range + --include-snapshots covers pre-releases",
+          got == ["1.21", "25.1", "26.2", "26.3-pre-1", "26.3-pre-2"],
+          str(got))
 
     class Opts2(Opts):
         range = None
         latest = True
         mc_version = "1.20.2"
     got = [e["id"] for e in select_versions(fixture, Opts2)]
-    check("explicit+latest merge", got == ["1.20.2", "26.3"], str(got))
+    check("explicit+latest merge", got == ["1.20.2", "26.2"], str(got))
+
+    class OptsExp(Opts):
+        range = None
+        mc_version = "26.3-pre-1,26.2"
+    got = [e["id"] for e in select_versions(fixture, OptsExp)]
+    check("explicit snapshot id resolves",
+          got == ["26.2", "26.3-pre-1"], str(got))
+
+    class OptsSnapLatest(Opts):
+        range = None
+        latest_snapshot = True
+    got = [e["id"] for e in select_versions(fixture, OptsSnapLatest)]
+    check("--latest-snapshot resolves", got == ["26.3-pre-2"], str(got))
 
     try:
         class Opts3(Opts):
             range = "9.9:26.3"
         select_versions(fixture, Opts3)
         check("bad range start errors", False, "no SystemExit")
+    except SystemExit as exc:
+        check("bad range start errors with suggestion lists",
+              "Newest releases" in str(exc), str(exc)[:120])
+
+    try:
+        class Opts4(Opts):
+            range = None
+            mc_version = "1.2"  # must NOT prefix-match 1.20.2
+        select_versions(fixture, Opts4)
+        check("partial id 1.2 rejected", False, "no SystemExit")
     except SystemExit:
-        check("bad range start errors", True)
+        check("partial id 1.2 rejected", True)
 
     # 2. Round-trip: template zip as a pseudo client jar.
     tmp = tempfile.mkdtemp(prefix="mc-assets-test-")
@@ -686,10 +782,18 @@ def build_parser():
     p.add_argument("--mc-version", default=None,
                    help="Explicit version(s), comma separated (e.g. 1.21,26.3)")
     p.add_argument("--range", default=None,
-                   help="Inclusive release range by date (e.g. 1.21:26.3; "
-                        "empty end means latest)")
+                   help="Inclusive date range (e.g. 1.21:26.3; empty end means "
+                        "latest release; an endpoint without a final release "
+                        "resolves to its newest pre-release)")
     p.add_argument("--latest", action="store_true",
                    help="Include the latest release")
+    p.add_argument("--latest-snapshot", action="store_true",
+                   help="Include the latest snapshot/pre-release")
+    p.add_argument("--include-snapshots", action="store_true",
+                   help="Include every snapshot/pre-release inside --range "
+                        "(pre-release endpoints are always included)")
+    p.add_argument("--list", action="store_true",
+                   help="List known versions (newest first) and exit")
     p.add_argument("--out", default=DEFAULT_MINECRAFT_DIR,
                    help="Output directory for .zip/.midata files")
     p.add_argument("--template", default=DEFAULT_TEMPLATE,
@@ -718,6 +822,9 @@ def main(argv=None):
     if args.self_test:
         return run_self_test(args)
     manifest = load_version_manifest(args)
+    if args.list:
+        list_versions(manifest)
+        return 0
     entries = select_versions(manifest, args)
     log("Selected %d version(s): %s"
         % (len(entries), ", ".join(e["id"] for e in entries)))

@@ -19,6 +19,18 @@ python3 Tools/fetch_minecraft_assets.py --range 1.21:26.3 --dry-run
 python3 Tools/fetch_minecraft_assets.py --self-test   # no network needed
 ```
 
+### Version selection
+
+Explicit ids (`--mc-version`) and range endpoints resolve against every
+manifest entry — releases, pre-releases, and snapshots. If an id has no final
+release yet, it automatically falls back to its newest `{id}-*` pre-release
+(e.g. `--range 1.21:26.3` currently ends at `26.3-pre-2`). Range bodies cover
+releases only, so output stays stable day to day; add `--include-snapshots`
+to fetch every snapshot inside the range as well. `--latest` always means the
+latest final release, `--latest-snapshot` the latest pre-release/snapshot, and
+`--list` prints every known version (newest first). Unknown ids fail with
+"did you mean" suggestions instead of a bare error.
+
 Outputs (default: `GmProject/datafiles/Data/Minecraft`, which the app scans
 automatically — every `*.midata` there becomes selectable in Settings):
 
