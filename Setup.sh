@@ -10,6 +10,8 @@
 #       Creates a release build and install folder for publishing
 #   x86_64|arm64:
 #       For Mac OS, sets the target architecture, defaults to system architecture
+#   Set SETUP_NON_INTERACTIVE=1 to skip confirmation prompts for CI /
+#   non-interactive runs (an existing Qt directory is reused as-is).
 
 set -eu
 
@@ -426,6 +428,10 @@ build_qt() {
     esac
 
     if [ -d "$qt_directory" ]; then
+        if [ -n "${SETUP_NON_INTERACTIVE:-}" ]; then
+            echo "Qt directory already exists at $qt_directory; reusing it (SETUP_NON_INTERACTIVE is set)."
+            exit 0
+        fi
         printf 'A Qt directory already exists at %s. Erase it and continue? [Y]es/[N]o ' "$qt_directory"
         if ! read -r answer; then
             exit 0

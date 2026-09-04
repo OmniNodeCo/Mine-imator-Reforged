@@ -55,13 +55,26 @@ runs:
       shell: bash
       run: |
         echo "DEV_DIR=$HOME/Dev" >> $GITHUB_ENV
-        sudo apt update
+        sudo apt-get update
         sudo apt-get install -y software-properties-common
-        sudo add-apt-repository -y --enable-source || \
+        # `apt-get build-dep` needs deb-src entries. add-apt-repository's
+        # --enable-source exits 0 on Ubuntu 24.04 without actually editing
+        # the DEB822 ubuntu.sources file, so patch it directly (falling back
+        # to add-apt-repository only on legacy sources.list layouts).
+        if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then
           sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
-        sudo apt update
-        sudo apt build-dep -y qtbase5-dev
-        sudo apt install -y git cmake perl clang libomp-dev
+        else
+          sudo add-apt-repository -y --enable-source
+        fi
+        if ! grep -rq "deb-src" /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null; then
+          echo "error: no deb-src entry found after enabling source repositories" >&2
+          cat /etc/apt/sources.list 2>/dev/null >&2 || true
+          cat /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null >&2 || true
+          exit 1
+        fi
+        sudo apt-get update
+        sudo apt-get build-dep -y qtbase5-dev
+        sudo apt-get install -y git cmake perl clang libomp-dev
 
     - name: Cache Qt (Linux)
       if: inputs.platform == 'linux'
@@ -97,18 +110,22 @@ runs:
     - name: Build dependencies + Qt (Windows)
       if: inputs.platform == 'windows'
       shell: pwsh
-      run: |
-        # Answer "N" if a cached Qt exists so a non-interactive run skips the rebuild.
-        echo "N" | ./Setup.ps1 Qt
+      env:
+        SETUP_NON_INTERACTIVE: '1'
+      run: ./Setup.ps1 Qt
 
     - name: Build dependencies + Qt (Linux)
       if: inputs.platform == 'linux'
       shell: bash
+      env:
+        SETUP_NON_INTERACTIVE: '1'
       run: ./Setup.sh Qt
 
     - name: Build dependencies + Qt (macOS x86_64)
       if: inputs.platform == 'macos'
       shell: bash
+      env:
+        SETUP_NON_INTERACTIVE: '1'
       run: ./Setup.sh Qt x86_64
 
     - name: Release build (Windows)

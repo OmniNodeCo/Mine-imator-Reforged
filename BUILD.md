@@ -14,6 +14,7 @@ To change the third-party source code location, set the `DEV_DIR` environment va
 * `Build check` (`.github/workflows/build.yml`) runs on every push/PR: fast checks (GML→C++ conversion, CppGen compile, asset-pipeline self-test) plus real Windows x64 / Linux x64 / macOS x86_64 Release builds with artifacts. Qt is cached after the first run.
 * `Release` (`.github/workflows/release.yml`) fetches Minecraft assets (default range `1.21:26.3` plus the auto-resolved latest release), builds Windows x64 / Linux x64 / macOS x86_64 installers with the assets bundled, and publishes a GitHub Release. First runs take hours (Qt compiles from source per OS); later runs reuse caches.
 * To cut a release: bump `mineimator_version_sub` in `GmProject/scripts/macros/macros.gml`, add a `CHANGELOG.md` entry, then push tag `reforged-v<version>` — or run the Release workflow manually with overrides.
+* CI runs the Setup scripts with `SETUP_NON_INTERACTIVE=1`, which reuses an existing Qt build instead of prompting to erase it. Set it for any non-interactive run.
 
 ## Building Mine-imator (Windows 64-bit)
 1. Set up environment and `DEV_DIR` variable
@@ -91,7 +92,7 @@ To change the third-party source code location, set the `DEV_DIR` environment va
 ## Building Mine-imator (Linux)
 1. Open terminal
 2. Install build dependencies
-    * **Ubuntu**: Run `sudo apt update && sudo apt-get install -y software-properties-common && sudo add-apt-repository -y --enable-source --enable-source && sudo apt build-dep -y qtbase5-dev && sudo apt install -y git cmake perl clang libomp-dev`
+    * **Ubuntu**: Run `sudo apt-get update && sudo apt-get install -y software-properties-common && (sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || sudo add-apt-repository -y --enable-source) && sudo apt-get update && sudo apt-get build-dep -y qtbase5-dev && sudo apt-get install -y git cmake perl clang libomp-dev` (`add-apt-repository --enable-source` alone silently does nothing on Ubuntu 24.04's DEB822 sources, so the `sed` patches `ubuntu.sources` directly)
     * **Debian/Linux Mint**: [Enable Source Code Repositories](https://wiki.debian.org/SourcesList), then run `sudo apt build-dep -y qtbase5-dev && sudo apt install -y git cmake perl clang libomp-dev`
     * **Fedora**: Run `sudo dnf install -y dnf-plugins-core && sudo dnf builddep -y qt5-qtbase && sudo dnf install -y git cmake perl clang libomp-devel`
     * **Arch Linux/CachyOS**: Run `sudo pacman -Syu --needed --noconfirm base-devel git cmake perl clang openmp`

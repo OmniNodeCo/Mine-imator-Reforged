@@ -9,6 +9,8 @@
 #       Creates a release build and install folder for publishing
 #   x64|x86:
 #       Sets the target architecture, defaults to system architecture
+#   Set SETUP_NON_INTERACTIVE=1 to skip confirmation prompts for CI /
+#   non-interactive runs (an existing Qt directory is reused as-is).
 
 param(
     [Parameter(Position = 0)][string] $Action = "Qt",
@@ -571,6 +573,10 @@ function Build-Qt {
     }
 
     if (Test-Path -LiteralPath $qtDirectory -PathType Container) {
+        if ($env:SETUP_NON_INTERACTIVE) {
+            Write-Host "Qt directory already exists at $qtDirectory; reusing it (SETUP_NON_INTERACTIVE is set)."
+            return
+        }
         $answer = Read-Host "A Qt directory already exists at $qtDirectory. Erase it and continue? [Y]es/[N]o"
         if ($answer -notmatch '^(?i:y|yes)$') {
             return
