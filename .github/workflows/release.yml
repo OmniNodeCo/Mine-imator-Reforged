@@ -1,8 +1,8 @@
 # Mine-imator Reforged - release automation.
 #
 # What it does:
-#   1. Resolves the newest successful "Build check" run for the release commit
-#      (or an explicit run id) and verifies its platform artifacts exist.
+#   1. Takes the newest successful "Build check" run (or an explicit run id)
+#      and verifies its platform artifacts exist.
 #   2. Fetches Minecraft Java assets (piston-meta -> client jars -> Mine-imator
 #      .zip/.midata packages) for the configured range (default 1.21 through
 #      26.3) plus the auto-resolved latest release.
@@ -12,11 +12,12 @@
 #
 # How to cut a release:
 #   * Bump `mineimator_version_sub` in GmProject/scripts/macros/macros.gml and
-#     add a CHANGELOG.md entry, push, and wait for a green "Build check" on
-#     that commit - then push tag `reforged-v<version>`
+#     add a CHANGELOG.md entry, push, and wait for a green "Build check" -
+#     then push tag `reforged-v<version>`
 #     (e.g. `git tag reforged-v1.1.0 && git push origin reforged-v1.1.0`).
-#     The tag MUST point at a commit with green builds; if a tag push races
-#     the build, just run this workflow manually with the same tag afterwards.
+#     The newest green build is used even if the tag races the build (a
+#     warning is printed when it was built from another commit); to redo a
+#     release after green builds, run this workflow manually instead.
 #   * Or run this workflow manually (Actions -> Release -> Run workflow),
 #     optionally overriding the tag, MC range, platforms, or build run id.
 #
@@ -46,7 +47,7 @@ on:
         required: false
         default: "windows,linux,macos"
       build_run_id:
-        description: "Build check run id to release (default: newest green run for this commit)"
+        description: "Build check run id to release (default: newest green run)"
         required: false
         default: ""
       publish:
@@ -167,17 +168,21 @@ jobs:
                            % (run_id, state))
           else:
               data = api("/repos/%s/actions/workflows/build.yml/runs?status=completed&per_page=50" % repo)
-              run = next((r for r in data.get("workflow_runs", [])
-                          if r.get("conclusion") == "success" and r.get("head_sha") == sha), None)
-              if run is None:
-                  sys.exit("error: no successful 'Build check' run for commit %s. "
-                           "Push the release commit and wait for green builds first "
-                           "(commits touching only *.md/Branding skip Build check), "
-                           "then retry - or pass an explicit build_run_id." % sha)
+              runs = [r for r in data.get("workflow_runs", [])
+                      if r.get("conclusion") == "success"]
+              if not runs:
+                  sys.exit("error: no successful 'Build check' runs found. "
+                           "Run Build check on the code you want to release and wait for green builds first - "
+                           "or pass an explicit build_run_id.")
+              run = runs[0]
               run_id = run["id"]
 
           print("Build run: %s (commit %s, ref %s)"
                 % (run.get("html_url"), run.get("head_sha"), run.get("head_branch")))
+          if run.get("head_sha") != sha:
+              print("::warning::Build run %d was built from commit %s, but this release is for %s. "
+                    "Binaries may not match the release source - pass build_run_id to pin an exact run."
+                    % (run_id, run.get("head_sha"), sha))
 
           arts = api("/repos/%s/actions/runs/%d/artifacts?per_page=100" % (repo, run_id))
           arts = arts.get("artifacts", [])
