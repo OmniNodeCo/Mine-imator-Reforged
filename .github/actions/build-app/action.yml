@@ -1,0 +1,148 @@
+# Shared full-platform build: dependencies + cached Qt + Release + package.
+# Used by build.yml (every push/PR) and release.yml (releases) so the build
+# logic exists exactly once. Expects a checked-out repo; on entry the caller
+# may already have bundled Minecraft assets + stamped versions (release.yml).
+# Produces <Mine-imator-Reforged-<ver>-<OS>-x64>.zip as an artifact.
+
+name: Build app
+description: Full Mine-imator Reforged platform build via the Setup scripts.
+
+inputs:
+  platform:
+    description: "Target platform: windows, linux or macos"
+    required: true
+  retention-days:
+    description: "Artifact retention"
+    required: false
+    default: "7"
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve artifact name
+      id: names
+      shell: bash
+      run: |
+        case "${{ inputs.platform }}" in
+          windows) label="Windows-x64" ;;
+          linux) label="Linux-x64" ;;
+          macos) label="macOS-x64" ;;
+          *) echo "error: unknown platform '${{ inputs.platform }}'"; exit 1 ;;
+        esac
+        ver="$(sed -n 's/.*#macro mineimator_version_sub[[:space:]]*"Reforged \([^"]*\)".*/\1/p' GmProject/scripts/macros/macros.gml)"
+        if [ -z "$ver" ]; then echo "error: cannot find Reforged version in macros.gml"; exit 1; fi
+        echo "zip=Mine-imator-Reforged-$ver-$label" >> "$GITHUB_OUTPUT"
+        echo "Building Mine-imator-Reforged-$ver-$label"
+
+    - name: Set up Windows build environment
+      if: inputs.platform == 'windows'
+      shell: pwsh
+      run: |
+        echo "DEV_DIR=C:\Dev" >> $env:GITHUB_ENV
+        choco install strawberryperl -y --no-progress
+
+    - name: Cache Qt (Windows)
+      if: inputs.platform == 'windows'
+      uses: actions/cache@v4
+      with:
+        path: |
+          C:/Dev/Qt/5.15.19/install
+          C:/Dev/Qt/5.15.19/qt5
+        key: qt-windows-x64-v1-${{ hashFiles('Setup.ps1', 'WinUtils.ps1') }}
+
+    - name: Set up Linux build environment
+      if: inputs.platform == 'linux'
+      shell: bash
+      run: |
+        echo "DEV_DIR=$HOME/Dev" >> $GITHUB_ENV
+        sudo apt update
+        sudo apt-get install -y software-properties-common
+        sudo add-apt-repository -y --enable-source || \
+          sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
+        sudo apt update
+        sudo apt build-dep -y qtbase5-dev
+        sudo apt install -y git cmake perl clang libomp-dev
+
+    - name: Cache Qt (Linux)
+      if: inputs.platform == 'linux'
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/Dev/Qt/5.15.19/install
+          ~/Dev/Qt/5.15.19/qt5
+        key: qt-linux-x64-v1-${{ hashFiles('Setup.sh') }}
+
+    - name: Set up macOS build environment
+      if: inputs.platform == 'macos'
+      shell: bash
+      run: |
+        echo "DEV_DIR=$HOME/Dev" >> $GITHUB_ENV
+        brew install cmake libomp
+        # Best effort: lets any x86_64 helper binary run on ARM runners.
+        sudo softwareupdate --install-rosetta --agree-to-license || true
+        # The committed CppGen is x86_64-only; build a native one instead.
+        cmake -S CppGen -B build-cppgen -DCMAKE_BUILD_TYPE=Release
+        cmake --build build-cppgen --parallel
+        cp build-cppgen/CppGen CppGen/Mac/CppGen
+
+    - name: Cache Qt (macOS)
+      if: inputs.platform == 'macos'
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/Dev/Qt/5.15.19/install
+          ~/Dev/Qt/5.15.19/qt5
+        key: qt-macos-x86_64-v1-${{ hashFiles('Setup.sh') }}
+
+    - name: Build dependencies + Qt (Windows)
+      if: inputs.platform == 'windows'
+      shell: pwsh
+      run: |
+        # Answer "N" if a cached Qt exists so a non-interactive run skips the rebuild.
+        echo "N" | ./Setup.ps1 Qt
+
+    - name: Build dependencies + Qt (Linux)
+      if: inputs.platform == 'linux'
+      shell: bash
+      run: ./Setup.sh Qt
+
+    - name: Build dependencies + Qt (macOS x86_64)
+      if: inputs.platform == 'macos'
+      shell: bash
+      run: ./Setup.sh Qt x86_64
+
+    - name: Release build (Windows)
+      if: inputs.platform == 'windows'
+      shell: pwsh
+      run: ./Setup.ps1 Release
+
+    - name: Release build (Linux)
+      if: inputs.platform == 'linux'
+      shell: bash
+      run: ./Setup.sh Release
+
+    - name: Release build (macOS x86_64)
+      if: inputs.platform == 'macos'
+      shell: bash
+      run: ./Setup.sh Release x86_64
+
+    - name: Package (Windows)
+      if: inputs.platform == 'windows'
+      shell: pwsh
+      run: |
+        Compress-Archive -Path install/Mine-imator/* `
+          -DestinationPath "${{ steps.names.outputs.zip }}.zip" -Force
+
+    - name: Package (Unix)
+      if: inputs.platform != 'windows'
+      shell: bash
+      run: |
+        cd install && zip -qr "../${{ steps.names.outputs.zip }}.zip" Mine-imator && cd ..
+        ls -la "${{ steps.names.outputs.zip }}.zip"
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.names.outputs.zip }}
+        path: ${{ steps.names.outputs.zip }}.zip
+        retention-days: ${{ inputs.retention-days }}
