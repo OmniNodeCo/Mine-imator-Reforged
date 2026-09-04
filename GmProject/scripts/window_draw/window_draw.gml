@@ -66,7 +66,7 @@ function window_draw()
 			view_draw(view_second)
 			if (menu_popup = null && popup)
 				menu_draw()
-			window_set_caption(view_second.title + " - Mine-imator")
+			window_set_caption(view_second.title + " - " + mineimator_title_short)
 			break
 		}
 		
@@ -77,7 +77,7 @@ function window_draw()
 			panel_draw(panel_window_obj)
 			if (menu_popup = null && popup)
 				menu_draw()
-			window_set_caption(text_get("tabtimeline") + " - Mine-imator")
+			window_set_caption(text_get("tabtimeline") + " - " + mineimator_title_short)
 			break
 		}
 	}

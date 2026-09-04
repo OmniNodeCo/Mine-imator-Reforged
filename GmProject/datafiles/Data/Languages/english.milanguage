@@ -4,8 +4,8 @@
 		"language": "English",
 		"locale": "en-US",
 		"translator": "David, Nimi, mbanders",
-		"forversion": "2.0.1",
-		"lastchange": "2023.10.27"
+		"forversion": "2.0.2",
+		"lastchange": "2026.09.04"
 	},
 	"particle/": {
 		"default": "Default spawner",
@@ -277,6 +277,7 @@
 		"createdby": "CREATED BY",
 		"development": "DEVELOPMENT",
 		"uibranding": "UI & BRANDING",
+		"cb": "CONTINUATION BUILD",
 		"betatesting": "BETA TESTING",
 		"site": "Visit Mine-imator's website",
 		"forums": "Visit the Mine-imator forums",

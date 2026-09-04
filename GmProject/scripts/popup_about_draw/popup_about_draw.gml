@@ -90,6 +90,14 @@ function popup_about_draw()
 	dy += 26
 	draw_label("Voxy", dx, dy, fa_left, fa_bottom, c_text_secondary, a_text_secondary, font_label)
 	
+	// Continuation Build
+	dy += 34
+	draw_label(text_get("aboutcb"), dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
+	dy += 26
+	draw_button_text("OmniNodeCo", dx, dy, popup_open_url, link_cb_repo, link_cb_repo, font_label)
+	dy += 19
+	draw_label(mineimator_version_sub, dx, dy, fa_left, fa_bottom, c_text_secondary, a_text_secondary, font_label)
+	
 	dx += 130 + 24
 	dy = content_y + 176
 	

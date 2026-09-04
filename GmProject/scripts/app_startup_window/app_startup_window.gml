@@ -24,7 +24,7 @@ function app_startup_window()
 	window_set_focus()
 	window_set_min_width(100)
 	window_set_min_height(100)
-	window_set_caption("Mine-imator")
+	window_set_caption(mineimator_title_short)
 	
 	window_scroll_focus = ""
 	window_scroll_focus_prev = ""

@@ -21,14 +21,14 @@ namespace CppProject
 		QTextEdit* textArea = new QTextEdit;
 		textArea->setReadOnly(true);
 		textArea->setStyleSheet("font-family: Consolas;");
-		textArea->setPlainText(error + "\nVersion: " + mineimator_version + (mineimator_version_extra.IsEmpty() ? "" : " " + mineimator_version_extra) + " (" + os_get() + ")");
+		textArea->setPlainText(error + "\nVersion: " + mineimator_version + (mineimator_version_sub.IsEmpty() ? "" : " " + mineimator_version_sub) + (mineimator_version_extra.IsEmpty() ? "" : " " + mineimator_version_extra) + " (" + os_get() + ")");
 
 		// Error
 		mainLayout->addWidget(new QLabel("A fatal error has occurred!"));
 		mainLayout->addWidget(textArea);
 
 		// Report
-		QLabel* text1 = new QLabel("Please report the error on the Mine-imator forums along with the log file contents and instructions how to recreate the error message. If the issue occurs with a certain project file, please upload the project folder as well and include a link to it in your topic.");
+		QLabel* text1 = new QLabel("Please report the error on the Continuation Build repository (https://github.com/OmniNodeCo/Mine-imator) or the Mine-imator forums along with the log file contents and instructions how to recreate the error message. If the issue occurs with a certain project file, please upload the project folder as well and include a link to it in your topic.");
 		text1->setWordWrap(true);
 		mainLayout->addWidget(text1);
 		QLayout* buttonLayout = new QHBoxLayout;

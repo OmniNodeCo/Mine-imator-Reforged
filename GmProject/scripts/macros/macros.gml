@@ -19,11 +19,13 @@ function macros()
 	#macro dev_mode_name_translation_message " is not defined in the translation, the key will be formatted"
 	
 	// Versions
+	#macro mineimator_title			"Mine-imator Continuation Build"	// Full display name of this fork
+	#macro mineimator_title_short		"Mine-imator CB"				// Short name used in window titles and dialogs
 	#macro mineimator_version			"2.0.2"		// Base Mine-imator version
-	#macro mineimator_version_sub		""			// Mod name and version (e.g. "Community Build 1.0.0")
+	#macro mineimator_version_sub		"Continuation Build 1.0.0"	// Mod name and version (e.g. "Community Build 1.0.0")
 	#macro mineimator_version_extra		""			// Additional suffix (e.g. "Alpha 1" or "Pre-Release 2")
 	#macro mineimator_version_full		(mineimator_version + ((mineimator_version_sub != "") ? " " + mineimator_version_sub : "") + ((mineimator_version_extra != "") ? " (" + mineimator_version_extra + ")" : ""))
-	#macro mineimator_version_date		"2023.11.12"
+	#macro mineimator_version_date		"2026.09.04"
 	#macro minecraft_version			"1.20.2"
 	#macro gm_runtime					GM_runtime_version
 	
@@ -99,7 +101,8 @@ function macros()
 	#macro link_twitter					"https://www.mineimator.com/tweets"
 	#macro link_discord					"https://www.mineimator.com/discord"
 	#macro link_donate					"https://www.mineimator.com/donate"
-	#macro link_article_drivers			"https://www.thewindowsclub.com/how-to-update-graphics-drivers-windows"
+	#macro link_article_drivers		"https://www.thewindowsclub.com/how-to-update-graphics-drivers-windows"
+	#macro link_cb_repo				"https://github.com/OmniNodeCo/Mine-imator"
 	#macro show_modelbench_popup		true
 	#macro http_ok						200
 	#macro http_bad_request				400

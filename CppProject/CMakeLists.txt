@@ -38,7 +38,12 @@ if(CMAKE_HOST_UNIX AND NOT CMAKE_HOST_APPLE)
 	set(CMAKE_CXX_COMPILER "/usr/bin/clang++" CACHE FILEPATH "Linux C++ compiler" FORCE)
 endif()
 
-project(Mine-imator LANGUAGES CXX)
+project(Mine-imator VERSION 2.0.2 LANGUAGES CXX)
+
+# Mine-imator Continuation Build version, appended to the base Mine-imator
+# version (GML: mineimator_version_sub). Platform file versions use
+# <base version>.<continuation build number>, e.g. 2.0.2.1.
+set(MINEIMATOR_CB_VERSION "1.0.0")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

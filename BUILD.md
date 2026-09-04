@@ -23,7 +23,7 @@ To change the third-party source code location, set the `DEV_DIR` environment va
 4. Open Windows PowerShell (via Start menu)
 5. Get Mine-imator sources
     1. Run `cd $env:DEV_DIR`
-    2. Run `git clone https://github.com/stuffbydavid/Mine-imator.git`
+    2. Run `git clone https://github.com/OmniNodeCo/Mine-imator.git`
     3. Run `cd Mine-imator`
 6. Set up external libraries and build Qt
     * Run `.\Setup.ps1`
@@ -51,7 +51,7 @@ To change the third-party source code location, set the `DEV_DIR` environment va
     5. Run `mkdir -p $DEV_DIR`
 3. Get Mine-imator sources
     1. Run `cd $DEV_DIR`
-    2. Run `git clone https://github.com/stuffbydavid/Mine-imator.git`
+    2. Run `git clone https://github.com/OmniNodeCo/Mine-imator.git`
     3. Run `cd Mine-imator`
 4. Set up external libraries and build Qt
     * Run `./Setup.sh`
@@ -94,7 +94,7 @@ To change the third-party source code location, set the `DEV_DIR` environment va
     2. Run `mkdir -p $DEV_DIR`
 4. Get Mine-imator sources
     1. Run `cd $DEV_DIR`
-    2. Run `git clone https://github.com/stuffbydavid/Mine-imator.git`
+    2. Run `git clone https://github.com/OmniNodeCo/Mine-imator.git`
     3. Run `cd Mine-imator`
 5. Set up external libraries and build Qt
     * Run `./Setup.sh`
@@ -176,7 +176,7 @@ To change the third-party source code location, set the `DEV_DIR` environment va
     * Run `./Setup.sh Release x86_64`
 
 ## Guide coverage
-This guide has been tested on the following systems. If you run into troubles or errors, please [open a Github issue](https://github.com/stuffbydavid/Mine-imator/issues) with details.
+This guide has been tested on the following systems. If you run into troubles or errors, please [open a Github issue](https://github.com/OmniNodeCo/Mine-imator/issues) with details.
 * Windows 11 25H2 64-bit
 * Mac OS Sonoma 14
 * Ubuntu 20.04.6

@@ -31,7 +31,7 @@ function minecraft_assets_startup()
 		new_assets_stage = ""
 		new_assets_download_progress = 0
 		window_set_size(540, 480)
-		window_set_caption("Mine-imator")
+		window_set_caption(mineimator_title_short)
 		alarm[0] = 1
 	}
 	
