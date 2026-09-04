@@ -1,4 +1,4 @@
-# Mine-imator Continuation Build
+# Mine-imator Reforged
 
 <p align="center">
   <img src="Branding/logo.png" width="600"/>
@@ -7,24 +7,24 @@
   <img src="https://www.mineimatorforums.com/uploads/monthly_2023_03/336815532_programview.png.9212aa1f6d1bed63411408aa5e905ce0.png" width="800"/>
 </p>
 
-**Mine-imator CB · Continuation Build 1.0.0** — based on Mine-imator 2.0.2.
+**Mine-imator Reforged 1.0.0** — based on Mine-imator 2.0.2.
 
-Mine-imator Continuation Build is a community continuation of [Mine-imator](https://www.mineimator.com), the 3D movie maker based on the sandbox game Minecraft, with over 10 million downloads since its launch in 2012. This fork keeps the project alive with its own identity, versioning, and builds while staying true to the original.
+Mine-imator Reforged is a community continuation of [Mine-imator](https://www.mineimator.com), the 3D movie maker based on the sandbox game Minecraft, with over 10 million downloads since its launch in 2012. This fork keeps the project alive with its own identity, versioning, and builds while staying true to the original.
 
 ## Versioning
 
 | Channel | Version | Date |
 |---|---|---|
 | Base Mine-imator | 2.0.2 | 2023.11.12 |
-| Continuation Build | 1.0.0 | 2026.09.04 |
+| Reforged | 1.0.0 | 2026.09.04 |
 
-The full in-app version reads `2.0.2 Continuation Build 1.0.0`. Platform file versions use `<base>.<build>`, e.g. `2.0.2.1`. See [CHANGELOG.md](CHANGELOG.md) for details.
+The full in-app version reads `2.0.2 Reforged 1.0.0`. Platform file versions use `<base>.<build>`, e.g. `2.0.2.1`. See [CHANGELOG.md](CHANGELOG.md) for details.
 
-## What's different in the Continuation Build
+## What's different in Reforged
 
-* New identity: **Mine-imator Continuation Build** (short name **Mine-imator CB**) with a gold-accented logo, app icons, and loading screen art
+* New identity: **Mine-imator Reforged** with a gold-accented logo, app icons, and loading screen art
 * Dedicated version line on top of the 2.0.2 base, shown in the startup screen, loading screen, About dialog, log, and crash reporter
-* About dialog credits the Continuation Build maintainers alongside the original team
+* About dialog credits the Reforged maintainers alongside the original team
 * Crash reporter points to this repository's issue tracker
 
 ## Building
@@ -36,8 +36,8 @@ You can open `GmProject/Mine-imator.yyp` directly in GameMaker on Windows (it ma
 ## Links
 
 * Original website and download: https://www.mineimator.com
-* Continuation Build repository: https://github.com/OmniNodeCo/Mine-imator
+* Reforged repository: https://github.com/OmniNodeCo/Mine-imator
 
 ## Credits
 
-Mine-imator was created by David Andrei, with development by David, Nimi, Marvin and mbanders, and UI/branding by Voxy — see the in-app About dialog for the full credits including beta testers. The Continuation Build is maintained by [OmniNodeCo](https://github.com/OmniNodeCo/Mine-imator). Minecraft is a trademark of Mojang Synergies AB; this is an unofficial community continuation, not affiliated with Mojang or Microsoft.
+Mine-imator was created by David Andrei, with development by David, Nimi, Marvin and mbanders, and UI/branding by Voxy — see the in-app About dialog for the full credits including beta testers. Reforged is maintained by [OmniNodeCo](https://github.com/OmniNodeCo/Mine-imator). Minecraft is a trademark of Mojang Synergies AB; this is an unofficial community continuation, not affiliated with Mojang or Microsoft.
