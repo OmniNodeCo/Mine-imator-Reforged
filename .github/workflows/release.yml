@@ -266,8 +266,7 @@ jobs:
     needs: [plan, assets]
     strategy:
       fail-fast: false
-      matrix:
-        include: ${{ fromJSON(needs.plan.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
