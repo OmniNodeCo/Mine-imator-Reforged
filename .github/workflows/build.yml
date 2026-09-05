@@ -22,6 +22,12 @@ on:
       - "**.md"
       - "Branding/**"
   workflow_dispatch:
+  # Auto-build the commit a tag-triggered Release published, so a re-run of
+  # the Release workflow can bundle fresh binaries without a manual dispatch.
+  # (workflow_run only fires for workflows on the default branch.)
+  workflow_run:
+    workflows: ["Release"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -33,6 +39,7 @@ concurrency:
 jobs:
   cppgen:
     name: CppGen (convert + compile)
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -52,6 +59,7 @@ jobs:
 
   assets:
     name: Asset pipeline
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -84,6 +92,7 @@ jobs:
 
   build:
     name: Build (${{ matrix.id }})
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     strategy:
       fail-fast: false
       matrix:
