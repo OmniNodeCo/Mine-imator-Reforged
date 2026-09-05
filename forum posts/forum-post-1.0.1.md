@@ -25,59 +25,9 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 
 - Textures Mojang renamed between 1.20.2 and 26.2 (and brand-new blocks/mobs) fall back to placeholder graphics until authored rig/spec data catches up — nothing breaks, they just render with stand-ins.
 
-<details><summary><b>Show hidden contents — full changelog</b></summary>
-
-<details><summary><b>Version 1.0.1</b> (2026-09-05)</summary>
-
-Maintenance release: bundled Minecraft assets refreshed and two trial-flow fixes.
-
-### Minecraft assets
-
-* Bundled Minecraft assets updated from **1.20.2** to **26.2**: `26.2.zip` + `26.2.midata` (built with `Tools/fetch_minecraft_assets.py`, which now uses `26.2` as its template) replace the 1.20.2 package in `Data/Minecraft`
-* Default assets version (`#macro minecraft_version`) and the GameMaker included-file list now point at `26.2`; the Settings dropdown picks up every bundled `*.midata` automatically
-* Release workflow now anchors on any committed `Data/Minecraft/<version>.midata` instead of hardcoding `1.20.2.midata`
-
-### Fixes
-
-* About (credits) screen: clicking the "TRIAL" tag next to the version number now opens the in-app upgrade dialog (like the "Upgrade" button) instead of sending you to the website; the version number itself still links to the site
-* Upgrade popup: entering a valid key after opening the popup directly (Help menu, toolbar) now closes/reverts properly instead of re-opening the upgrade popup via a stale revert target, and a previous "invalid key" warning is cleared on success
-
-### Versioning
-
-* Version bumped to `Reforged 1.0.1` (full in-app version `2.0.2 Reforged 1.0.1`, platform file version `2.0.2.2`)
-
-</details>
-
-<details><summary><b>Version 1.0.0</b> (2026-09-04)</summary>
-
-First release of Mine-imator Reforged, based on Mine-imator 2.0.2.
-
-### Rebrand
-
-* Application renamed to **Mine-imator Reforged**, used in window titles, dialogs, and message boxes
-* New logo lockup: the classic Mine-imator wordmark with a gold "REFORGED" tag, shown on the startup screen and in the About dialog
-* App icons (Windows/macOS/Linux) and the loading-screen artwork recolored from green to the Reforged gold identity
-* About dialog gains a Reforged section with maintainer credit and build version
-* Crash reporter and log output identify Reforged and link to its repository
-
-### Versioning
-
-* Introduced the Reforged version line: full version reads `2.0.2 Reforged 1.0.0`
-* Platform file versions updated to `2.0.2.1` (`<base version>.<build>`)
-* Build system declares the base (`2.0.2`) and Reforged (`1.0.0`) versions in CMake
-
-</details>
-
-</details>
-
----
-
-**If your forum uses BBCode instead of Markdown**, replace the `<details>` blocks above with this spoiler (everything else stays the same):
-
-```
 [spoiler="Show hidden contents — full changelog"]
 
-[spoiler=Version 1.0.1 (2026-09-05)]
+[spoiler="Version 1.0.1 (2026-09-05)"]
 Maintenance release: bundled Minecraft assets refreshed and two trial-flow fixes.
 
 [b]Minecraft assets[/b]
@@ -93,7 +43,7 @@ Maintenance release: bundled Minecraft assets refreshed and two trial-flow fixes
 - Version bumped to Reforged 1.0.1 (full in-app version 2.0.2 Reforged 1.0.1, platform file version 2.0.2.2)
 [/spoiler]
 
-[spoiler=Version 1.0.0 (2026-09-04)]
+[spoiler="Version 1.0.0 (2026-09-04)"]
 First release of Mine-imator Reforged, based on Mine-imator 2.0.2.
 
 [b]Rebrand[/b]
@@ -110,4 +60,3 @@ First release of Mine-imator Reforged, based on Mine-imator 2.0.2.
 [/spoiler]
 
 [/spoiler]
-```

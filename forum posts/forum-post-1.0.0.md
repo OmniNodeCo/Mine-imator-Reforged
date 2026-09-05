@@ -25,31 +25,6 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 
 - Newer Minecraft packages bring correct textures, but brand-new blocks and mobs stay unavailable until rig/spec data is authored for them. Missing entries fall back to placeholders gracefully instead of breaking anything.
 
-<details><summary><b>Show hidden contents — full changelog</b></summary>
-
-First release of Mine-imator Reforged, based on Mine-imator 2.0.2.
-
-### Rebrand
-
-* Application renamed to **Mine-imator Reforged**, used in window titles, dialogs, and message boxes
-* New logo lockup: the classic Mine-imator wordmark with a gold "REFORGED" tag, shown on the startup screen and in the About dialog
-* App icons (Windows/macOS/Linux) and the loading-screen artwork recolored from green to the Reforged gold identity
-* About dialog gains a Reforged section with maintainer credit and build version
-* Crash reporter and log output identify Reforged and link to its repository
-
-### Versioning
-
-* Introduced the Reforged version line: full version reads `2.0.2 Reforged 1.0.0`
-* Platform file versions updated to `2.0.2.1` (`<base version>.<build>`)
-* Build system declares the base (`2.0.2`) and Reforged (`1.0.0`) versions in CMake
-
-</details>
-
----
-
-**If your forum uses BBCode instead of Markdown**, replace the `<details>` block above with this spoiler (everything else stays the same):
-
-```
 [spoiler="Show hidden contents — full changelog"]
 First release of Mine-imator Reforged, based on Mine-imator 2.0.2.
 
@@ -65,4 +40,3 @@ First release of Mine-imator Reforged, based on Mine-imator 2.0.2.
 - Platform file versions updated to 2.0.2.1 (<base version>.<build>)
 - Build system declares the base (2.0.2) and Reforged (1.0.0) versions in CMake
 [/spoiler]
-```
