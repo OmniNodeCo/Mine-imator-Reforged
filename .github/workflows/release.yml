@@ -289,7 +289,8 @@ jobs:
       # assets-index.json, minecraft_latest.txt) - the app lists every
       # *.midata there as a selectable version. Windows zips store Data/ at
       # the root while Unix zips nest it under Mine-imator/, so the prefix is
-      # detected from the committed 1.20.2 anchor present in every build.
+      # detected from a committed anchor midata present in every build
+      # (any Data/Minecraft/<version>.midata works, e.g. 26.2.midata).
       - name: Inject assets into platform zip
         run: |
           python3 - <<'EOF'
@@ -303,9 +304,10 @@ jobs:
           with zipfile.ZipFile(zpath) as z:
               names = z.namelist()
           anchor = next((n for n in names
-                         if re.fullmatch(r"(.*/)?Data/Minecraft/1\.20\.2\.midata", n)), None)
+                         if re.fullmatch(r"(.*/)?Data/Minecraft/[^/]+\.midata", n)
+                         and not n.endswith(("versions.midata", "languages.midata", "legacy.midata"))), None)
           if anchor is None:
-              sys.exit("error: no Data/Minecraft/1.20.2.midata in %s; first entries: %s"
+              sys.exit("error: no Data/Minecraft/<version>.midata anchor in %s; first entries: %s"
                        % (zpath, names[:30]))
           prefix = anchor[:anchor.index("Data/Minecraft/")]
 

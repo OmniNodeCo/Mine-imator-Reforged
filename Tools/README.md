@@ -55,7 +55,7 @@ entries appended, so existing texture slots never shift):
 * `block_textures`, `block_textures_animated` (PNGs with animation `.mcmeta`),
   `item_textures`, `model_textures` (entity textures), `particle_textures`
 
-Inherited from the template (`1.20.2`, format 9):
+Inherited from the template (`26.2`, format 9 — itself cloned from `1.20.2`):
 
 * `characters`, `special_blocks` (+ their `.mimodel`/`.miframes` rigs),
   `blocks`, `biomes`, `armor`, `sherds`, `map_colors`, `particles`, `swatches`,

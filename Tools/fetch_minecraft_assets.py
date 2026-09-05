@@ -65,7 +65,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.dirname(SCRIPT_DIR)
 DEFAULT_MINECRAFT_DIR = os.path.join(
     REPO_ROOT, "GmProject", "datafiles", "Data", "Minecraft")
-DEFAULT_TEMPLATE = "1.20.2"
+DEFAULT_TEMPLATE = "26.2"
 DEFAULT_CACHE = os.path.join(
     os.path.expanduser("~"), ".cache", "mine-imator-reforged", "mc-assets")
 

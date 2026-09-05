@@ -13,14 +13,23 @@ function popup_about_draw()
 	// Program info
 	draw_set_font(font_value)
 	
-	var text, width, textx;
-	text = text_get("aboutversion", mineimator_version_full) + text_get("aboutreleasedate", mineimator_version_date)
-	width = string_width(text)
+	var version, trial, width, textx;
+	version = text_get("aboutversion", mineimator_version_full)
+	trial = (trial_version ? " " + text_get("startuptrial") : "")
+	width = string_width(version + trial + text_get("aboutreleasedate", mineimator_version_date))
 	textx = floor(dx + dw/2 - width/2)
 	
-	var version = text_get("aboutversion", mineimator_version_full) + (trial_version ? " " + text_get("startuptrial") : "");
 	draw_button_text(version, textx, dy + 98, popup_open_url, link_website, link_website)
 	textx += string_width(version)
+	
+	if (trial != "")
+	{
+		// Clicking the "TRIAL" tag opens the upgrade popup,
+		// like the "Upgrade" button in the corner below.
+		popup_upgrade.page = 0
+		draw_button_text(trial, textx, dy + 98, popup_switch, popup_upgrade, text_get("aboutupgrade"))
+		textx += string_width(trial)
+	}
 	
 	draw_label(text_get("aboutreleasedate", mineimator_version_date), textx, dy + 98, fa_left, fa_bottom, c_text_secondary, a_text_secondary)
 	

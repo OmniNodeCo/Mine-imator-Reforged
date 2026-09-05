@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### Minecraft assets
+
+* Bundled Minecraft assets updated from **1.20.2** to **26.2**: `26.2.zip` + `26.2.midata` (built with `Tools/fetch_minecraft_assets.py`, which now uses `26.2` as its template) replace the 1.20.2 package in `Data/Minecraft`
+* Default assets version (`#macro minecraft_version`) and the GameMaker included-file list now point at `26.2`; the Settings dropdown picks up every bundled `*.midata` automatically
+* Release workflow now anchors on any committed `Data/Minecraft/<version>.midata` instead of hardcoding `1.20.2.midata`
+
+### Fixes
+
+* About (credits) screen: clicking the "TRIAL" tag next to the version number now opens the in-app upgrade dialog (like the "Upgrade" button) instead of sending you to the website; the version number itself still links to the site
+* Upgrade popup: entering a valid key after opening the popup directly (Help menu, toolbar) now closes/reverts properly instead of re-opening the upgrade popup via a stale revert target, and a previous "invalid key" warning is cleared on success
+
 ## Reforged 1.0.0 (2026-09-04)
 
 First release of Mine-imator Reforged, based on Mine-imator 2.0.2.
