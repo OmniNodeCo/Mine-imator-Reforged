@@ -1,4 +1,10 @@
 /// popup_about_draw()
+/// @desc Layout budget (popup is 580x552, set in app_startup_interface_popups):
+///      header 0-128, version line ~98, credits start at +176 (left column),
+///      bottom button row occupies the last ~40px (content_height - 40).
+///      Keep the left credits column above y = content_height - 50.
+
+function popup_about_draw()
 
 function popup_about_draw()
 {
