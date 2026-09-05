@@ -4,8 +4,9 @@
 #   1. Takes the newest successful "Build check" run (or an explicit run id)
 #      and verifies its platform artifacts exist.
 #   2. Fetches Minecraft Java assets (piston-meta -> client jars -> Mine-imator
-#      .zip/.midata packages) for the configured range (default 1.21 through
-#      26.3) plus the auto-resolved latest release.
+#      .zip/.midata packages) for the configured range (optional, e.g.
+#      1.21:26.3 or a single version like 26.2; empty = latest release only)
+#      plus the auto-resolved latest release.
 #   3. Injects the fetched assets into each platform zip from that build run
 #      (no recompilation) and publishes a GitHub Release with per-platform
 #      builds + the assets bundle.
@@ -34,9 +35,9 @@ on:
         required: false
         default: ""
       mc_range:
-        description: "Minecraft assets range (start:end, empty end = latest)"
+        description: "Minecraft assets range (start:end, single version like 26.2, or empty = latest release only)"
         required: false
-        default: "1.21:26.3"
+        default: ""
       no_latest:
         description: "Do NOT auto-include the latest Minecraft release"
         required: false
@@ -126,8 +127,12 @@ jobs:
           if event == "push" and tag != "reforged-v" + fork_version:
               sys.exit("error: tag %s does not match macros version Reforged %s" % (tag, fork_version))
 
-          mc_range = inp("INPUT_RANGE") or "1.21:26.3"
+          mc_range = inp("INPUT_RANGE")
           include_latest = inp("INPUT_NO_LATEST").lower() != "true"
+          if not mc_range and not include_latest:
+              sys.exit("error: mc_range is empty and no_latest is set - "
+                       "there would be nothing to fetch. Set mc_range or "
+                       "leave no_latest unchecked.")
           wanted = [p.strip().lower() for p in (inp("INPUT_PLATFORMS") or "windows,linux,macos").split(",")]
           labels = {"windows": "Windows-x64", "linux": "Linux-x64", "macos": "macOS-x64"}
           unknown = [p for p in wanted if p not in labels]
@@ -214,7 +219,7 @@ jobs:
               "matrix": json.dumps(matrix),
               "publish": publish,
               "prerelease": prerelease,
-              "bundle": "minecraft-assets-" + mc_range.replace(":", "-"),
+              "bundle": "minecraft-assets-" + (mc_range.replace(":", "-") if mc_range else "latest"),
               "build_run": str(run_id),
               "artifacts": json.dumps(mapping),
           }
@@ -242,13 +247,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/mine-imator-reforged
-          key: mc-assets-v1-${{ needs.plan.outputs.mc_range }}-${{ hashFiles('Tools/fetch_minecraft_assets.py') }}
+          key: mc-assets-v1-${{ needs.plan.outputs.mc_range || 'none' }}-${{ hashFiles('Tools/fetch_minecraft_assets.py') }}
           restore-keys: mc-assets-v1-
 
-      - name: Fetch + package assets (${{ needs.plan.outputs.mc_range }})
+      - name: Fetch + package assets (${{ needs.plan.outputs.mc_range || 'latest only' }})
         run: |
+          RANGE_ARG=""
+          if [ -n "${{ needs.plan.outputs.mc_range }}" ]; then
+            RANGE_ARG="--range ${{ needs.plan.outputs.mc_range }}"
+          fi
           python3 Tools/fetch_minecraft_assets.py \
-            --range "${{ needs.plan.outputs.mc_range }}" \
+            $RANGE_ARG \
             ${{ needs.plan.outputs.latest_flag }} \
             --out staging/minecraft-assets \
             --workers 4

@@ -260,12 +260,17 @@ def select_versions(manifest, args):
             if vid:
                 add(resolve_id(vid, by_id, chrono, "version"))
 
-    if args.range:
-        if ":" not in args.range:
-            raise SystemExit("error: --range must look like 1.21:26.3")
-        start_id, _, end_id = args.range.partition(":")
+    if args.range and args.range.strip():
+        rng = args.range.strip()
+        if ":" not in rng:
+            # A single version id ("--range 26.2") means exactly that version.
+            rng = rng + ":" + rng
+        start_id, _, end_id = rng.partition(":")
         start_id = start_id.strip()
         end_id = end_id.strip() or manifest["latest"]["release"]
+        if not start_id:
+            raise SystemExit("error: --range needs a start version "
+                             "(e.g. 1.21:26.3, 1.21: or a single id like 26.2)")
         start = resolve_id(start_id, by_id, chrono, "range start")
         end = resolve_id(end_id, by_id, chrono, "range end")
         start_t = parse_time(start["releaseTime"])
@@ -698,6 +703,33 @@ def run_self_test(args):
     got = [e["id"] for e in select_versions(fixture, OptsSnapLatest)]
     check("--latest-snapshot resolves", got == ["26.3-pre-2"], str(got))
 
+    class OptsSingle(Opts):
+        range = "26.2"
+    got = [e["id"] for e in select_versions(fixture, OptsSingle)]
+    check("single-version range covers just that version",
+          got == ["26.2"], str(got))
+
+    class OptsOpenEnd(Opts):
+        range = "26.2:"
+    got = [e["id"] for e in select_versions(fixture, OptsOpenEnd)]
+    check("open-ended range runs to latest release",
+          got == ["26.2"], str(got))
+
+    class OptsBlank(Opts):
+        range = "   "
+        latest = True
+    got = [e["id"] for e in select_versions(fixture, OptsBlank)]
+    check("blank --range value is ignored",
+          got == ["26.2"], str(got))
+
+    try:
+        class OptsNoStart(Opts):
+            range = ":26.2"
+        select_versions(fixture, OptsNoStart)
+        check("range without start errors", False, "no SystemExit")
+    except SystemExit:
+        check("range without start errors", True)
+
     try:
         class Opts3(Opts):
             range = "9.9:26.3"
@@ -782,9 +814,9 @@ def build_parser():
     p.add_argument("--mc-version", default=None,
                    help="Explicit version(s), comma separated (e.g. 1.21,26.3)")
     p.add_argument("--range", default=None,
-                   help="Inclusive date range (e.g. 1.21:26.3; empty end means "
-                        "latest release; an endpoint without a final release "
-                        "resolves to its newest pre-release)")
+                   help="Optional version range (start:end; empty end = latest "
+                        "release; a single id like 26.2 = exactly that version. "
+                        "An empty value is ignored)")
     p.add_argument("--latest", action="store_true",
                    help="Include the latest release")
     p.add_argument("--latest-snapshot", action="store_true",

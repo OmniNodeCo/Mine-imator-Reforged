@@ -26,7 +26,10 @@ manifest entry — releases, pre-releases, and snapshots. If an id has no final
 release yet, it automatically falls back to its newest `{id}-*` pre-release
 (e.g. `--range 1.21:26.3` currently ends at `26.3-pre-2`). Range bodies cover
 releases only, so output stays stable day to day; add `--include-snapshots`
-to fetch every snapshot inside the range as well. `--latest` always means the
+to fetch every snapshot inside the range as well. `--range` is optional:
+a lone id (`--range 26.2`) fetches exactly that version, an empty end
+(`1.21:`) runs to the latest release, and an empty value is ignored.
+`--latest` always means the
 latest final release, `--latest-snapshot` the latest pre-release/snapshot, and
 `--list` prints every known version (newest first). Unknown ids fail with
 "did you mean" suggestions instead of a bare error.
