@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## Reforged 1.0.1 (2026-09-05)
+
+Maintenance release: bundled Minecraft assets refreshed and two trial-flow fixes.
 
 ### Minecraft assets
 
@@ -12,6 +14,10 @@
 
 * About (credits) screen: clicking the "TRIAL" tag next to the version number now opens the in-app upgrade dialog (like the "Upgrade" button) instead of sending you to the website; the version number itself still links to the site
 * Upgrade popup: entering a valid key after opening the popup directly (Help menu, toolbar) now closes/reverts properly instead of re-opening the upgrade popup via a stale revert target, and a previous "invalid key" warning is cleared on success
+
+### Versioning
+
+* Version bumped to `Reforged 1.0.1` (full in-app version `2.0.2 Reforged 1.0.1`, platform file version `2.0.2.2`)
 
 ## Reforged 1.0.0 (2026-09-04)
 

@@ -22,10 +22,10 @@ function macros()
 	#macro mineimator_title			"Mine-imator Reforged"	// Full display name of this fork
 	#macro mineimator_title_short		"Mine-imator Reforged"	// Short name used in window titles and dialogs
 	#macro mineimator_version			"2.0.2"		// Base Mine-imator version
-	#macro mineimator_version_sub		"Reforged 1.0.0"	// Mod name and version (e.g. "Community Build 1.0.0")
+	#macro mineimator_version_sub		"Reforged 1.0.1"	// Mod name and version (e.g. "Community Build 1.0.0")
 	#macro mineimator_version_extra		""			// Additional suffix (e.g. "Alpha 1" or "Pre-Release 2")
 	#macro mineimator_version_full		(mineimator_version + ((mineimator_version_sub != "") ? " " + mineimator_version_sub : "") + ((mineimator_version_extra != "") ? " (" + mineimator_version_extra + ")" : ""))
-	#macro mineimator_version_date		"2026.09.04"
+	#macro mineimator_version_date		"2026.09.05"
 	#macro minecraft_version			"26.2"
 	#macro gm_runtime					GM_runtime_version
 	

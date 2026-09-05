@@ -9,7 +9,7 @@
   <img src="https://www.mineimatorforums.com/uploads/monthly_2023_03/336815532_programview.png.9212aa1f6d1bed63411408aa5e905ce0.png" width="800"/>
 </p>
 
-**Mine-imator Reforged 1.0.0** — based on Mine-imator 2.0.2.
+**Mine-imator Reforged 1.0.1** — based on Mine-imator 2.0.2.
 
 Mine-imator Reforged is a community continuation of [Mine-imator](https://www.mineimator.com), the 3D movie maker based on the sandbox game Minecraft, with over 10 million downloads since its launch in 2012. This fork keeps the project alive with its own identity, versioning, and builds while staying true to the original.
 
@@ -18,9 +18,9 @@ Mine-imator Reforged is a community continuation of [Mine-imator](https://www.mi
 | Channel | Version | Date |
 |---|---|---|
 | Base Mine-imator | 2.0.2 | 2023.11.12 |
-| Reforged | 1.0.0 | 2026.09.04 |
+| Reforged | 1.0.1 | 2026.09.05 |
 
-The full in-app version reads `2.0.2 Reforged 1.0.0`. Platform file versions use `<base>.<build>`, e.g. `2.0.2.1`. See [CHANGELOG.md](CHANGELOG.md) for details.
+The full in-app version reads `2.0.2 Reforged 1.0.1`. Platform file versions use `<base>.<build>`, e.g. `2.0.2.2`. See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ## What's different in Reforged
 

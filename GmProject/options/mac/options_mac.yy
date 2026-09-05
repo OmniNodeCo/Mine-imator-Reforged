@@ -4,7 +4,7 @@
   "name": "macOS",
   "option_mac_display_name": "Mine-imator Reforged",
   "option_mac_app_id": "",
-  "option_mac_version": "2.0.2.1",
+  "option_mac_version": "2.0.2.2",
   "option_mac_output_dir": "~/GameMaker-Studio/mineimator",
   "option_mac_team_id": null,
   "option_mac_signing_identity": "Developer ID Application:",

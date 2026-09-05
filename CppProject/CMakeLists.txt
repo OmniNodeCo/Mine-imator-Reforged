@@ -42,8 +42,8 @@ project(Mine-imator VERSION 2.0.2 LANGUAGES CXX)
 
 # Mine-imator Reforged version, appended to the base Mine-imator
 # version (GML: mineimator_version_sub). Platform file versions use
-# <base version>.<fork build number>, e.g. 2.0.2.1.
-set(MINEIMATOR_FORK_VERSION "1.0.0")
+# <base version>.<fork build number>, e.g. 2.0.2.2.
+set(MINEIMATOR_FORK_VERSION "1.0.1")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

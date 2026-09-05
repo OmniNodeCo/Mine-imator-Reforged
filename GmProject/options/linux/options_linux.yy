@@ -3,7 +3,7 @@
   "resourceVersion": "1.0",
   "name": "Linux",
   "option_linux_display_name": "mineimator",
-  "option_linux_version": "2.0.2.1",
+  "option_linux_version": "2.0.2.2",
   "option_linux_maintainer_email": "",
   "option_linux_homepage": "http://www.Mine-imator.com",
   "option_linux_short_desc": "Mine-imator Reforged",
