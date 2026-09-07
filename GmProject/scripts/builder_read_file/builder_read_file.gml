@@ -153,6 +153,12 @@ function builder_read_schematic(map)
 			return false
 		}
 		
+		// WorldEdit "AddBlocks": high bits of block ids 256+ (nibble per block).
+		// Without it, modded ids wrap to their low byte and spawn random blocks.
+		sch_legacy_addarray = map[?"AddBlocks"];
+		if (is_undefined(sch_legacy_addarray))
+			sch_legacy_addarray = -1
+		
 		// Get map
 		file_map = map[?"FromMap"]
 	}
@@ -420,12 +426,22 @@ function builder_read_schematic_blocks()
 		{
 			// Read legacy block ID & data
 			var bid = buffer_peek(buffer_current, sch_legacy_blocksarray + b, buffer_u8)
-			if (bid > 0 && legacy_block_set[bid])
+			if (sch_legacy_addarray > -1) // High bits from "AddBlocks" (ids 256+, modded)
 			{
-				var bdata = buffer_peek(buffer_current, sch_legacy_dataarray + b, buffer_u8) mod 16;
-				block = legacy_block_obj[bid, bdata]
-				stateid = legacy_block_state_id[bid, bdata]
+				var addnibble = buffer_peek(buffer_current, sch_legacy_addarray + (b div 2), buffer_u8)
+				if (b mod 2)
+					addnibble = addnibble >> 4
+				else
+					addnibble = addnibble & 15
+				bid += addnibble * 256
 			}
+			if (bid > 0 && bid < 256) // 256+ = modded, no mapping
+				if (legacy_block_set[bid])
+				{
+					var bdata = buffer_peek(buffer_current, sch_legacy_dataarray + b, buffer_u8) mod 16;
+					block = legacy_block_obj[bid, bdata]
+					stateid = legacy_block_state_id[bid, bdata]
+				}
 		}
 							
 		if (block != null)

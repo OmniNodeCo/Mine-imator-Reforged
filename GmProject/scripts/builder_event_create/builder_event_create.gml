@@ -10,6 +10,7 @@ function builder_event_create()
 	sch_blockdata_ints = false
 	sch_legacy_blocksarray = null
 	sch_legacy_dataarray = null
+	sch_legacy_addarray = -1
 	sch_timeline_amount = 0
 	sch_tileentity_list = null
 	

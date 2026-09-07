@@ -148,6 +148,17 @@ namespace CppProject
 				const Heap<int8_t>& skyLightArray = nbt->ByteArray("SkyLight");
 				const Heap<int8_t>& blockLightArray = nbt->ByteArray("BlockLight");
 
+				// "Add" holds the high bits of block ids 256+ (pre-1.13, e.g. modded
+				// blocks). Without it, ids like 3000 wrap to their low byte alone and
+				// import as seemingly random vanilla blocks.
+				Heap<int8_t>* addArray = nullptr;
+				if (nbt->HasKey("Add"))
+				{
+					addArray = &nbt->ByteArray("Add");
+					if (addArray->Size() < blocksArray.Size())
+						addArray = nullptr; // Malformed, ignore
+				}
+
 				// Pre Java 1.2 uses a single array for the chunk, so we add the section's y as offset
 				IntType offset = 0;
 				if (format == Chunk::Format::PRE_JAVA_1_2)
@@ -175,9 +186,11 @@ namespace CppProject
 					else
 						arrayIndex = blockIndex; // YZX order
 
-					IntType arrayIndexHalf = arrayIndex >> 1;
-					uint8_t legacyId = blocksArray.Value(arrayIndex);
-					uint8_t legacyData = dataArray.Value(arrayIndexHalf);
+						IntType arrayIndexHalf = arrayIndex >> 1;
+						uint16_t legacyId = (uint8_t)blocksArray.Value(arrayIndex);
+						if (addArray) // High bits from "Add" array (ids 256+, modded)
+							legacyId |= (uint16_t)((uint8_t)addArray->Value(arrayIndex)) << 8;
+						uint8_t legacyData = dataArray.Value(arrayIndexHalf);
 
 					// Parse data
 					if (arrayIndex & 1) // Upper bits
@@ -188,9 +201,9 @@ namespace CppProject
 					if (dataType == BUILDER) // Legacy id+data to block and state id
 					{
 						IntType builderIndex = (y - blockStart.y) * builder.sizeXY + (z - blockStart.z) * builder.size.x + (x - blockStart.x); // YZX order
-						if (legacyId > 0 && global::legacy_block_set[legacyId]) // Non-air
-						{
-							if (obj_block* block = Builder::filteredMcLegacyBlockIdObj[legacyId][legacyData])
+							if (legacyId > 0 && legacyId < 256 && global::legacy_block_set[legacyId]) // Non-air, mappable (256+ = modded)
+							{
+								if (obj_block* block = Builder::filteredMcLegacyBlockIdObj[legacyId][legacyData])
 							{
 								if (block->timeline)
 									chunk->numTimelines++;
@@ -224,9 +237,12 @@ namespace CppProject
 						if (chunk->legacyBiomes.Size())
 							preview.biomeIndices[blockIndex] = chunk->legacyBiomes[(z << 4) + x];
 
-						// Parse block
-						if (uint16_t blockStyleIndex = Preview::filteredMcLegacyBlockIdStyleIndex[legacyId][legacyData]) // Non-air
-						{
+							// Parse block
+							uint16_t blockStyleIndex = 0;
+							if (legacyId < 256) // 256+ = modded blocks with no mapping
+								blockStyleIndex = Preview::filteredMcLegacyBlockIdStyleIndex[legacyId][legacyData];
+							if (blockStyleIndex) // Non-air
+							{
 							preview.blockStyleIndices[blockIndex] = blockStyleIndex;
 							PreviewState& state = BlockStyle::blockPreviewStates[blockStyleIndex];
 							BoolType solid = state.IsSolid();
