@@ -78,3 +78,10 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   Continuation Build 1.0.15 Alpha 1 → bundled Minecraft 26.3-snapshot-9
   assets), build and release instructions, credits for the continuation
   upstream
+
+### Versioning
+
+* Version line continues as Reforged 1.0.3: the app identifies as
+  `2.0.2 Reforged 1.0.3` instead of the base's `Continuation Build 1.0.15
+  (Alpha 1)`. Release names, tags (`reforged-v1.0.3`) and download zips
+  (`Mine-imator-Reforged-1.0.3-<platform>.zip`) all derive from it

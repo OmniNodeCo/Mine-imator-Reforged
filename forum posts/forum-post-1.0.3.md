@@ -4,7 +4,7 @@ based on Mine-imator 2.0.2 (Continuation Build 1.0.15 Alpha 1)
 
 
 
-Biggest update yet: Reforged is now built on mbanders' Mine-imator 2.0.2 Continuation Build, an actively maintained continuation of Mine-imator with up-to-date Minecraft support - so everything 1.0.2 was still missing is finally in, natively. On GitHub this release is named Mine-imator Reforged 1.0.15, after the Continuation Build version it ships.
+Biggest update yet: Reforged is now built on mbanders' Mine-imator 2.0.2 Continuation Build, an actively maintained continuation of Mine-imator with up-to-date Minecraft support - so everything 1.0.2 was still missing is finally in, natively.
 
 **Download:** [Github Release](https://github.com/OmniNodeCo/Mine-imator/releases)
 
@@ -27,7 +27,7 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 
 - H.264 export on Linux works but encodes slower than it could (the bundled x264 is built without assembly for now).
 - macOS is x86_64 only - it runs under Rosetta on Apple Silicon machines, but there is no native ARM build.
-- The Continuation Build labels itself Alpha 1 - expect the occasional rough edge.
+- The underlying Continuation Build base is alpha quality - expect the occasional rough edge.
 - The About-screen trial tag and upgrade popup fixes from Reforged 1.0.1/1.0.2 were patches to the old codebase and have not been re-applied to this base yet.
 
 [spoiler="Show hidden contents — full changelog"]
@@ -53,7 +53,7 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 - Setup scripts, Makefile, BUILD.md and the cross-platform C++ CppGen restored alongside the original C# CppGen
 
 [b]Versioning[/b]
-- The forum line continues as Reforged 1.0.3; the app identifies as "2.0.2 Continuation Build 1.0.15 (Alpha 1)" and the downloads are named Mine-imator-Reforged-1.0.15, following the Continuation Build's version
+- Version bumped to Reforged 1.0.3 (full in-app version 2.0.2 Reforged 1.0.3); the base underneath is mbanders' Continuation Build 1.0.15 Alpha 1
 [/spoiler]
 
 [spoiler="Version 1.0.2 (2026-09-07)"]
