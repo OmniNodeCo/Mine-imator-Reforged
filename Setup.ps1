@@ -1,6 +1,7 @@
-# Usage: ./Setup.ps1 [Qt|OpenSSL|FFmpeg|Libzip|OpenAL|VisualStudio|CppGen|Release] [x64|x86]
-#   Qt|OpenSSL|FFmpeg|Libzip|OpenAL:
-#       Unzips or downloads external libraries into DEV_DIR, then builds them
+# Usage: ./Setup.ps1 [Qt|OpenSSL|FFmpeg|FreeType|Libzip|OpenAL|VisualStudio|CppGen|Release] [x64|x86]
+#   Qt|OpenSSL|FFmpeg|FreeType|Libzip|OpenAL:
+#       Unzips external library sources into DEV_DIR (the libraries themselves
+#       are precompiled in CppProject/External); Qt and OpenSSL are built
 #   VisualStudio:
 #       Generates and opens a Visual Studio 2022/2026 solution
 #   CppGen:
@@ -31,9 +32,9 @@ if (-not $env:DEV_DIR) {
 }
 
 $actionKey = $Action.ToLowerInvariant()
-$validActions = @("qt", "openssl", "ffmpeg", "libzip", "openal", "visualstudio", "cppgen", "release")
+$validActions = @("qt", "openssl", "ffmpeg", "freetype", "libzip", "openal", "visualstudio", "cppgen", "release")
 if ($actionKey -notin $validActions) {
-    throw "Unknown action '$Action'. Use Qt, OpenSSL, FFmpeg, Libzip, OpenAL, VisualStudio, CppGen or Release."
+    throw "Unknown action '$Action'. Use Qt, OpenSSL, FFmpeg, FreeType, Libzip, OpenAL, VisualStudio, CppGen or Release."
 }
 
 $architectureKey = $Architecture.ToLowerInvariant()
@@ -65,10 +66,12 @@ $buildReleaseDirectory = Join-Path $PSScriptRoot "build-release${architectureSuf
 $qtVersion = "5.15.19"
 $qtRef = "v${qtVersion}-lts-lgpl"
 $qtFolderName = "${qtVersion}${architectureSuffix}"
-$ffmpegVersion = "5.1.10"
-$x264Revision = "0480cb05"
-$libzipVersion = "1.11.4"
-$openAlVersion = "1.24.3"
+# Header-only dependency sources; the compiled libraries are precompiled
+# in CppProject/External and referenced by CppProject/CMakeLists.txt
+$ffmpegVersion = "5.0"
+$libzipVersion = "1.9.2"
+$freetypeVersion = "2.9.1"
+$openAlVersion = "1.22.0"
 $openSslVersion = "3.0.21"
 $jomVersion = "1.1.7"
 
@@ -94,8 +97,8 @@ function Get-SafeSourceTarget {
 
     $allowedRelativePaths = @(
         "FFmpeg\ffmpeg-$ffmpegVersion",
-        "x264\x264-master",
         "Libzip\libzip-$libzipVersion",
+        "FreeType\freetype-$freetypeVersion",
         "OpenAL\openal-soft-$openAlVersion",
         "OpenSSL\openssl-$openSslVersion"
     )
@@ -139,12 +142,6 @@ function Ensure-SourceArchive {
                     RelativePath = "FFmpeg\ffmpeg-$ffmpegVersion"
                     Marker = "configure"
                 }
-                @{
-                    Archive = "x264-master-$x264Revision.tar.bz2"
-                    Destination = Join-Path $devDirectory "x264"
-                    RelativePath = "x264\x264-master"
-                    Marker = "configure"
-                }
             }
             "libzip" {
                 @{
@@ -152,6 +149,14 @@ function Ensure-SourceArchive {
                     Destination = Join-Path $devDirectory "Libzip"
                     RelativePath = "Libzip\libzip-$libzipVersion"
                     Marker = "CMakeLists.txt"
+                }
+            }
+            "freetype" {
+                @{
+                    Archive = "freetype-$freetypeVersion.tar.gz"
+                    Destination = Join-Path $devDirectory "FreeType"
+                    RelativePath = "FreeType\freetype-$freetypeVersion"
+                    Marker = "include\freetype\freetype.h"
                 }
             }
             "openal" {
@@ -211,7 +216,7 @@ function Remove-BuildDirectory {
     param([Parameter(Mandatory = $true)][string] $Path)
 
     $resolvedPath = [System.IO.Path]::GetFullPath($Path)
-    $isUnderKnownLibrary = @("Qt", "OpenSSL", "FFmpeg", "x264", "Libzip", "OpenAL") |
+    $isUnderKnownLibrary = @("Qt", "OpenSSL", "FFmpeg", "FreeType", "Libzip", "OpenAL") |
         ForEach-Object { [System.IO.Path]::GetFullPath((Join-Path $devDirectory $_)) } |
         Where-Object {
             $resolvedPath.StartsWith(
@@ -228,25 +233,21 @@ function Remove-BuildDirectory {
     }
 }
 
-function Remove-CMakeCache {
-    param([Parameter(Mandatory = $true)][string] $SourceDirectory)
-
-    $allowedSourceDirectories = @(
-        (Join-Path $devDirectory "Libzip\libzip-$libzipVersion"),
-        (Join-Path $devDirectory "OpenAL\openal-soft-$openAlVersion")
-    ) | ForEach-Object { [System.IO.Path]::GetFullPath($_) }
-    $resolvedSourceDirectory = [System.IO.Path]::GetFullPath($SourceDirectory)
-    if ($allowedSourceDirectories -notcontains $resolvedSourceDirectory) {
-        throw "Refusing to remove CMake cache files from unexpected source directory: $resolvedSourceDirectory"
+# Place generated/absent headers that the precompiled libraries expect
+function Copy-DevHeaders {
+    $ffmpegDirectory = Get-SafeSourceTarget -RelativePath "FFmpeg\ffmpeg-$ffmpegVersion"
+    if (Test-Path -LiteralPath $ffmpegDirectory -PathType Container) {
+        Copy-Item `
+            -LiteralPath (Join-Path $externalDirectory "avconfig.h") `
+            -Destination (Join-Path $ffmpegDirectory "libavutil\avconfig.h") -Force
     }
-
-    foreach ($name in @("CMakeCache.txt", "CMakeFiles")) {
-        $cachePath = Join-Path $resolvedSourceDirectory $name
-        if (Test-Path -LiteralPath $cachePath) {
-            Write-Host "Removing generated CMake cache path $cachePath"
-            Remove-Item -LiteralPath $cachePath -Recurse -Force
-        }
+    $libzipDirectory = Get-SafeSourceTarget -RelativePath "Libzip\libzip-$libzipVersion"
+    if (Test-Path -LiteralPath $libzipDirectory -PathType Container) {
+        Copy-Item `
+            -LiteralPath (Join-Path $externalDirectory "zipconf.h") `
+            -Destination (Join-Path $libzipDirectory "lib\zipconf.h") -Force
     }
+    Write-Host "Placed avconfig.h and zipconf.h into the dependency sources"
 }
 
 function Copy-BuiltFile {
@@ -316,168 +317,6 @@ function Ensure-Jom {
         }
         throw
     }
-}
-
-function Invoke-MsysBash {
-    param(
-        [Parameter(Mandatory = $true)][string] $WorkingDirectory,
-        [Parameter(Mandatory = $true)][string] $Command
-    )
-
-    $bashExecutable = Join-Path $devDirectory "msys64\usr\bin\bash.exe"
-    Require-File -Path $bashExecutable -Description "MSYS2 Bash"
-    if ($WorkingDirectory.Contains("'")) {
-        throw "MSYS2 build paths containing an apostrophe are not supported: $WorkingDirectory"
-    }
-    $msysWorkingDirectory = $WorkingDirectory.Replace('\', '/')
-    $normalizedCommand = $Command.Replace("`r`n", "`n").Replace("`r", "`n")
-    # Keep the active MSVC tools ahead of MSYS2. MSYS2 also ships link.exe,
-    # which must not shadow Visual Studio's linker.
-    $bashCommand =
-        "set -e; export PATH=`"`$PATH:/usr/bin:/bin`"; " +
-        "cd '$msysWorkingDirectory'; $normalizedCommand"
-
-    $bashCommand | & $bashExecutable -s
-    if ($LASTEXITCODE -ne 0) {
-        throw "MSYS2 build failed with exit code $LASTEXITCODE."
-    }
-}
-
-function Build-FFmpeg {
-    $ffmpegDirectory = Get-SafeSourceTarget -RelativePath "FFmpeg\ffmpeg-$ffmpegVersion"
-    Invoke-MsysBash -WorkingDirectory $ffmpegDirectory -Command @'
-for tool in make nasm pkgconf; do
-    command -v "$tool" >/dev/null 2>&1 || { echo "Required MSYS2 command not found: $tool" >&2; exit 1; }
-done
-'@
-
-    $ffmpegBuildDirectory = Join-Path $ffmpegDirectory "build${architectureSuffix}"
-    $ffmpegInstallDirectory = Join-Path $ffmpegDirectory "install${architectureSuffix}"
-    $x264Directory = Get-SafeSourceTarget -RelativePath "x264\x264-master"
-    $x264BuildDirectory = Join-Path $x264Directory "build${architectureSuffix}"
-    $x264InstallDirectory = Join-Path $x264Directory "install${architectureSuffix}"
-    
-    Remove-BuildDirectory -Path $ffmpegBuildDirectory
-    Remove-BuildDirectory -Path $ffmpegInstallDirectory
-    Remove-BuildDirectory -Path $x264BuildDirectory
-    Remove-BuildDirectory -Path $x264InstallDirectory
-
-    Import-VisualStudioEnvironment -TargetArchitecture $architectureKey
-    New-Item -ItemType Directory -Path $ffmpegBuildDirectory | Out-Null
-    New-Item -ItemType Directory -Path $x264BuildDirectory | Out-Null
-
-    $x264Command = (@'
-CC=cl ../configure --prefix="$PWD/../{0}" --enable-static --disable-cli
-make -j{1}
-make install
-'@) -f "install${architectureSuffix}", $jobs
-    Invoke-MsysBash -WorkingDirectory $x264BuildDirectory -Command $x264Command
-    
-    if ($architectureKey -eq "x64") {
-        $ffmpegArchitecture = "x86_64"
-    } else {
-        $ffmpegArchitecture = "x86_32"
-    }
-
-    $ffmpegCommand = (@'
-export PKG_CONFIG_PATH="$PWD/../../../x264/x264-master/{0}/lib/pkgconfig"
-../configure \
---toolchain=msvc \
---arch={2} \
---prefix="$PWD/../{1}" \
---disable-autodetect \
---disable-debug \
---disable-everything \
---disable-programs \
---disable-avdevice \
---disable-avfilter \
---disable-postproc \
---disable-network \
---disable-doc \
---disable-htmlpages \
---enable-protocol=file \
---enable-parser='vorbis,opus,flac,mpegaudio,aac*,h264' \
---enable-decoder='mp3,vorbis,opus,flac,wma*,pcm*,mpeg4,aac*' \
---enable-demuxer='mp3,wav,ogg,flac,xwma,asf,aac,m*' \
---enable-encoder='libx264,wma*,aac*,msmpeg4v*' \
---enable-muxer='mp4,mov,asf,h264' \
---enable-libx264 \
---enable-gpl \
---extra-ldflags="-LIBPATH:../../../x264/x264-master/{0}/lib" \
---extra-cflags="-I../../../x264/x264-master/{0}/include"
-make -j{3}
-make -j1 install
-'@) -f "install${architectureSuffix}", "install${architectureSuffix}", $ffmpegArchitecture, $jobs
-    Invoke-MsysBash -WorkingDirectory $ffmpegBuildDirectory -Command $ffmpegCommand
-
-    foreach ($name in @("libavcodec.a", "libavformat.a", "libavutil.a", "libswresample.a", "libswscale.a")) {
-        Copy-BuiltFile `
-            -Source (Join-Path $ffmpegInstallDirectory "lib\$name")
-    }
-    Copy-BuiltFile `
-        -Source (Join-Path $x264InstallDirectory "lib\libx264.lib")
-}
-
-function Build-Libzip {
-    $qtCoreLibrary = Join-Path $qtInstallDirectory "lib\Qt5Core.lib"
-    Require-File -Path $qtCoreLibrary -Description "Qt Core static library"
-
-    $libzipDirectory = Get-SafeSourceTarget -RelativePath "Libzip\libzip-$libzipVersion"
-    $buildDirectory = Join-Path $libzipDirectory "build${architectureSuffix}"
-
-    Remove-CMakeCache -SourceDirectory $libzipDirectory
-    Remove-BuildDirectory -Path $buildDirectory
-
-    Import-VisualStudioEnvironment -TargetArchitecture $architectureKey
-
-    & $cmake `
-        -S $libzipDirectory -B $buildDirectory `
-        -G $cmakeGenerator -A $cmakeArchitecture `
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded `
-        "-DZLIB_INCLUDE_DIR=$qtInstallDirectory\include\QtZlib" `
-        "-DCMAKE_C_STANDARD_INCLUDE_DIRECTORIES=$qtInstallDirectory\include;$qtInstallDirectory\include\QtCore" `
-        "-DZLIB_LIBRARY=$qtCoreLibrary" `
-        -DENABLE_BZIP2=OFF -DENABLE_LZMA=OFF -DENABLE_ZSTD=OFF `
-        -DBUILD_DOC=OFF -DBUILD_EXAMPLES=OFF -DBUILD_OSSFUZZ=OFF -DBUILD_REGRESS=OFF `
-        -DBUILD_SHARED_LIBS=OFF -DBUILD_TOOLS=OFF
-    if ($LASTEXITCODE -ne 0) {
-        throw "Libzip configuration failed for $($cmakeArchitecture)."
-    }
-
-    & $cmake --build $buildDirectory --parallel $jobs --config Release
-    if ($LASTEXITCODE -ne 0) {
-        throw "Libzip build failed for $($cmakeArchitecture)."
-    }
-
-    Copy-BuiltFile -Source (Join-Path $buildDirectory "lib\Release\zip.lib")
-}
-
-function Build-OpenAL {
-    $openAlDirectory = Get-SafeSourceTarget -RelativePath "OpenAL\openal-soft-$openAlVersion"
-    $buildDirectory = Join-Path $openAlDirectory "build${architectureSuffix}"
-
-    Remove-CMakeCache -SourceDirectory $openAlDirectory
-    Remove-BuildDirectory -Path $buildDirectory
-
-    Import-VisualStudioEnvironment -TargetArchitecture $architectureKey
-
-    & $cmake `
-        -S $openAlDirectory -B $buildDirectory `
-        -G $cmakeGenerator -A $cmakeArchitecture `
-        -DCMAKE_POLICY_DEFAULT_CMP0091=NEW -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded `
-        -DCMAKE_CXX_FLAGS=/D_USE_STD_VECTOR_ALGORITHMS=0 `
-        -DLIBTYPE=STATIC -DALSOFT_EXAMPLES=OFF -DALSOFT_UTILS=OFF -DALSOFT_EAX=OFF `
-        -DALSOFT_EMBED_HRTF_DATA=OFF
-    if ($LASTEXITCODE -ne 0) {
-        throw "OpenAL Soft configuration failed for $($cmakeArchitecture)."
-    }
-
-    & $cmake --build $buildDirectory --parallel $jobs --config Release
-    if ($LASTEXITCODE -ne 0) {
-        throw "OpenAL Soft build failed for $($cmakeArchitecture)."
-    }
-
-    Copy-BuiltFile -Source (Join-Path $buildDirectory "Release\OpenAL32.lib")
 }
 
 function Invoke-OpenSSLTarget {
@@ -668,7 +507,8 @@ function Build-Qt {
 switch ($actionKey) {
     "qt" {
         Ensure-GeneratedSources
-        Ensure-SourceArchive "OpenSSL" "FFmpeg" "OpenAL" "Libzip"
+        Ensure-SourceArchive "OpenSSL" "FFmpeg" "FreeType" "OpenAL" "Libzip"
+        Copy-DevHeaders
         Build-Qt
     }
     "openssl" {
@@ -677,18 +517,22 @@ switch ($actionKey) {
     }
     "ffmpeg" {
         Ensure-SourceArchive "FFmpeg"
-        Build-FFmpeg
+        Copy-DevHeaders
+    }
+    "freetype" {
+        Ensure-SourceArchive "FreeType"
     }
     "libzip" {
         Ensure-SourceArchive "Libzip"
-        Build-Libzip
+        Copy-DevHeaders
     }
     "openal" {
         Ensure-SourceArchive "OpenAL"
-        Build-OpenAL
     }
     "visualstudio" {
         Ensure-GeneratedSources
+        Ensure-SourceArchive "FFmpeg" "FreeType" "OpenAL" "Libzip"
+        Copy-DevHeaders
         & $cmake `
             -S $cppProjectDirectory -B $buildVsDirectory `
             -G $cmakeGenerator -A $cmakeArchitecture
@@ -711,6 +555,8 @@ switch ($actionKey) {
     }
     "release" {
         Ensure-GeneratedSources
+        Ensure-SourceArchive "FFmpeg" "FreeType" "OpenAL" "Libzip"
+        Copy-DevHeaders
         & $cmake `
             -S $cppProjectDirectory -B $buildReleaseDirectory `
             -G $cmakeGenerator -A $cmakeArchitecture

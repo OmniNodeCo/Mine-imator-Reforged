@@ -75,7 +75,10 @@ runs:
         fi
         sudo apt-get update
         sudo apt-get build-dep -y qtbase5-dev
-        sudo apt-get install -y git cmake perl clang libomp-dev
+        # System libraries linked by CppProject/CMakeLists.txt (Linux build)
+        sudo apt-get install -y git cmake perl clang libomp-dev \
+          libx264-dev libgnutls28-dev libnettle-dev libsndio-dev \
+          libva-dev libvdpau-dev libbz2-dev liblzma-dev
 
     - name: Cache Qt (Linux)
       if: inputs.platform == 'linux'

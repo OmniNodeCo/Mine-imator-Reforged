@@ -82,17 +82,14 @@ To change the third-party source code location, set the `DEV_DIR` environment va
 ## Building Mine-imator (Mac OS ARM)
 **Note**: Mine-imator has not been officially built or tested on the ARM architecture.
 1. Follow steps 1-4 for Mac OS Intel setup
-2. Run `brew install nasm yasm pkg-config`
-3. Build libraries for Mac OS ARM
-    1. Run `./Setup.sh FFmpeg`
-    2. Run `./Setup.sh Libzip`
-    3. Run `./Setup.sh OpenAL`
-4. Follow steps 5-7 for Mac OS Intel setup
+2. Follow steps 5-7 for Mac OS Intel setup (the dependency sources are
+   extracted automatically; their libraries are precompiled in
+   `CppProject/External/Mac`)
 
 ## Building Mine-imator (Linux)
 1. Open terminal
 2. Install build dependencies
-    * **Ubuntu**: Run `sudo apt-get update && sudo apt-get install -y software-properties-common && (sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || sudo add-apt-repository -y --enable-source) && sudo apt-get update && sudo apt-get build-dep -y qtbase5-dev && sudo apt-get install -y git cmake perl clang libomp-dev` (`add-apt-repository --enable-source` alone silently does nothing on Ubuntu 24.04's DEB822 sources, so the `sed` patches `ubuntu.sources` directly)
+    * **Ubuntu**: Run `sudo apt-get update && sudo apt-get install -y software-properties-common && (sudo sed -i 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || sudo add-apt-repository -y --enable-source) && sudo apt-get update && sudo apt-get build-dep -y qtbase5-dev && sudo apt-get install -y git cmake perl clang libomp-dev libx264-dev libgnutls28-dev libnettle-dev libsndio-dev libva-dev libvdpau-dev libbz2-dev liblzma-dev` (`add-apt-repository --enable-source` alone silently does nothing on Ubuntu 24.04's DEB822 sources, so the `sed` patches `ubuntu.sources` directly)
     * **Debian/Linux Mint**: [Enable Source Code Repositories](https://wiki.debian.org/SourcesList), then run `sudo apt build-dep -y qtbase5-dev && sudo apt install -y git cmake perl clang libomp-dev`
     * **Fedora**: Run `sudo dnf install -y dnf-plugins-core && sudo dnf builddep -y qt5-qtbase && sudo dnf install -y git cmake perl clang libomp-devel`
     * **Arch Linux/CachyOS**: Run `sudo pacman -Syu --needed --noconfirm base-devel git cmake perl clang openmp`
@@ -122,45 +119,18 @@ To change the third-party source code location, set the `DEV_DIR` environment va
     * Run `./Setup.sh Release`
 
 ## Building libraries (Windows 64-bit) (optional)
-1. Get MSYS2 from https://www.msys2.org/
-    1. Install into `C:\Dev\msys64`
-    2. Open MSYS2 MSYS prompt (via Start menu)
-    3. Run `pacman -S --noconfirm make nasm pkgconf`
-2. Open Windows PowerShell
-3. Run `cd $env:DEV_DIR\Mine-imator`
-4. Build libraries for Windows 64-bit
-    1. Run `.\Setup.ps1 OpenSSL`
-    2. Run `.\Setup.ps1 FFmpeg`
-    3. Run `.\Setup.ps1 Libzip` (requires Qt)
-    4. Run `.\Setup.ps1 OpenAL`
-5. Build libraries for Windows 32-bit
-    1. Run `.\Setup.ps1 Qt x86`
-    2. Run `.\Setup.ps1 OpenSSL x86`
-    3. Run `.\Setup.ps1 FFmpeg x86`
-    4. Run `.\Setup.ps1 Libzip x86`
-    5. Run `.\Setup.ps1 OpenAL x86`
-6. Libraries are copied into `CppProject\External\Win32` and `CppProject\External\Win64`
+The FFmpeg, x264, Libzip, OpenAL and zlib libraries are **precompiled** in
+`CppProject\External\Win32` and `CppProject\External\Win64`; their source
+trees (headers only) plus OpenSSL are extracted into `C:\Dev` automatically
+by `Setup.ps1 Qt` / `Setup.ps1 Release`. To regenerate the committed OpenSSL
+static libraries, run `.\Setup.ps1 OpenSSL` (and `... x86` for 32-bit).
 
-## Building libraries (Mac OS Intel/ARM) (optional)
-1. Open terminal
-2. Run `brew install nasm yasm pkg-config`
-3. Run `cd $DEV_DIR/Mine-imator`
-4. Run `./Setup.sh FFmpeg`
-5. Run `./Setup.sh Libzip` (requires Qt)
-6. Run `./Setup.sh OpenAL`
-7. Libraries are copied into `CppProject/External/Mac`
-
-## Building libraries (Linux) (optional)
-1. Open terminal
-2. Install build dependencies
-    * **Ubuntu/Debian/Linux Mint**: Run `sudo apt install -y nasm yasm pkg-config`
-    * **Fedora**: Run `sudo dnf install -y nasm yasm pkgconf-pkg-config`
-    * **Arch Linux/CachyOS**: Run `sudo pacman -S --needed --noconfirm nasm yasm pkgconf`
-3. Run `cd $DEV_DIR/Mine-imator`
-4. Run `./Setup.sh FFmpeg`
-5. Run `./Setup.sh Libzip` (requires Qt)
-6. Run `./Setup.sh OpenAL`
-7. Libraries are copied into `CppProject/External/Linux`
+## Dependency sources (Mac OS / Linux)
+The FFmpeg, x264, Libzip, OpenAL and zlib libraries are **precompiled** in
+`CppProject/External/Mac` and `CppProject/External/Linux`; their source
+trees (headers only) are extracted into `~/Dev` automatically by
+`Setup.sh Qt` / `Setup.sh Release` (or individually via
+`./Setup.sh FFmpeg`, `FreeType`, `Libzip`, `OpenAL`).
 
 ## Building Mine-imator (on Windows 64-bit for 32-bit)
 1. Follow steps 1-5 for Windows 64-bit setup
@@ -173,13 +143,9 @@ To change the third-party source code location, set the `DEV_DIR` environment va
 **Note**: Mine-imator has not been officially built or tested on the ARM architecture.
 1. Follow steps 1-3 for Mac OS Intel setup
 2. Run `sudo softwareupdate --install-rosetta --agree-to-license`
-3. Run `brew install nasm yasm pkg-config`
-4. Build libraries for Mac OS Intel
+3. Build Qt for Mac OS Intel (dependency sources are extracted automatically)
     1. Run `./Setup.sh Qt x86_64`
-    2. Run `./Setup.sh FFmpeg x86_64`
-    3. Run `./Setup.sh Libzip x86_64`
-    4. Run `./Setup.sh OpenAL x86_64`
-5. Generate Release build in `install/`
+4. Generate Release build in `install/`
     * Run `./Setup.sh Release x86_64`
 
 ## Guide coverage

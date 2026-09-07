@@ -8,6 +8,26 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
 ### Fixes
 
+* **CI builds failing on all platforms** (`Setup Qt` step): the restored build
+  scripts targeted the old dependency pipeline (built FFmpeg 5.1.10 / x264 /
+  Libzip 1.11.4 / OpenAL 1.24.3 from vendored sources), but this base's
+  CppProject links the **precompiled libraries from `CppProject/External`**
+  and only needs the header source trees — FFmpeg 5.0, FreeType 2.9.1,
+  Libzip 1.9.2 and OpenAL Soft 1.22.0. The Setup scripts now extract exactly
+  those sources into the `DEV_DIR` layout the CMake project expects
+  (plus the generated `avconfig.h`/`zipconf.h` headers), the obsolete
+  FFmpeg/x264/Libzip/OpenAL build pipelines were removed, and the matching
+  source tarballs are vendored in `CppProject/External/Sources/`. OpenSSL
+  (Qt on Windows), Jom and the committed Windows SSL libs and macOS
+  `libomp.dylib` were restored so the cached Qt builds link again.
+* `CppProject/CMakeLists.txt` adaptations for the CI-built Qt: resolve
+  `/usr/bin/clang` instead of the missing `clang-12`, use the Qt 5.15.19
+  `install` prefix built by the Setup scripts, resolve Homebrew libomp on
+  macOS (with the committed x86_64 runtime), and a full installation layout
+  (`cmake --install` now produces the packaged `Mine-imator/` folder)
+* Linux CI installs the system libraries this CppProject links
+  (x264, gnutls, nettle, sndio, va, vdpau, bz2, lzma)
+
 * **World import (pre-1.13 worlds, e.g. 1.12.2):** block ids of 256 and above
   are stored in the chunk section's `Add` array (the high bits of each id).
   The importer only read the low `Blocks` byte, so worlds containing such

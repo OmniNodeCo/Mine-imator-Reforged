@@ -8,7 +8,8 @@ set(MAC_LINUX_RELEASE 1)
 
 # Project setup
 set(CMAKE_CXX_STANDARD 17)
-set(QT_VERSION "5.15.9")
+# Reforged CI builds Qt 5.15.19 (KDE lts-lgpl) via Setup.sh/Setup.ps1
+set(QT_VERSION "5.15.19")
 if (WIN32)
 	set(CMAKE_CONFIGURATION_TYPES "Debug" "RelWithDebInfo" "Release")
 	if (WINDOWS_32BIT)
@@ -21,8 +22,9 @@ if (WIN32)
 	endif()
 	set(CMAKE_GENERATOR_PLATFORM ${PLATFORM})
 elseif (NOT APPLE)
-	set(CMAKE_C_COMPILER "/usr/bin/clang-12")
-	set(CMAKE_CXX_COMPILER "/usr/bin/clang++-12")
+	# Reforged CI: resolve the installed clang instead of hardcoding clang-12
+	set(CMAKE_C_COMPILER "/usr/bin/clang" CACHE FILEPATH "Linux C compiler" FORCE)
+	set(CMAKE_CXX_COMPILER "/usr/bin/clang++" CACHE FILEPATH "Linux C++ compiler" FORCE)
 endif()
 
 project(Mine-imator)
@@ -105,6 +107,28 @@ else()
 	set(LIBS ${LIBS} "bz2" "lzma") # Zip dependencies
 	
 	# Add OpenMP
+	if(APPLE)
+		# Reforged CI: resolve libomp from Homebrew; x86_64 builds link the
+		# committed External/Mac/libomp.dylib and get patched at install time
+		execute_process(COMMAND brew --prefix libomp
+			RESULT_VARIABLE LIBOMP_RESULT
+			OUTPUT_VARIABLE LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+		if(NOT LIBOMP_RESULT EQUAL 0 OR NOT EXISTS "${LIBOMP_PREFIX}/include/omp.h")
+			message(FATAL_ERROR "Homebrew libomp was not found")
+		endif()
+		if(CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64")
+			set(OPENMP_RUNTIME_LIBRARY "${EXT_DIR}/libomp.dylib")
+			set(OPENMP_LINKED_LIBRARY "/usr/local/opt/libomp/lib/libomp.dylib")
+		else()
+			set(OPENMP_RUNTIME_LIBRARY "${LIBOMP_PREFIX}/lib/libomp.dylib")
+			set(OPENMP_LINKED_LIBRARY "${OPENMP_RUNTIME_LIBRARY}")
+		endif()
+		if(NOT EXISTS "${OPENMP_RUNTIME_LIBRARY}")
+			message(FATAL_ERROR "OpenMP runtime was not found at ${OPENMP_RUNTIME_LIBRARY}")
+		endif()
+		set(OpenMP_libomp_LIBRARY "${OPENMP_RUNTIME_LIBRARY}" CACHE FILEPATH "" FORCE)
+		set(OpenMP_CXX_INCLUDE_DIR "${LIBOMP_PREFIX}/include" CACHE PATH "" FORCE)
+	endif()
 	find_package(OpenMP REQUIRED)
 	set(LIBS ${LIBS} OpenMP::OpenMP_CXX)
 
@@ -113,8 +137,8 @@ endif()
 message("DEV_DIR = ${DEV_DIR}")
 message("EXT_DIR = ${EXT_DIR}")
 
-# Add Qt
-set(Qt_DIR "${DEV_DIR}/Qt/${QT_VERSION}/build")
+# Add Qt (installed by Setup.sh/Setup.ps1 into Qt/<version>/install)
+set(Qt_DIR "${DEV_DIR}/Qt/${QT_VERSION}/install")
 message("Qt_DIR = ${Qt_DIR}")
 set(CMAKE_PREFIX_PATH ${Qt_DIR})
 set(CMAKE_AUTOMOC ON)
@@ -182,5 +206,53 @@ elseif (APPLE)
 	set_target_properties(${PROJECT_NAME} PROPERTIES
 		LIBRARY_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}"
 		RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}"
+	)
+endif()
+
+# Installation layout (Reforged CI; used by cmake --install in Setup.sh/Setup.ps1)
+get_filename_component(REPO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
+set(DATAFILES_SOURCE_DIR "${REPO_DIR}/GmProject/datafiles")
+set(INSTALL_DIR "${REPO_DIR}/install")
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	set(CMAKE_INSTALL_PREFIX "${INSTALL_DIR}/Mine-imator"
+		CACHE PATH "Mine-imator installation directory" FORCE)
+endif()
+install(TARGETS ${PROJECT_NAME}
+	RUNTIME DESTINATION "."
+	BUNDLE DESTINATION "."
+)
+install(DIRECTORY
+	"${DATAFILES_SOURCE_DIR}/Data"
+	"${DATAFILES_SOURCE_DIR}/Particles"
+	DESTINATION "."
+	PATTERN "Libraries" EXCLUDE
+)
+if(EXISTS "${DATAFILES_SOURCE_DIR}/Schematics")
+	install(DIRECTORY "${DATAFILES_SOURCE_DIR}/Schematics" DESTINATION ".")
+endif()
+install(DIRECTORY DESTINATION "Skins")
+
+if(WIN32)
+	install(FILES "${EXT_DIR}/vcomp140.dll" DESTINATION ".")
+	install(DIRECTORY DESTINATION "Projects")
+elseif(APPLE)
+	install(FILES "${OPENMP_RUNTIME_LIBRARY}" DESTINATION "Data/Libraries" RENAME "libomp.dylib")
+	set(OPENMP_INSTALLED_EXECUTABLE "\${CMAKE_INSTALL_PREFIX}/Mine-imator")
+	install(CODE
+		"execute_process(
+			Command \"${CMAKE_INSTALL_NAME_TOOL}\"
+				-change
+				\"${OPENMP_LINKED_LIBRARY}\"
+				\"@executable_path/Data/Libraries/libomp.dylib\"
+				\"${OPENMP_INSTALLED_EXECUTABLE}\"
+				RESULT_VARIABLE OPENMP_PATCH_RESULT
+		)
+		if(NOT OPENMP_PATCH_RESULT EQUAL 0)
+			message(FATAL_ERROR \"Could not patch the installed OpenMP library path\")
+		endif()"
+	)
+else()
+	install(DIRECTORY "${EXT_DIR}/" DESTINATION "Data/Libraries"
+		FILES_MATCHING PATTERN "*.so*"
 	)
 endif()
