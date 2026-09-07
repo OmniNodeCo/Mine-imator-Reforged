@@ -1,5 +1,26 @@
 # Changelog
 
+## Reforged 1.0.2 (2026-09-07)
+
+Content release: mobs, variants, babies and new blocks for the 26.2 assets.
+
+### Mobs
+
+* Climate variants for **Cow**, **Pig** and **Chicken** (Temperate / Cold / Warm) as variant states
+* **Wolf** biome variants (Ashen, Black, Chestnut, Rusty, Snowy, Spotted, Striped, Woods) on top of the existing normal/tame/angry
+* **Baby versions** for Cow, Pig, Chicken, Wolf (all variants), Sheep, and all 8 Rabbit variants - scaled rigs with bigger heads using the official baby textures
+* **Bogged** and **Parched** skeleton variants
+* New **Breeze** character (head + swirling wind base, emissive)
+
+### Blocks
+
+* 65 new block entries for everything added since 1.20.2: full **copper** families (bars, bulb, chain, grate, lantern, torch, trapdoor, door, chiseled, golem statue, lightning rod - each with Exposed/Weathered/Oxidized stages), **cinnabar**, **sulfur**, **resin**, **tuff** families, **pale oak** wood set + pale moss, shelves (all woods), new plants (bush, firefly bush, leaf litter, grasses, cactus flower, wildflowers, golden dandelion, eyeblossoms), creaking heart, dried ghast, trial spawner, vault, crafter, heavy core, and more
+* All new blocks and variants have English display names; items were already covered by the regenerated item texture lists
+
+### Not yet included (texture layouts need per-mob authoring)
+
+* Armadillo, Creaking, Copper Golem, Happy Ghast rigs; wolf armor; baby versions of the remaining mobs
+
 ## Reforged 1.0.1 (2026-09-05)
 
 Maintenance release: bundled Minecraft assets refreshed and two trial-flow fixes.

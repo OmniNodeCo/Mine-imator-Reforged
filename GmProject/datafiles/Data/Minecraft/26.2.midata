@@ -120,6 +120,16 @@
 					{
 						"value": "stray_skeleton",
 						"file": "stray_skeleton.mimodel"
+					},
+					{
+						"value": "bogged",
+						"file": "skeleton.mimodel",
+						"texture": "entity/skeleton/bogged"
+					},
+					{
+						"value": "parched",
+						"file": "skeleton.mimodel",
+						"texture": "entity/skeleton/parched"
 					}
 				]
 			},
@@ -172,15 +182,40 @@
 		},
 		{
 			"name": "chicken",
-			"file": "chicken.mimodel"
+			"file": "chicken.mimodel",
+			"states": {
+				"variant": [
+					{
+						"value": "temperate",
+						"texture": "entity/chicken/chicken_temperate"
+					},
+					{
+						"value": "temperate_baby",
+						"file": "chicken_baby.mimodel",
+						"texture": "entity/chicken/chicken_temperate_baby"
+					},
+					{
+						"value": "cold_baby",
+						"file": "chicken_baby.mimodel",
+						"texture": "entity/chicken/chicken_cold_baby"
+					},
+					{
+						"value": "warm_baby",
+						"file": "chicken_baby.mimodel",
+						"texture": "entity/chicken/chicken_warm_baby"
+					}
+				]
+			},
+			"default_state": "variant=temperate"
 		},
 		{
 			"name": "cow",
 			"states": {
 				"variant": [
 					{
-						"value": "cow",
-						"file": "cow.mimodel"
+						"value": "temperate",
+						"file": "cow.mimodel",
+						"texture": "entity/cow/cow_temperate"
 					},
 					{
 						"value": "red_mooshroom",
@@ -189,6 +224,21 @@
 					{
 						"value": "brown_mooshroom",
 						"file": "brown_mooshroom.mimodel"
+					},
+					{
+						"value": "temperate_baby",
+						"file": "cow_baby.mimodel",
+						"texture": "entity/cow/cow_temperate_baby"
+					},
+					{
+						"value": "cold_baby",
+						"file": "cow_baby.mimodel",
+						"texture": "entity/cow/cow_cold_baby"
+					},
+					{
+						"value": "warm_baby",
+						"file": "cow_baby.mimodel",
+						"texture": "entity/cow/cow_warm_baby"
 					}
 				]
 			},
@@ -208,6 +258,27 @@
 					},
 					{
 						"value": "true"
+					}
+				],
+				"variant": [
+					{
+						"value": "temperate",
+						"texture": "entity/pig/pig_temperate"
+					},
+					{
+						"value": "temperate_baby",
+						"file": "pig_baby.mimodel",
+						"texture": "entity/pig/pig_temperate_baby"
+					},
+					{
+						"value": "cold_baby",
+						"file": "pig_baby.mimodel",
+						"texture": "entity/pig/pig_cold_baby"
+					},
+					{
+						"value": "warm_baby",
+						"file": "pig_baby.mimodel",
+						"texture": "entity/pig/pig_warm_baby"
 					}
 				]
 			},
@@ -325,6 +396,12 @@
 							"wool": "dye:black"
 						}
 					}
+				],
+				"variant": [
+					{
+						"value": "baby",
+						"file": "sheep_baby.mimodel"
+					}
 				]
 			},
 			"default_state": "sheared=false,wool_color=white"
@@ -365,6 +442,46 @@
 					{
 						"value": "white_splotched",
 						"texture": "entity/rabbit/white_splotched"
+					},
+					{
+						"value": "black_baby",
+						"file": "rabbit_baby.mimodel",
+						"texture": "entity/rabbit/rabbit_black_baby"
+					},
+					{
+						"value": "brown_baby",
+						"file": "rabbit_baby.mimodel",
+						"texture": "entity/rabbit/rabbit_brown_baby"
+					},
+					{
+						"value": "caerbannog_baby",
+						"file": "rabbit_baby.mimodel",
+						"texture": "entity/rabbit/rabbit_caerbannog_baby"
+					},
+					{
+						"value": "gold_baby",
+						"file": "rabbit_baby.mimodel",
+						"texture": "entity/rabbit/rabbit_gold_baby"
+					},
+					{
+						"value": "salt_baby",
+						"file": "rabbit_baby.mimodel",
+						"texture": "entity/rabbit/rabbit_salt_baby"
+					},
+					{
+						"value": "toast_baby",
+						"file": "rabbit_baby.mimodel",
+						"texture": "entity/rabbit/rabbit_toast_baby"
+					},
+					{
+						"value": "white_baby",
+						"file": "rabbit_baby.mimodel",
+						"texture": "entity/rabbit/rabbit_white_baby"
+					},
+					{
+						"value": "white_splotched_baby",
+						"file": "rabbit_baby.mimodel",
+						"texture": "entity/rabbit/rabbit_white_splotched_baby"
 					}
 				]
 			},
@@ -563,6 +680,82 @@
 					{
 						"value": "angry",
 						"texture": "entity/wolf/wolf_angry"
+					},
+					{
+						"value": "ashen",
+						"texture": "entity/wolf/wolf_ashen"
+					},
+					{
+						"value": "ashen_baby",
+						"file": "wolf_baby.mimodel",
+						"texture": "entity/wolf/wolf_ashen_baby"
+					},
+					{
+						"value": "black",
+						"texture": "entity/wolf/wolf_black"
+					},
+					{
+						"value": "black_baby",
+						"file": "wolf_baby.mimodel",
+						"texture": "entity/wolf/wolf_black_baby"
+					},
+					{
+						"value": "chestnut",
+						"texture": "entity/wolf/wolf_chestnut"
+					},
+					{
+						"value": "chestnut_baby",
+						"file": "wolf_baby.mimodel",
+						"texture": "entity/wolf/wolf_chestnut_baby"
+					},
+					{
+						"value": "rusty",
+						"texture": "entity/wolf/wolf_rusty"
+					},
+					{
+						"value": "rusty_baby",
+						"file": "wolf_baby.mimodel",
+						"texture": "entity/wolf/wolf_rusty_baby"
+					},
+					{
+						"value": "snowy",
+						"texture": "entity/wolf/wolf_snowy"
+					},
+					{
+						"value": "snowy_baby",
+						"file": "wolf_baby.mimodel",
+						"texture": "entity/wolf/wolf_snowy_baby"
+					},
+					{
+						"value": "spotted",
+						"texture": "entity/wolf/wolf_spotted"
+					},
+					{
+						"value": "spotted_baby",
+						"file": "wolf_baby.mimodel",
+						"texture": "entity/wolf/wolf_spotted_baby"
+					},
+					{
+						"value": "striped",
+						"texture": "entity/wolf/wolf_striped"
+					},
+					{
+						"value": "striped_baby",
+						"file": "wolf_baby.mimodel",
+						"texture": "entity/wolf/wolf_striped_baby"
+					},
+					{
+						"value": "woods",
+						"texture": "entity/wolf/wolf_woods"
+					},
+					{
+						"value": "woods_baby",
+						"file": "wolf_baby.mimodel",
+						"texture": "entity/wolf/wolf_woods_baby"
+					},
+					{
+						"value": "baby",
+						"file": "wolf_baby.mimodel"
 					}
 				],
 				"collar": [
@@ -2211,6 +2404,14 @@
 		{
 			"name": "ender_dragon",
 			"file": "ender_dragon.mimodel"
+		},
+		{
+			"name": "breeze",
+			"file": "breeze.mimodel"
+		},
+		{
+			"name": "breeze",
+			"file": "breeze.mimodel"
 		}
 	],
 	"special_blocks": [
@@ -13611,6 +13812,877 @@
 				}
 			},
 			"id": "minecraft:decorated_pot"
+		},
+		{
+			"name": "copper_bulb",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "copper_bulb.json"
+					},
+					{
+						"value": "exposed",
+						"file": "exposed_copper_bulb.json"
+					},
+					{
+						"value": "weathered",
+						"file": "weathered_copper_bulb.json"
+					},
+					{
+						"value": "oxidized",
+						"file": "oxidized_copper_bulb.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "copper_chain",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "copper_chain.json"
+					},
+					{
+						"value": "exposed",
+						"file": "exposed_copper_chain.json"
+					},
+					{
+						"value": "weathered",
+						"file": "weathered_copper_chain.json"
+					},
+					{
+						"value": "oxidized",
+						"file": "oxidized_copper_chain.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "copper_grate",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "copper_grate.json"
+					},
+					{
+						"value": "exposed",
+						"file": "exposed_copper_grate.json"
+					},
+					{
+						"value": "weathered",
+						"file": "weathered_copper_grate.json"
+					},
+					{
+						"value": "oxidized",
+						"file": "oxidized_copper_grate.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "copper_lantern",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "copper_lantern.json"
+					},
+					{
+						"value": "exposed",
+						"file": "exposed_copper_lantern.json"
+					},
+					{
+						"value": "weathered",
+						"file": "weathered_copper_lantern.json"
+					},
+					{
+						"value": "oxidized",
+						"file": "oxidized_copper_lantern.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "copper_torch",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "copper_torch.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "chiseled_copper",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "chiseled_copper.json"
+					},
+					{
+						"value": "exposed",
+						"file": "exposed_chiseled_copper.json"
+					},
+					{
+						"value": "weathered",
+						"file": "weathered_chiseled_copper.json"
+					},
+					{
+						"value": "oxidized",
+						"file": "oxidized_chiseled_copper.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "copper_golem_statue",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "copper_golem_statue.json"
+					},
+					{
+						"value": "exposed",
+						"file": "exposed_copper_golem_statue.json"
+					},
+					{
+						"value": "weathered",
+						"file": "weathered_copper_golem_statue.json"
+					},
+					{
+						"value": "oxidized",
+						"file": "oxidized_copper_golem_statue.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "copper_chest",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "copper_chest.json"
+					},
+					{
+						"value": "exposed",
+						"file": "exposed_copper_chest.json"
+					},
+					{
+						"value": "weathered",
+						"file": "weathered_copper_chest.json"
+					},
+					{
+						"value": "oxidized",
+						"file": "oxidized_copper_chest.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "cinnabar",
+			"states": {
+				"variant": [
+					{
+						"value": "plain",
+						"file": "cinnabar.json"
+					},
+					{
+						"value": "chiseled_plain",
+						"file": "chiseled_cinnabar.json"
+					},
+					{
+						"value": "polished_plain",
+						"file": "polished_cinnabar.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "sulfur",
+			"states": {
+				"variant": [
+					{
+						"value": "plain",
+						"file": "sulfur.json"
+					},
+					{
+						"value": "chiseled_plain",
+						"file": "chiseled_sulfur.json"
+					},
+					{
+						"value": "polished_plain",
+						"file": "polished_sulfur.json"
+					},
+					{
+						"value": "potent_plain",
+						"file": "potent_sulfur.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "resin",
+			"states": {
+				"variant": [
+					{
+						"value": "plain_block",
+						"file": "resin_block.json"
+					},
+					{
+						"value": "plain_bricks",
+						"file": "resin_bricks.json"
+					},
+					{
+						"value": "chiseled_plain_bricks",
+						"file": "chiseled_resin_bricks.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "cinnabar_brick_slab",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "cinnabar_brick_slab.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "cinnabar_brick_stairs",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "cinnabar_brick_stairs.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "sulfur_brick_slab",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "sulfur_brick_slab.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "sulfur_brick_stairs",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "sulfur_brick_stairs.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "resin_brick_slab",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "resin_brick_slab.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "resin_brick_stairs",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "resin_brick_stairs.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "tuff_brick_slab",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "tuff_brick_slab.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "tuff_brick_stairs",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "tuff_brick_stairs.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "tuff_slab",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "tuff_slab.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "tuff_stairs",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "tuff_stairs.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "polished_tuff_slab",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "polished_tuff_slab.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "polished_tuff_stairs",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "polished_tuff_stairs.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "polished_cinnabar_slab",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "polished_cinnabar_slab.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "polished_cinnabar_stairs",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "polished_cinnabar_stairs.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "polished_sulfur_slab",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "polished_sulfur_slab.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "polished_sulfur_stairs",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "polished_sulfur_stairs.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_planks",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_planks.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_log",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_log.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "stripped_pale_oak_log",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "stripped_pale_oak_log.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_wood",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_wood.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "stripped_pale_oak_wood",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "stripped_pale_oak_wood.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_leaves",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_leaves.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_sapling",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_sapling.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_door",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_door.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_trapdoor",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_trapdoor.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_fence",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_fence.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_fence_gate",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_fence_gate.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_button",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_button.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_pressure_plate",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_pressure_plate.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_slab",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_slab.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_oak_stairs",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_oak_stairs.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_moss_block",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_moss_block.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_moss_carpet",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_moss_carpet.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "pale_hanging_moss",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "pale_hanging_moss.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "bush",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "bush.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "firefly_bush",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "firefly_bush.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "leaf_litter",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "leaf_litter.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "short_grass",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "short_grass.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "short_dry_grass",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "short_dry_grass.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "tall_dry_grass",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "tall_dry_grass.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "cactus_flower",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "cactus_flower.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "wildflowers",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "wildflowers.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "golden_dandelion",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "golden_dandelion.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "closed_eyeblossom",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "closed_eyeblossom.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "open_eyeblossom",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "open_eyeblossom.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "creaking_heart",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "creaking_heart.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "dried_ghast",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "dried_ghast.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "trial_spawner",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "trial_spawner.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "vault",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "vault.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "crafter",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "crafter.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "heavy_core",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "heavy_core.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "sulfur_spike",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "sulfur_spike.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "resin_clump",
+			"states": {
+				"variant": [
+					{
+						"value": "normal",
+						"file": "resin_clump.json"
+					}
+				]
+			}
+		},
+		{
+			"name": "shelf",
+			"states": {
+				"variant": [
+					{
+						"value": "oak",
+						"file": "oak_shelf.json"
+					},
+					{
+						"value": "spruce",
+						"file": "spruce_shelf.json"
+					},
+					{
+						"value": "birch",
+						"file": "birch_shelf.json"
+					},
+					{
+						"value": "jungle",
+						"file": "jungle_shelf.json"
+					},
+					{
+						"value": "acacia",
+						"file": "acacia_shelf.json"
+					},
+					{
+						"value": "dark_oak",
+						"file": "dark_oak_shelf.json"
+					},
+					{
+						"value": "mangrove",
+						"file": "mangrove_shelf.json"
+					},
+					{
+						"value": "cherry",
+						"file": "cherry_shelf.json"
+					},
+					{
+						"value": "bamboo",
+						"file": "bamboo_shelf.json"
+					},
+					{
+						"value": "crimson",
+						"file": "crimson_shelf.json"
+					},
+					{
+						"value": "warped",
+						"file": "warped_shelf.json"
+					},
+					{
+						"value": "pale_oak",
+						"file": "pale_oak_shelf.json"
+					}
+				]
+			}
 		}
 	],
 	"model_textures": [
