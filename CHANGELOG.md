@@ -31,6 +31,11 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 * `CppProject/Asset/Script.hpp`: restored the `ExecuteFunction` function
   pointer alias so generated `Assets.cpp` (from the C++ CppGen) compiles
   against this base's `function<>`-based Script constructor
+* Fixed two GML ternaries whose generated C++ mixes `VarType` with plain
+  numeric branches (`tab_template_editor_particles_preview`,
+  `tab_timeline` zoom). MSVC accepts the ambiguous conditional, but
+  clang/gcc (Linux and macOS builds) reject it; both branches are now
+  explicitly real-typed. Verified against a VarType-faithful test harness
 * Linux CI installs the system libraries this CppProject links
   (x264, gnutls, nettle, sndio, va, vdpau, bz2, lzma)
 

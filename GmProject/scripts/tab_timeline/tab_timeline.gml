@@ -1813,7 +1813,7 @@ function tab_timeline()
 		timeline_zoom_goal = clamp(timeline_zoom_goal * m, 0.25, 32)
 		if (timeline_zoom_goal > 1)
 			timeline_zoom_goal = round(timeline_zoom_goal)
-		timeline_zoom_target = zoombutton <> 0 ? (barw * .5) + barx : mouse_x
+		timeline_zoom_target = zoombutton <> 0 ? real((barw * .5) + barx) : real(mouse_x)
 	}
 	var zoompoint = (timeline_zoom_target - barx + timeline.hor_scroll.value);
 	if (timeline_zoom != timeline_zoom_goal)
