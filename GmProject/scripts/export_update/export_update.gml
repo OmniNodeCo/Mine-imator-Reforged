@@ -10,10 +10,12 @@ function export_update()
 	if (export_escape_time > 0 && current_time - export_escape_time > 1000)
 	{
 		export_escape_time = 0
+		window_taskbar_progress_state_set(e_window_taskbar_state.PAUSED)
+		
 		if (question(text_get("questionstoprender")))
 		{
 			if (window_state = "export_movie")
-				export_done_movie(true)
+				export_done_movie()
 			else if (window_state = "export_image")
 			{
 				surface_save_lib(export_surface, export_filename)
@@ -23,6 +25,8 @@ function export_update()
 			return 0
 		}
 	}
+	
+	window_taskbar_progress_state_set(e_window_taskbar_state.NORMAL)
 	
 	// Update movie
 	if (window_state = "export_movie")
@@ -34,6 +38,8 @@ function export_update()
 			if (timeline_marker > exportmovie_marker_end)
 			{
 				export_done_movie()
+				window_flash()
+				window_beep()
 				return 0
 			}
 			
@@ -42,7 +48,7 @@ function export_update()
 		}
 	}
 	
-	if (window_state = "export_image")
+	if (window_state = "export_image" && render_samples = -1)
 		app_update_cameras(popup_exportimage.high_quality, false)
 	
 	// Render
@@ -124,6 +130,9 @@ function export_update()
 	{
 		surface_save_lib(export_surface, export_filename)
 		export_done_image()
+		window_flash()
+		window_beep()
+		return 0
 	}
 	
 	return 1

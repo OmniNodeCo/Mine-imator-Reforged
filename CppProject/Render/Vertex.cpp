@@ -52,25 +52,19 @@ namespace CppProject
 		IntType aColor = GFX->shader->attributeLocation[1];
 		IntType aUv = GFX->shader->attributeLocation[2];
 
-		if (aPosition > -1)
-			prog->enableAttributeArray(aPosition);
-		if (aColor > -1)
-			prog->enableAttributeArray(aColor);
-		if (aUv > -1)
-			prog->enableAttributeArray(aUv);
+		prog->enableAttributeArray(aPosition);
+		prog->enableAttributeArray(aColor);
+		prog->enableAttributeArray(aUv);
 		GL_CHECK_ERROR();
 
 		IntType offset = 0;
-		if (aPosition > -1)
-			prog->setAttributeBuffer(aPosition, GL_FLOAT, offset, 3, sizeof(PrimitiveVertex));
+		prog->setAttributeBuffer(aPosition, GL_FLOAT, offset, 3, sizeof(PrimitiveVertex));
 		offset += 3 * sizeof(float);
 
-		if (aColor > -1)
-			prog->setAttributeBuffer(aColor, GL_FLOAT, offset, 4, sizeof(PrimitiveVertex));
+		prog->setAttributeBuffer(aColor, GL_FLOAT, offset, 4, sizeof(PrimitiveVertex));
 		offset += 4 * sizeof(float);
 
-		if (aUv > -1)
-			prog->setAttributeBuffer(aUv, GL_FLOAT, offset, 2, sizeof(PrimitiveVertex));
+		prog->setAttributeBuffer(aUv, GL_FLOAT, offset, 2, sizeof(PrimitiveVertex));
 
 		GL_CHECK_ERROR();
 	#endif

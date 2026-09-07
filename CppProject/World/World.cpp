@@ -113,7 +113,7 @@ namespace CppProject
 
 		// Water/Lava
 		Preview::mcBlockIdStyleIndexMap["water"] =
-		Preview::mcBlockIdStyleIndexMap["flowing_water"] = BlockStyle::Create(make_color_rgb(50, 60, 255), 0.4, -1, 1.0, BlockStyle::WATER);
+		Preview::mcBlockIdStyleIndexMap["flowing_water"] = BlockStyle::Create(make_color_rgb(165, 165, 165), 0.7, -1, 1.0, BlockStyle::WATER);
 		Preview::mcBlockIdStyleIndexMap["lava"] =
 		Preview::mcBlockIdStyleIndexMap["flowing_lava"] = BlockStyle::Create(make_color_rgb(255, 100, 0), 1.0, -1, 1.0, BlockStyle::NONE, 26);
 
@@ -284,9 +284,9 @@ namespace CppProject
 				{ TAG_INT, { "version", "Id", "SpawnX", "SpawnY", "SpawnZ", "Dimension" }},
 				{ TAG_STRING, { "LevelName", "Dimension" }},
 				{ TAG_LIST, { "Pos", "Rotation" }},
-				{ TAG_COMPOUND, { "Data", "Player", "spawn" } },
+				{ TAG_COMPOUND, { "Data", "Player", "spawn" }},
 				{ TAG_INT_ARRAY, { "pos" }}
-			}));
+				}));
 			NbtCompound saveData(stream);
 			if (!saveData.HasKey("Data"))
 				return false;
@@ -335,14 +335,14 @@ namespace CppProject
 					info.playerPos.y += 24.0 / 16.0;
 
 				if (player->GetType("Dimension") == TAG_STRING) // String dimension
-					info.playerDim = player->String("Dimension").Replaced("minecraft:", "").Replaced("the_", "");
+					info.playerDim = player->String("Dimension").Replaced("minecraft:", ""); //.Replaced("the_", "");
 
 				else // Integer dimension
 					switch (player->Int("Dimension"))
 					{
-					case 0: info.playerDim = "overworld"; break;
-					case 1: info.playerDim = "end"; break;
-					case -1: info.playerDim = "nether"; break;
+						case 0: info.playerDim = "overworld"; break;
+						case -1: info.playerDim = "the_nether"; break;
+						case 1: info.playerDim = "the_end"; break;
 					}
 
 				info.hasPlayer = true;
@@ -374,11 +374,10 @@ namespace CppProject
 						{ TAG_INT, { "Dimension" }},
 						{ TAG_STRING, { "Dimension" }},
 						{ TAG_LIST, { "Pos", "Rotation" }},
-					}));
+						}));
 					NbtCompound playerData(playerStream);
 					loadPlayerData(&playerData);
 				}
-
 			}
 		}
 		catch (const QString& str)
@@ -415,9 +414,9 @@ namespace CppProject
 
 		info.dimDir["overworld"] = overworldDir;
 		if (netherDir.exists() && !netherDir.isEmpty())
-			info.dimDir["nether"] = netherDir;
+			info.dimDir["the_nether"] = netherDir;
 		if (endDir.exists() && !endDir.isEmpty())
-			info.dimDir["end"] = endDir;
+			info.dimDir["the_end"] = endDir;
 
 		World::saves[dir] = info;
 		return true;

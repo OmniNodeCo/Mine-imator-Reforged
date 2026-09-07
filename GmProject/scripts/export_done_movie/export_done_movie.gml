@@ -1,6 +1,6 @@
 /// export_done_movie()
 
-function export_done_movie(cancel = false)
+function export_done_movie()
 {
 	var fn;
 	
@@ -16,6 +16,8 @@ function export_done_movie(cancel = false)
 	export_surface = null
 	window_state = ""
 	
+	window_taskbar_progress_state_set()
+	
 	render_watermark = false
 	render_background = true
 	render_hidden = false
@@ -27,9 +29,10 @@ function export_done_movie(cancel = false)
 	else
 		fn = export_filename
 	
-	if (!cancel)
-	{
-		toast_new(e_toast.POSITIVE, text_get("alertexportmovie"))
-		toast_add_action("alertexportmovieview", popup_open_url, fn)
-	}
+	var export_folder = string_delete(fn, string_last_pos("/", string_replace_all(fn, "\\", "/")), string_length(fn) - string_last_pos("/", string_replace_all(fn, "\\", "/")) + 1)
+	
+	toast_new(e_toast.POSITIVE, text_get("alertexportmovie"))
+	toast_add_action("alertexportmovieview", popup_open_url, fn)
+	toast_add_action("alertexportmoviefolder", popup_open_url, export_folder)
+	toast_last.dismiss_time = 10
 }

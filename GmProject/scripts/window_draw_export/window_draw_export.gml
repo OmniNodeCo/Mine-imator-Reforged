@@ -2,13 +2,13 @@
 
 function window_draw_export()
 {
-	var totalframes, totalsamples, usesamples, perc;
-	var framex, framey, framew, frameh;
-	var timeleftsecs, timeleftmins, timelefthours, timeleftstr;
-	
 	// Update rendering
 	if (!export_update())
 		return 0
+	
+	var totalframes, totalsamples, usesamples, perc;
+	var framex, framey, framew, frameh;
+	var timeleftsecs, timeleftmins, timelefthours, timeleftstr;
 	
 	// Set dimensions
 	if (window_state = "export_movie")
@@ -31,6 +31,7 @@ function window_draw_export()
 	}
 	
 	perc = export_sample / totalsamples
+	window_taskbar_progress_value_set(perc)
 	
 	content_width = floor(window_width * 0.5)
 	content_height = min(500, floor(window_height * 0.5))
@@ -96,7 +97,7 @@ function window_draw_export()
 	
 	draw_loading_bar((framex + framew/2) - loadw/2, framey + frameh + 40, loadw, 8, perc, text, "")
 	
-	window_set_caption(loadtext + " - " + mineimator_title_short)
+	window_set_caption(loadtext + " - Mine-imator")
 	
 	// Title
 	draw_label(window_state = "export_movie" ? text_get("exportmovietitle") : text_get("exportimagetitle"), framex + framew / 2, framey - 35, fa_center, fa_bottom, c_accent, 1, font_heading_big)

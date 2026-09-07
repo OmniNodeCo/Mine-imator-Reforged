@@ -2,11 +2,6 @@
 
 function popup_about_draw()
 {
-	// Layout budget (popup is 580x552, set in app_startup_interface_popups):
-	// header 0-128, version line ~98, credits start at +176 (left column),
-	// bottom button row occupies the last ~40px (content_height - 40).
-	// Keep the left credits column above y = content_height - 50.
-	
 	// Header
 	draw_box(dx, dy, dw, 128, false, c_overlay, a_overlay)
 	
@@ -18,23 +13,14 @@ function popup_about_draw()
 	// Program info
 	draw_set_font(font_value)
 	
-	var version, trial, width, textx;
-	version = text_get("aboutversion", mineimator_version_full)
-	trial = (trial_version ? " " + text_get("startuptrial") : "")
-	width = string_width(version + trial + text_get("aboutreleasedate", mineimator_version_date))
+	var text, width, textx;
+	text = text_get("aboutversion", mineimator_version_full) + text_get("aboutreleasedate", mineimator_version_date)
+	width = string_width(text)
 	textx = floor(dx + dw/2 - width/2)
 	
+	var version = text_get("aboutversion", mineimator_version_full) + (trial_version ? " " + text_get("startuptrial") : "");
 	draw_button_text(version, textx, dy + 98, popup_open_url, link_website, link_website)
 	textx += string_width(version)
-	
-	if (trial != "")
-	{
-		// Clicking the "TRIAL" tag opens the upgrade popup,
-		// like the "Upgrade" button in the corner below.
-		popup_upgrade.page = 0
-		draw_button_text(trial, textx, dy + 98, popup_switch, popup_upgrade, text_get("aboutupgrade"))
-		textx += string_width(trial)
-	}
 	
 	draw_label(text_get("aboutreleasedate", mineimator_version_date), textx, dy + 98, fa_left, fa_bottom, c_text_secondary, a_text_secondary)
 	
@@ -45,9 +31,6 @@ function popup_about_draw()
 	draw_label(text_get("aboutminecraftpre"), mctextx, dy + 98 + 19, fa_left, fa_bottom, c_text_secondary, a_text_secondary)
 	mctextx += string_width(text_get("aboutminecraftpre"))
 	draw_button_text(text_get("aboutminecraft"), mctextx, dy + 98 + 19, popup_open_url, link_minecraft, link_minecraft)
-	
-	dy += 128 + 48
-	dx = content_x + 64
 	
 	// Button links
 	var buttonx, buttony;
@@ -80,14 +63,11 @@ function popup_about_draw()
 			open_url(link_donate)
 	}
 	
-	// Created by
-	dy += 12
-	draw_label(text_get("aboutcreatedby"), dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
-	dy += 26
-	draw_button_text("David Andrei", dx, dy, popup_open_url, link_david, link_david, font_label)
+	dx = content_x + 64
+	dy += 128 + 48
 	
 	// Development
-	dy += 34
+	dy += 12
 	draw_label(text_get("aboutdevelopment"), dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
 	dy += 26
 	draw_button_text("David", dx, dy, popup_open_url, link_david, link_david, font_label)
@@ -98,24 +78,37 @@ function popup_about_draw()
 	dy += 19
 	draw_label("mbanders", dx, dy, fa_left, fa_bottom, c_text_secondary, a_text_secondary, font_label)
 	
-	// UI/Branding
+	// Mod development
 	dy += 34
-	draw_label(text_get("aboutuibranding"), dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
+	draw_label(text_get("aboutmoddevelopment"), dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
 	dy += 26
-	draw_label("Voxy", dx, dy, fa_left, fa_bottom, c_text_secondary, a_text_secondary, font_label)
-	
-	// Reforged
-	dy += 34
-	draw_label(text_get("aboutfork"), dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
-	dy += 26
-	draw_button_text("OmniNodeCo", dx, dy, popup_open_url, link_fork_repo, link_fork_repo, font_label)
-	dy += 19
-	draw_label(mineimator_version_sub, dx, dy, fa_left, fa_bottom, c_text_secondary, a_text_secondary, font_label)
+	draw_label("mbanders", dx, dy, fa_left, fa_bottom, c_text_secondary, a_text_secondary, font_label)
 	
 	dx += 130 + 24
 	dy = content_y + 176
 	
+	// Created by
+	dy += 12
+	draw_label(text_get("aboutcreatedby"), dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
+	dy += 26
+	draw_button_text("David Andrei", dx, dy, popup_open_url, link_david, link_david, font_label)
+	
+	dx += 130 + 24
+	dy = content_y + 176
+	
+	// UI/Branding
+	dy += 12
+	draw_label(text_get("aboutuibranding"), dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
+	dy += 26
+	draw_label("Voxy", dx, dy, fa_left, fa_bottom, c_text_secondary, a_text_secondary, font_label)
+	
+	dx -= 130 + 24
+	dy += 34
+	
 	// Beta testing
+	draw_label(text_get("aboutbetatesting"), dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
+	dy += 26
+	
 	var list = [
 		"9redwoods",
 		"Alpha Toostrr",
@@ -134,19 +127,17 @@ function popup_about_draw()
 		"__Mine__"
 	]
 	
-	dy += 12
-	draw_label(text_get("aboutbetatesting"), dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
-	dy += 26
-	
 	for (var i = 0; i < array_length(list); i++)
 	{
 		draw_label(list[i], dx, dy, fa_left, fa_bottom, c_text_secondary, a_text_secondary, font_label)
-		dy += 19
 		
-		if (i = 7)
+		if (i % 2 = 1)
 		{
-			dx += 130 + 24
-			dy = content_y + 176 + 12 + 26
+			dx -= 130 + 24
+			if (i < array_length(list) - 1)
+				dy += 19
 		}
+		else
+			dx += 130 + 24
 	}
 }

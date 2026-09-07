@@ -40,7 +40,7 @@ namespace CppProject
 	Random::ThreadData Random::threadData[OPENMP_MAX_THREADS];
 	IntType Printer::indent = 0;
 
-	AppHandler::AppHandler(int& argc, char* argv[])
+	AppHandler::AppHandler(int argc, char* argv[])
 	{
 		try
 		{
@@ -70,7 +70,7 @@ namespace CppProject
 			gmlGlobal::working_directory = QDir::currentPath() + "/";
 			DEBUG("Debug mode enabled");
 		#endif
-			DEBUG(mineimator_title + " " + mineimator_version + (mineimator_version_sub.IsEmpty() ? "" : " " + mineimator_version_sub) + (mineimator_version_extra.IsEmpty() ? "" : " " + mineimator_version_extra) + " (" + mineimator_version_date + ")");
+			DEBUG("Mine-imator version " + mineimator_version_full + " (" + mineimator_version_date + ")");
 		#if OS_WINDOWS
 			BOOL is64Bit;
 			IsWow64Process((HANDLE)qApp->applicationPid(), &is64Bit);
@@ -460,10 +460,8 @@ namespace CppProject
 			{
 				if (keyMap.contains(event->key())) // Mapped key
 					keys = { keyMap.value(event->key()) };
-				else if (event->key() > 255 || event->modifiers() & Qt::ShiftModifier) // Unicode key pressed or shift
-					keys = { event->nativeVirtualKey() };
 				else
-					keys = { event->key() };
+					keys = { event->nativeVirtualKey() };
 				break;
 			}
 		}

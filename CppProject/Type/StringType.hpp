@@ -60,6 +60,7 @@ namespace CppProject
 		inline BoolType EndsWith(const StringType& subStr) const { return QStr().endsWith(subStr); }
 		inline IntType Count(const StringType& subStr) const { return QStr().count(subStr); }
 		inline IntType IndexOf(const StringType& subStr) const { return QStr().indexOf(subStr); }
+		inline IntType LastIndexOf(const StringType& subStr) const { return QStr().lastIndexOf(subStr); }
 
 		// Return modified string
 		inline StringType Removed(IntType pos, IntType n) const { return QStr().remove(pos, n); }
@@ -137,5 +138,5 @@ namespace CppProject
 	};
 
 	// StringType id used for hash table
-	inline uint qHash(const StringType& key, uint seed = 0) { return ::qHash(key.GetId(), seed); }
+	static uint qHash(const StringType& key) { return key.GetId(); }
 }

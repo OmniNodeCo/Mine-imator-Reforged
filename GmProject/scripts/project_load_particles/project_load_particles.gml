@@ -55,8 +55,6 @@ function project_load_particles(map)
 			if (load_format < e_project.FORMAT_123_PRE_2)
 			{
 				temp = value_get_save_id(ptypemap[?"temp"], particle_sheet)
-				if (temp = null)
-					temp = particle_sheet
 			}
 			else
 			{

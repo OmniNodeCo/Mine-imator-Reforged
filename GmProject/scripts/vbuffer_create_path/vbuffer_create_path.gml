@@ -4,14 +4,19 @@
 
 function vbuffer_create_path(path, small = false)
 {
-	var points, radius, detail, closed, rail, texlength, invert;
+	var points, closed, detail, rail, radius, invert, mapped, fixlength, texoffset, texrepeat, texmirror, texlength;
 	points = path.path_table
-	radius = path.path_shape_radius
-	detail = path.path_shape_detail
 	closed = path.path_closed
-	rail = !path.path_shape_tube
-	texlength = path.path_shape_tex_length
+	detail = path.path_shape_detail
+	rail = path.path_shape = "flat"
+	radius = path.path_shape_radius
 	invert = path.path_shape_invert
+	mapped = path.path_shape_tex_mapped
+	fixlength = path.path_shape_tex_fixed
+	texoffset = vec2(path.path_shape_tex_hoffset, path.path_shape_tex_voffset)
+	texrepeat = vec2(path.path_shape_tex_hrepeat, path.path_shape_tex_vrepeat)
+	texmirror = vec2(path.path_shape_tex_hmirror, path.path_shape_tex_vmirror)
+	texlength = path.path_shape_tex_length
 	
 	// Create mesh for clicking path(for selection) where a shape isn't set to be used in timeline
 	if (small)
@@ -40,9 +45,14 @@ function vbuffer_create_path(path, small = false)
 	var t1, t2, t3, t4;
 	var jp, j;
 	var ringp;
-	var length, plength;
+	var length, prevlength, totallength;
 	length = 0
-	plength = 0
+	prevlength = 0
+	totallength = 0
+	
+	if (!fixlength)
+		for (var i = 0; i < array_length(frames) - 1; i++)
+			totallength += point3D_distance(points[i], points[i + 1])
 	
 	for (var i = 0; i < array_length(frames) - 1; i++)
 	{
@@ -50,14 +60,18 @@ function vbuffer_create_path(path, small = false)
 		{
 			jp = 0
 			j = 1/detail
+			ringp = [sin(jp * pi * 2), 0, cos(jp * pi * 2)]
 		}
 		else
+		{
 			jp = .5 // Left side of rail
+			ringp = [cos(jp * pi * 2), 0, -sin(jp * pi * 2)]
+		}
 		
-		ringp = [cos(jp * pi * 2), 0, -sin(jp * pi * 2)]
-		
-		plength = length
+		prevlength = length
 		length += point3D_distance(points[i], points[i + 1])
+		if (!fixlength)
+			texlength = totallength
 		
 		// p1 - current point's segment
 		n1 = vec3_normalize(vec3_mul_matrix(ringp, frames[i]))
@@ -77,11 +91,13 @@ function vbuffer_create_path(path, small = false)
 			{
 				jp = j
 				j += 1 / detail
+				ringp = [sin(j * pi * 2), 0, cos(j * pi * 2)]
 			}
 			else
+			{
 				j = 0 // Right side of rail
-			
-			ringp = [cos(j * pi * 2), 0, -sin(j * pi * 2)]
+				ringp = [cos(j * pi * 2), 0, -sin(j * pi * 2)]
+			}
 			
 			// Next segment
 			n2 = vec3_normalize(vec3_mul_matrix(ringp, frames[i]))
@@ -93,8 +109,8 @@ function vbuffer_create_path(path, small = false)
 			
 			if (rail)
 			{
-				t1 = vec2(0, plength / texlength)
-				t2 = vec2(1, plength / texlength)
+				t1 = vec2(0, prevlength / texlength)
+				t2 = vec2(1, prevlength / texlength)
 				t3 = vec2(0, length / texlength)
 				t4 = vec2(1, length / texlength)
 				
@@ -105,16 +121,70 @@ function vbuffer_create_path(path, small = false)
 			}
 			else
 			{
-				t1 = vec2(jp, plength / texlength)
-				t2 = vec2(j, plength / texlength)
+				t1 = vec2(jp, prevlength / texlength)
+				t2 = vec2(j, prevlength / texlength)
 				t3 = vec2(jp, length / texlength)
 				t4 = vec2(j, length / texlength)
 			}
 			
-			t1[X] /= 3
-			t2[X] /= 3
-			t3[X] /= 3
-			t4[X] /= 3
+			if (mapped)
+			{
+				t1[X] /= 3
+				t2[X] /= 3
+				t3[X] /= 3
+				t4[X] /= 3
+			}
+			
+			// Texture mirror
+			if (texmirror[Y])
+			{
+				t1[Y] = 1.0 - t1[Y]
+				t2[Y] = 1.0 - t2[Y]
+				t3[Y] = 1.0 - t3[Y]
+				t4[Y] = 1.0 - t4[Y]
+			}
+			if (texmirror[X])
+			{
+				t1[X] = 1.0 - t1[X]
+				t2[X] = 1.0 - t2[X]
+				t3[X] = 1.0 - t3[X]
+				t4[X] = 1.0 - t4[X]
+			}
+			
+			if (!mapped)
+			{
+			
+				// Texture offset
+				t1[X] += texoffset[X]
+				t1[Y] += texoffset[Y]
+				t2[X] += texoffset[X]
+				t2[Y] += texoffset[Y]
+				t3[X] += texoffset[X]
+				t3[Y] += texoffset[Y]
+				t4[X] += texoffset[X]
+				t4[Y] += texoffset[Y]
+			
+				// Texture repeat
+				t1[X] *= texrepeat[X]
+				t2[X] *= texrepeat[X]
+				t3[X] *= texrepeat[X]
+				t4[X] *= texrepeat[X]
+				if (!fixlength)
+				{
+					t1[Y] *= texrepeat[Y]
+					t2[Y] *= texrepeat[Y]
+					t3[Y] *= texrepeat[Y]
+					t4[Y] *= texrepeat[Y]
+				}
+			}
+			else if (texmirror[X])
+			{
+				
+				t1[X] -= 2/3
+				t2[X] -= 2/3
+				t3[X] -= 2/3
+				t4[X] -= 2/3
+			}
 			
 			nn1 = n1
 			nn2 = n2
@@ -160,8 +230,8 @@ function vbuffer_create_path(path, small = false)
 				
 			if (invert)
 			{
-				vbuffer_add_triangle(p2, p1, p4, t4, t1, t2, nn2, nn1, nn4)
-				vbuffer_add_triangle(p1, p3, p4, t4, t3, t1, nn1, nn3, nn4)
+				vbuffer_add_triangle(p2, p1, p4, t2, t1, t4, nn2, nn1, nn4)
+				vbuffer_add_triangle(p1, p3, p4, t1, t3, t4, nn1, nn3, nn4)
 			}
 			else
 			{
@@ -179,15 +249,57 @@ function vbuffer_create_path(path, small = false)
 				t2 = [(cos((j + .25) * pi * 2) + 1)/2, (sin((j + .25) * pi * 2) + 1)/2]
 				t3 = [.5, .5]
 				
-				t1[X] = (t1[X] / 3) + (1/3)
-				t2[X] = (t2[X] / 3) + (1/3)
-				t3[X] = (t3[X] / 3) + (1/3)
+				if (mapped)
+				{
+					t1[X] = (t1[X] / 3) + (1/3)
+					t2[X] = (t2[X] / 3) + (1/3)
+					t3[X] = (t3[X] / 3) + (1/3)
+				}
+				else
+				{
+					// Texture offset
+					t1[X] += texoffset[X]
+					t1[Y] += texoffset[Y]
+					t2[X] += texoffset[X]
+					t2[Y] += texoffset[Y]
+					t3[X] += texoffset[X]
+					t3[Y] += texoffset[Y]
+				
+					t1[X] -= texoffset[X] * 2
+					t2[X] -= texoffset[X] * 2
+					t3[X] -= texoffset[X] * 2
+			
+					// Texture repeat
+					t1[X] *= texrepeat[X]
+					t2[X] *= texrepeat[X]
+					t3[X] *= texrepeat[X]
+					t1[Y] *= texrepeat[Y]
+					t2[Y] *= texrepeat[Y]
+					t3[Y] *= texrepeat[Y]
+				}
+				
+				// Texture mirror
+				t1[X] = 1.0 - t1[X]
+				t2[X] = 1.0 - t2[X]
+				t3[X] = 1.0 - t3[X]
+				if (texmirror[X])
+				{
+					t1[X] = 1.0 - t1[X]
+					t2[X] = 1.0 - t2[X]
+					t3[X] = 1.0 - t3[X]
+				}
+				if (texmirror[Y])
+				{
+					t1[Y] = 1.0 - t1[Y]
+					t2[Y] = 1.0 - t2[Y]
+					t3[Y] = 1.0 - t3[Y]
+				}
 				
 				// Beginning
 				if (i = 0)
 				{
 					if (invert)
-						vbuffer_add_triangle(p2, points[i], p1, t1, t3, t2)
+						vbuffer_add_triangle(p2, points[i], p1, t2, t3, t1)
 					else
 						vbuffer_add_triangle(p1, points[i], p2, t1, t3, t2)
 				}
@@ -195,12 +307,25 @@ function vbuffer_create_path(path, small = false)
 				// End
 				if (i = (array_length(points) - 2))
 				{
-					t1[X] += (1/3)
-					t2[X] += (1/3)
-					t3[X] += (1/3)
+					if (mapped)
+					{
+						t1[X] += (1/3)
+						t2[X] += (1/3)
+						t3[X] += (1/3)
+					}
+					else
+					{
+						t1[Y] -= texoffset[Y] * 2
+						t2[Y] -= texoffset[Y] * 2
+						t3[Y] -= texoffset[Y] * 2
+					}
+					
+					t1[Y] = 1.0 - t1[Y]
+					t2[Y] = 1.0 - t2[Y]
+					t3[Y] = 1.0 - t3[Y]
 					
 					if (invert)
-						vbuffer_add_triangle(p3, points[i + 1], p4, t2, t3, t1)
+						vbuffer_add_triangle(p3, points[i + 1], p4, t1, t3, t2)
 					else
 						vbuffer_add_triangle(p4, points[i + 1], p3, t2, t3, t1)
 				}
@@ -211,7 +336,7 @@ function vbuffer_create_path(path, small = false)
 			n1 = n2
 			n3 = n4
 		}
-		
+	
 	}
 	
 	return vbuffer_done()

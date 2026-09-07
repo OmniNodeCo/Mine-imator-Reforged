@@ -63,7 +63,7 @@ function skins_directory_get()
 /// Returns an URL to an article showing how to update graphics drivers.
 function drivers_url_get()
 {
-	return link_article_drivers
+	return "https://www.thewindowsclub.com/how-to-update-graphics-drivers-windows"
 }
 
 /// Returns whether an array of filenames are accepted to be dropped on the window.
@@ -162,6 +162,12 @@ function window_state_restore(window, map)
 function window_main_restore(rect, maximize)
 {
 	window_maximize()
+}
+
+/// CppSeparate StringType get_open_filenames_ext(StringType, StringType, StringType, StringType)
+function get_open_filenames_ext(filter, filename, directory, title)
+{
+	return string(get_open_filename_ext(filter, filename, directory, title))
 }
 
 /// CppSeparate void surface_clear_depth_cache(IntType)
@@ -273,7 +279,6 @@ function surface_create_ext2(width, height, depth = true, hdr = false)
 /// Sets whether a specific sprite will use texture pages, default is enabled.
 function sprite_set_texture_page(sprite, enabled)
 {
-	
 }
 
 /// CppSeparate void move_all_to_texture_page()
@@ -403,7 +408,8 @@ function builder_add_triangle()
 }
 
 /// CppSeparate BoolType clip_is_active()
-function clip_is_active() {
+function clip_is_active()
+{
 	return shader_clip_active
 }
 

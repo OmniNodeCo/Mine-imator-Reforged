@@ -162,9 +162,6 @@ namespace CppProject
 		UINT offset = 0;
 		D3DContext->IASetVertexBuffers(0, 1, &d3dVertexBuffer, &stride, &offset);
 		D3DContext->IASetIndexBuffer(d3dIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-		// Disable culling
-		D3DContext->RSSetState(GFX->d3dRasterizerStateMap[D3D11_CULL_NONE]);
 	#else
 		// Create buffers
 		if (!glVertexBuffer)
@@ -177,11 +174,9 @@ namespace CppProject
 			glIndexBuffer->create();
 			glIndexBuffer->setUsagePattern(QOpenGLBuffer::DynamicDraw);
 		}
-		
-		GFX->glBindVertexArray(GFX->glCurrentVboId);
 
-		// Bind vertex buffer
-		if (!glVertexBuffer->bind())
+		// Bind buffers
+		if (!glVertexBuffer->bind() || !glIndexBuffer->bind())
 			return;
 
 		// Write data
@@ -193,13 +188,6 @@ namespace CppProject
 		else
 			glVertexBuffer->write(0, vertices.Data(), vertSize);
 
-		// Bind index buffer
-		if (!glIndexBuffer->bind())
-		{
-			glVertexBuffer->release();
-			return;
-		}
-
 		if (indSize > indexBufferSize)
 		{
 			glIndexBuffer->allocate(indices.Data(), indSize);
@@ -207,25 +195,19 @@ namespace CppProject
 		}
 		else
 			glIndexBuffer->write(0, indices.Data(), indSize);
-
-		// Disable culling
-		glDisable(GL_CULL_FACE);
 	#endif
+		vertices.Reset();
 
-		// Submit
+		// Set shader
 		GFX->shader->SubmitMatrix(Shader::MVP, GFX->surface->ortho, true);
+
+		// Submit (disable mipmap and culling)
+		BoolType culling = GFX->culling;
+		GFX->SetCulling(false);
 		GFX->shader->SubmitVertices(renderMode, indices.Size());
+		GFX->SetCulling(culling);
 
-	#if API_D3D11
-		// Restore culling
-		D3DContext->RSSetState(GFX->d3dRasterizerStateMap[GFX->culling ? D3D11_CULL_BACK : D3D11_CULL_NONE]);
-	#else
-		// Restore culling
-		if (GFX->culling)
-			glEnable(GL_CULL_FACE);
-		else
-			glDisable(GL_CULL_FACE);
-
+	#if API_OPENGL
 		glVertexBuffer->release();
 		glIndexBuffer->release();
 	#endif
@@ -236,7 +218,6 @@ namespace CppProject
 		else if (renderMode == Shader::TRIANGLE_LIST)
 			trianglesSubmitted += indices.Size() / 3;
 
-		vertices.Reset();
 		indices.Reset();
 		mode = 0;
 		renderMode = Shader::NO_MODE;

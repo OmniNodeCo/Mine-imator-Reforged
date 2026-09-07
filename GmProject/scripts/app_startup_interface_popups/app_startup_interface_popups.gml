@@ -6,7 +6,7 @@ function app_startup_interface_popups()
 	popup_welcome = new_popup("welcome", popup_welcome_draw, 420, 159, true, false, false, false)
 	
 	// About
-	popup_about = new_popup("about", popup_about_draw, 580, 552, true, true, false, true)
+	popup_about = new_popup("about", popup_about_draw, 542, 480, true, true, false, true)
 	
 	// New project
 	popup_newproject = new_popup("newproject", popup_newproject_draw, 380, null, true)
@@ -51,22 +51,31 @@ function app_startup_interface_popups()
 	}
 	
 	// Import image
-	popup_importimage = new_popup("importimage", popup_importimage_draw, 236, null, true)
+	popup_importimage = new_popup("importimage", popup_importimage_draw, 477, null, true) //236
 	with (popup_importimage)
 	{
 		filename = ""
+		filenames = ds_list_create();
+		do_all = false;
+		texture = null
 		type = e_res_type.SKIN
+		value_script = null
+		is_sheet = true
+		sheet_size = vec2(16, 16)
+		sheet_size_def = sheet_size
+		tbx_sheet_width = new_textbox_integer()
+		tbx_sheet_height = new_textbox_integer()
 	}
 	
 	// Import item sheet
-	popup_importitemsheet = new_popup("importitemsheet", popup_importitemsheet_draw, 288, null, true)
+	popup_importitemsheet = new_popup("importitemsheet", popup_importitemsheet_draw, 280, null, true)
 	with (popup_importitemsheet)
 	{
 		filename = ""
 		value_script = null
 		texture = null
 		is_sheet = true
-		sheet_size = vec2(item_sheet_width, item_sheet_height)
+		sheet_size = vec2(minecraft_item_sheet_size[0], minecraft_item_sheet_size[1])
 		sheet_size_def = sheet_size
 		tbx_sheet_width = new_textbox_integer()
 		tbx_sheet_height = new_textbox_integer()

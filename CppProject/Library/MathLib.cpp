@@ -1,6 +1,6 @@
 #include "Generated/Scripts.hpp"
 
-#include <SimplexNoise1234/simplexnoise1234.c>
+#include <simplexnoise1234.c>
 
 namespace CppProject
 {

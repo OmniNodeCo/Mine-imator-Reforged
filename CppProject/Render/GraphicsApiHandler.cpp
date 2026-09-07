@@ -371,8 +371,6 @@ namespace CppProject
 		D3DContext->OMSetDepthStencilState(d3dDepthStencilStateMap[DEPTH_NO_TEST_NO_WRITE], 1);
 	}
 #else
-	bool GraphicsApiHandler::glEnableLogger = true;
-
 	GraphicsApiHandler::GraphicsApiHandler()
 	{
 		handler = this;
@@ -421,8 +419,6 @@ namespace CppProject
 		{
 			logger->connect(logger, &QOpenGLDebugLogger::messageLogged, [&](const QOpenGLDebugMessage& message)
 				{
-					if (!glEnableLogger)
-						return;
 					QString msg = message.message();
 					if (msg.contains("error"))
 						DEBUG("[OpenGL error] " + msg);

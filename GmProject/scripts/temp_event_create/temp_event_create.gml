@@ -96,7 +96,9 @@ function temp_event_create()
 	shape_tex_vmirror = 0
 	shape_closed = true
 	shape_invert = false
+	shape_smooth = true
 	shape_detail = 32
+	shape_ring_detail = 32
 	shape_face_camera = false
 	
 	text_font = null

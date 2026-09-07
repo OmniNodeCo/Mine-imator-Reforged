@@ -5,7 +5,7 @@ function question(text)
 {
 	var answer;
 	
-	window_set_caption(mineimator_title_short)
+	window_set_caption("Mine-imator")
 	answer = show_question(text)
 	window_set_caption("")
 	

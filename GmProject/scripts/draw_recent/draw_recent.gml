@@ -46,7 +46,7 @@ function draw_recent()
 			// Name
 			draw_label(string_limit(filename_name(item.name), (iconx - xx) - 12), xx + 12, recenty + 22, fa_left, fa_middle, c_text_main, a_text_main)
 			
-			// Seperator
+			// Separator
 			draw_box(xx + 4, recenty + 43, wid - 8, 1, false, c_overlay, a_overlay)
 			
 			// Animation
@@ -111,7 +111,7 @@ function draw_recent()
 		timex = xx + 12 + namewidth + 12
 		
 		// File name
-		draw_label(text_get("recentfilename"), namex, recenty + 14, fa_left, fa_middle, c_text_secondary, a_text_secondary)
+		draw_label(text_get("recentname"), namex, recenty + 14, fa_left, fa_middle, c_text_secondary, a_text_secondary)
 		
 		// Last opened
 		draw_label(text_get("recentlastopened"), timex, recenty + 14, fa_left, fa_middle, c_text_secondary, a_text_secondary)
@@ -134,27 +134,27 @@ function draw_recent()
 			draw_label(string_limit(recent_time_string(item.last_opened), timewidth), timex, recenty + 22, fa_left, fa_middle, c_text_secondary, a_text_secondary)
 			
 			// Icons
-			var iconx = xx + wid - 8;
+			var iconx = xx + wid - 10;
 			iconx -= 24
 			
 			// Remove
 			if (hover)
 			{
-				if (draw_button_icon("recentdelete" + string(item), iconx, recenty + 8, 24, 24, false, icons.DELETE, null, false, "tooltipremove"))
+				if (draw_button_icon("recentdelete" + string(item), iconx, recenty + 10, 24, 24, false, icons.DELETE, null, false, "tooltipremove"))
 					action_recent_remove(item)
 				mouseon = mouseon && !app_mouse_box(iconx, recenty + 8, 24, 24)
 			}
-			iconx -= 24
+			iconx -= 28
 			
 			// Oh yeah. Pin it
 			if (hover || item.pinned)
 			{
-				if (draw_button_icon("recentpin" + string(item), iconx, recenty + 8, 24, 24, item.pinned, icons.PIN, null, false, "tooltippin"))
+				if (draw_button_icon("recentpin" + string(item), iconx, recenty + 10, 24, 24, item.pinned, icons.PIN, null, false, "tooltippin"))
 					action_recent_pin(item)
 				mouseon = mouseon && !app_mouse_box(iconx, recenty + 8, 24, 24)
 			}
 			
-			// Seperator
+			// Separator
 			draw_box(xx + 4, recenty + 43, wid - 8, 1, false, c_overlay, a_overlay)
 			
 			// Animation
@@ -233,9 +233,17 @@ function draw_recent()
 				
 				// Card outline
 				draw_outline(cardx, cardy, 240, 240, 1, item.pinned ? c_accent : c_border, item.pinned ? 1 : a_border)
+				draw_divide(cardx, cardy + 181, 240)
 				
 				if (item.thumbnail != null)
-					draw_sprite(item.thumbnail, 0, cardx, cardy)
+				{
+					// Scale down to fit
+					var thumbwid, thumbhei, thumbsca;
+					thumbwid = sprite_get_width(item.thumbnail)
+					thumbhei = sprite_get_height(item.thumbnail)
+					thumbsca = max(1, thumbwid / 240, thumbhei / 180)
+					draw_sprite_ext(item.thumbnail, 0, cardx + ((240 / 2) - ((thumbwid / thumbsca) / 2)), cardy + ((180 / 2) - ((thumbhei / thumbsca) / 2)), 1 / thumbsca, 1 / thumbsca, 0, c_white, 1)
+				}
 				else
 					draw_sprite(spr_missing_thumbnail, 0, cardx, cardy)
 				

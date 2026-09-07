@@ -78,12 +78,7 @@ function popup_upgrade_draw()
 		
 		if (upgrade)
 		{
-			popup_upgrade.warntext = ""
-			
-			// Only revert to the popup we were opened from; a stale
-			// popup_switch_from (e.g. this very popup) must not make
-			// the upgrade popup switch to itself instead of closing.
-			if (popup_switch_from && popup_switch_from != popup_upgrade)
+			if (popup_switch_from)
 				popup_switch(popup_switch_from)
 			else
 			{

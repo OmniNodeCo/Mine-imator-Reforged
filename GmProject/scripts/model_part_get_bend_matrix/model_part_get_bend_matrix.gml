@@ -7,18 +7,18 @@
 
 function model_part_get_bend_matrix()
 {
-	var part, bend, pos, rot, sca;
-	part = argument[0]
+	var part = argument[0];
+	if (part.bend_part = null)
+		return MAT_IDENTITY
+	
+	var bend, pos, sca;
 	bend = argument[1]
 	pos = argument[2]
-	
+
 	if (argument_count > 3)
 		sca = argument[3]
 	else
 		sca = vec3(1)
-	
-	if (part.bend_part = null)
-		return MAT_IDENTITY
 	
 	// Limit angle
 	for (var i = X; i <= Z; i++)
