@@ -35,7 +35,7 @@ function settings_startup()
 	setting_watermark_opacity = 1
 	
 	setting_theme = theme_light
-	setting_accent = 3
+	setting_accent = 2
 	setting_accent_custom = hex_to_color("03A9F4")
 	
 	setting_language_filename = language_file
