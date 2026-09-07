@@ -19,10 +19,6 @@ on:
       - "Branding/**"
   pull_request:
   workflow_dispatch:
-    paths-ignore:
-      - "**.md"
-      - "Branding/**"
-  workflow_dispatch:
   # Auto-build the commit a tag-triggered Release published, so a re-run of
   # the Release workflow can bundle fresh binaries without a manual dispatch.
   # (workflow_run only fires for workflows on the default branch.)
