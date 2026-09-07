@@ -97,7 +97,7 @@ else()
 
 		message("Linux platform")
 		set(EXT_DIR "${CMAKE_SOURCE_DIR}/External/Linux")
-		set(LIBS ${LIBS} "-lvdpau -lva -lva-drm -lva-x11 -lsndio -lx264 -lgnutls -lnettle")
+		set(LIBS ${LIBS} "-lvdpau -lva -lva-drm -lva-x11 -lsndio -lgnutls -lnettle")
 		set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath='$ORIGIN'/Data") # Find .so in Data folder
 
 	endif()
@@ -182,8 +182,13 @@ set(LIBS ${LIBS} "${EXT_DIR}/libswresample.a")
 set(LIBS ${LIBS} "${EXT_DIR}/libswscale.a")
 set(LIBS ${LIBS} "${EXT_DIR}/libavutil.a")
 
-if (NOT APPLE) # Linux: resolve zlib symbols needed by the static FFmpeg/libzip
-	set(LIBS ${LIBS} "-lz") # archives (libz.a is listed before them, so its members are never pulled)
+if (NOT APPLE) # Linux
+	# Static x264 matching the API the precompiled libavcodec was built against
+	# (x264_encoder_open_155); system libx264 (API 164+) cannot satisfy it.
+	set(LIBS ${LIBS} "${EXT_DIR}/libx264.a")
+	# Resolve zlib symbols needed by the static FFmpeg/libzip archives
+	# (libz.a is listed before them, so its members are never pulled)
+	set(LIBS ${LIBS} "-lz")
 endif()
 
 # Add C++ sources

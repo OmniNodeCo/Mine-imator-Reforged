@@ -36,6 +36,14 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   `tab_timeline` zoom). MSVC accepts the ambiguous conditional, but
   clang/gcc (Linux and macOS builds) reject it; both branches are now
   explicitly real-typed. Verified against a VarType-faithful test harness
+* Linux link: the precompiled `libavcodec.a` was built against x264 API
+  155, but Ubuntu 24.04's system libx264 only provides API 164
+  (`x264_encoder_open_164`), failing the link. A static libx264 built
+  from the official mirror at the last API-155 commit is now committed
+  to `CppProject/External/Linux/` and linked instead of `-lx264`
+  (built without assembly for now - H.264 export on Linux works but
+  encodes slower than with hand-written SIMD; full Linux symbol-closure
+  was verified with nm across all precompiled archives)
 * Linux CI installs the system libraries this CppProject links
   (x264, gnutls, nettle, sndio, va, vdpau, bz2, lzma)
 
