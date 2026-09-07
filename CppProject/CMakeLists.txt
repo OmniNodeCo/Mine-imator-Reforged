@@ -23,11 +23,10 @@ if (WIN32)
 	set(CMAKE_GENERATOR_PLATFORM ${PLATFORM})
 elseif (NOT APPLE)
 	# Reforged CI: resolve the installed clang instead of hardcoding clang-12
-	set(CMAKE_C_COMPILER "/usr/bin/clang" CACHE FILEPATH "Linux C compiler" FORCE)
 	set(CMAKE_CXX_COMPILER "/usr/bin/clang++" CACHE FILEPATH "Linux C++ compiler" FORCE)
 endif()
 
-project(Mine-imator)
+project(Mine-imator LANGUAGES CXX)
 add_definitions("-DBUILD_FOLDER=QString(\"${CMAKE_BINARY_DIR}\")")
 add_definitions("-DPROJECT_NAME=\"${PROJECT_NAME}\"")
 
@@ -129,7 +128,7 @@ else()
 		set(OpenMP_libomp_LIBRARY "${OPENMP_RUNTIME_LIBRARY}" CACHE FILEPATH "" FORCE)
 		set(OpenMP_CXX_INCLUDE_DIR "${LIBOMP_PREFIX}/include" CACHE PATH "" FORCE)
 	endif()
-	find_package(OpenMP REQUIRED)
+	find_package(OpenMP REQUIRED COMPONENTS CXX)
 	set(LIBS ${LIBS} OpenMP::OpenMP_CXX)
 
 endif()

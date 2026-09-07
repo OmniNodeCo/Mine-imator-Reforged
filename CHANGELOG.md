@@ -24,7 +24,13 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   `/usr/bin/clang` instead of the missing `clang-12`, use the Qt 5.15.19
   `install` prefix built by the Setup scripts, resolve Homebrew libomp on
   macOS (with the committed x86_64 runtime), and a full installation layout
-  (`cmake --install` now produces the packaged `Mine-imator/` folder)
+  (`cmake --install` now produces the packaged `Mine-imator/` folder).
+  The project is now CXX-only with `find_package(OpenMP COMPONENTS CXX)` —
+  Apple clang cannot supply the OpenMP C bindings the default language
+  set demanded
+* `CppProject/Asset/Script.hpp`: restored the `ExecuteFunction` function
+  pointer alias so generated `Assets.cpp` (from the C++ CppGen) compiles
+  against this base's `function<>`-based Script constructor
 * Linux CI installs the system libraries this CppProject links
   (x264, gnutls, nettle, sndio, va, vdpau, bz2, lzma)
 
