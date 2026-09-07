@@ -182,6 +182,10 @@ set(LIBS ${LIBS} "${EXT_DIR}/libswresample.a")
 set(LIBS ${LIBS} "${EXT_DIR}/libswscale.a")
 set(LIBS ${LIBS} "${EXT_DIR}/libavutil.a")
 
+if (NOT APPLE) # Linux: resolve zlib symbols needed by the static FFmpeg/libzip
+	set(LIBS ${LIBS} "-lz") # archives (libz.a is listed before them, so its members are never pulled)
+endif()
+
 # Add C++ sources
 file(GLOB_RECURSE SRCS RELATIVE "${CMAKE_SOURCE_DIR}" "*.cpp" "*.hpp")
 source_group(TREE "${CMAKE_SOURCE_DIR}" PREFIX ${PROJECT_NAME} FILES ${SRCS})
@@ -239,7 +243,7 @@ elseif(APPLE)
 	set(OPENMP_INSTALLED_EXECUTABLE "\${CMAKE_INSTALL_PREFIX}/Mine-imator")
 	install(CODE
 		"execute_process(
-			Command \"${CMAKE_INSTALL_NAME_TOOL}\"
+			COMMAND \"${CMAKE_INSTALL_NAME_TOOL}\"
 				-change
 				\"${OPENMP_LINKED_LIBRARY}\"
 				\"@executable_path/Data/Libraries/libomp.dylib\"
