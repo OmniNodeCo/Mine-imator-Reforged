@@ -1501,6 +1501,10 @@
 			"file": "magma_cube.mimodel"
 		},
 		{
+			"name": "sulfur_cube",
+			"file": "sulfur_cube.mimodel"
+		},
+		{
 			"name": "endermite",
 			"file": "endermite.mimodel"
 		},

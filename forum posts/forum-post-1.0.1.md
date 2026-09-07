@@ -12,7 +12,7 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 
 **What's new**
 
-- **Minecraft 26.2 assets built in:** the bundled asset package jumps from 1.20.2 straight to **26.2**, and 26.2 is now the default for new installs. That's hundreds of new block, item, entity and particle textures, plus all the new blockstates and models, with the texture lists fully regenerated. The old 1.20.2 package has been removed — Settings still lists every version you've downloaded.
+- **Minecraft 26.2 assets built in:** the bundled asset package jumps from 1.20.2 straight to **26.2**, and 26.2 is now the default for new installs. That's hundreds of new block, item, entity and particle textures, plus all the new blockstates and models, with the texture lists fully regenerated. The old 1.20.2 package has been removed — Settings still lists every version you've downloaded. Includes a hand-authored **Sulfur Cube** (the 26.2 sulfur slime) rig with its split outer/inner textures.
 - **Credits screen fix:** clicking the "TRIAL" tag next to the version number on the About screen now opens the in-app upgrade dialog — same as the Upgrade button — instead of dumping you on the website. The version number itself still links to the site.
 - **Upgrade popup fixes:** opening the upgrade dialog from the Help menu or toolbar and entering a valid key now closes it properly (a stale revert target could make it re-open itself), and a previous "invalid key" warning clears once you upgrade successfully.
 

@@ -8,6 +8,7 @@ Maintenance release: bundled Minecraft assets refreshed and two trial-flow fixes
 
 * Bundled Minecraft assets updated from **1.20.2** to **26.2**: `26.2.zip` + `26.2.midata` (built with `Tools/fetch_minecraft_assets.py`, which now uses `26.2` as its template) replace the 1.20.2 package in `Data/Minecraft`
 * Default assets version (`#macro minecraft_version`) and the GameMaker included-file list now point at `26.2`; the Settings dropdown picks up every bundled `*.midata` automatically
+* New **Sulfur Cube** character (the 26.2 sulfur slime): authored `sulfur_cube.mimodel` rig (translucent outer shell + inner core, face baked into the texture) with per-shape texture overrides for the split `sulfur_cube_outer`/`sulfur_cube_inner` textures, added to the character list and the English language file
 * Release workflow now anchors on any committed `Data/Minecraft/<version>.midata` instead of hardcoding `1.20.2.midata`
 
 ### Fixes
