@@ -283,7 +283,12 @@ function Invoke-CppGen {
 }
 
 function Ensure-GeneratedSources {
-    if (Test-Path -LiteralPath $generatedDirectory -PathType Container) {
+    # The directory may exist as a placeholder (Generated/.gitignore) in a
+    # fresh checkout; only skip CppGen when its outputs are actually present
+    $gmlFuncHeader = Join-Path $generatedDirectory "GmlFunc.hpp"
+    $scriptsHeader = Join-Path $generatedDirectory "Scripts.hpp"
+    if ((Test-Path -LiteralPath $gmlFuncHeader -PathType Leaf) -and
+        (Test-Path -LiteralPath $scriptsHeader -PathType Leaf)) {
         return
     }
 

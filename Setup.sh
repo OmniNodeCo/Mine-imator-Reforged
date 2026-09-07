@@ -136,7 +136,9 @@ invoke_cppgen() {
 }
 
 ensure_generated_sources() {
-    if [ -d "$generated_directory" ]; then
+    # The directory may exist as a placeholder (Generated/.gitignore) in a
+    # fresh checkout; only skip CppGen when its outputs are actually present
+    if [ -f "$generated_directory/GmlFunc.hpp" ] && [ -f "$generated_directory/Scripts.hpp" ]; then
         return
     fi
 
