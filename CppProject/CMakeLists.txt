@@ -182,7 +182,7 @@ set(LIBS ${LIBS} "${EXT_DIR}/libswresample.a")
 set(LIBS ${LIBS} "${EXT_DIR}/libswscale.a")
 set(LIBS ${LIBS} "${EXT_DIR}/libavutil.a")
 
-if (NOT APPLE) # Linux
+if(UNIX AND NOT APPLE) # Linux only (Win64 links libx264.lib, Mac has its own libx264.a)
 	# Static x264 matching the API the precompiled libavcodec was built against
 	# (x264_encoder_open_155); system libx264 (API 164+) cannot satisfy it.
 	set(LIBS ${LIBS} "${EXT_DIR}/libx264.a")
