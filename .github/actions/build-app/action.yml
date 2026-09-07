@@ -75,10 +75,12 @@ runs:
         fi
         sudo apt-get update
         sudo apt-get build-dep -y qtbase5-dev
-        # System libraries linked by CppProject/CMakeLists.txt (Linux build)
+        # System libraries linked by CppProject/CMakeLists.txt (Linux build).
+        # nettle-dev replaced libnettle-dev on Ubuntu 24.04+.
         sudo apt-get install -y git cmake perl clang libomp-dev \
-          libx264-dev libgnutls28-dev libnettle-dev libsndio-dev \
+          libx264-dev libgnutls28-dev libsndio-dev \
           libva-dev libvdpau-dev libbz2-dev liblzma-dev
+        sudo apt-get install -y nettle-dev || sudo apt-get install -y libnettle-dev
 
     - name: Cache Qt (Linux)
       if: inputs.platform == 'linux'
