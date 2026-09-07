@@ -50,6 +50,7 @@ runs:
           C:/Dev/Qt/5.15.19/install
           C:/Dev/Qt/5.15.19/qt5
         key: qt-windows-x64-v1-${{ hashFiles('Setup.ps1', 'WinUtils.ps1') }}
+        restore-keys: qt-windows-x64-v1-
 
     - name: Set up Linux build environment
       if: inputs.platform == 'linux'
@@ -90,6 +91,7 @@ runs:
           ~/Dev/Qt/5.15.19/install
           ~/Dev/Qt/5.15.19/qt5
         key: qt-linux-x64-v1-${{ hashFiles('Setup.sh') }}
+        restore-keys: qt-linux-x64-v1-
 
     - name: Set up macOS build environment
       if: inputs.platform == 'macos'
@@ -112,6 +114,7 @@ runs:
           ~/Dev/Qt/5.15.19/install
           ~/Dev/Qt/5.15.19/qt5
         key: qt-macos-x86_64-v1-${{ hashFiles('Setup.sh') }}
+        restore-keys: qt-macos-x86_64-v1-
 
     - name: Build dependencies + Qt (Windows)
       if: inputs.platform == 'windows'
