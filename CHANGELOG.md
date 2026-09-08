@@ -47,6 +47,16 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 * Linux CI installs the system libraries this CppProject links
   (x264, gnutls, nettle, sndio, va, vdpau, bz2, lzma)
 
+* **First run never reached the interface** (the "creates a Projects
+  folder but no window appears" bug): the continuation base ships its
+  GameMaker development defaults, with `dev_mode` enabled. In dev mode
+  `app_startup_interface` skips the normal first-run flow and
+  unconditionally `project_load()`s a `dev_project/dev_project.miproject`
+  from the temp folder - which never exists on a user machine - and
+  `dev_mode_skip_blocks` even skips loading blocks. `dev_mode` is now
+  `false`, the shippable configuration the previous Reforged releases
+  used (all `dev_mode_*` flags collapse to false with it; the app then
+  takes the normal startup path: loading screen -> welcome popup).
 * **World import (pre-1.13 worlds, e.g. 1.12.2):** block ids of 256 and above
   are stored in the chunk section's `Add` array (the high bits of each id).
   The importer only read the low `Blocks` byte, so worlds containing such
