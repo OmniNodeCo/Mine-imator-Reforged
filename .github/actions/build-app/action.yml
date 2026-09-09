@@ -197,14 +197,28 @@ runs:
       shell: bash
       run: |
         set -uo pipefail
-        sudo apt-get install -y -q xvfb libgl1-mesa-dri libglx-mesa0 >/dev/null 2>&1 || sudo apt-get install -y -q xvfb >/dev/null 2>&1 || true
+        sudo apt-get install -y -q xvfb libgl1-mesa-dri libglx-mesa0 gdb >/dev/null 2>&1 || sudo apt-get install -y -q xvfb gdb >/dev/null 2>&1 || true
         cp -r install/Mine-imator smoke-run-Mine-imator
         cd smoke-run-Mine-imator
         set +e
-        xvfb-run -a -s "-screen 0 1280x800x24" env LIBGL_ALWAYS_SOFTWARE=1 QT_QPA_PLATFORM=xcb timeout 90s ./Mine-imator
+        # Run under gdb -batch: if the app segfaults, the backtrace lands in the
+        # job log and names the crashing function directly.
+        xvfb-run -a -s "-screen 0 1280x800x24" env LIBGL_ALWAYS_SOFTWARE=1 QT_QPA_PLATFORM=xcb timeout 90s gdb -q -batch \
+          -ex "set pagination off" \
+          -ex "set confirm off" \
+          -ex "handle SIGSEGV stop nopass" \
+          -ex "handle SIGABRT stop nopass" \
+          -ex "run" \
+          -ex "echo \n==== CRASH DETECTED: BACKTRACE ====\n" \
+          -ex "bt 40" \
+          -ex "echo \n==== ALL THREADS ====\n" \
+          -ex "thread apply all bt 12" \
+          -ex "echo \n==== FAULTING FRAME REGISTERS ====\n" \
+          -ex "info registers" \
+          --args ./Mine-imator
         code=$?
         set -e
-        echo "SMOKE: app exit code: $code (124 = still running at timeout, expected for a healthy GUI app)"
+        echo "SMOKE: gdb exit code: $code (124 = still running at timeout, expected for a healthy GUI app)"
         echo "SMOKE: ----- log.txt -----"
         if [ ! -f log.txt ]; then
           echo "SMOKE: no log.txt was created - the app died before logging anything"
