@@ -4,14 +4,11 @@ namespace CppProject
 {
 	void Printer::Line(QString text)
 	{
-	#if OS_WINDOWS
 	#if RELEASE_MODE
-		QString logFile = QCoreApplication::applicationDirPath() + "/Data/log.txt";
+		// Log next to the executable so it is easy to find and attach to bug reports
+		QString logFile = QCoreApplication::applicationDirPath() + "/log.txt";
 	#else
 		QString logFile = QDir::currentPath() + "/log.txt";
-	#endif
-	#else
-		QString logFile = QDir::homePath() + "/Mine-imator/log.txt";
 	#endif
 		QFile file(logFile);
 		AddPerms(file);

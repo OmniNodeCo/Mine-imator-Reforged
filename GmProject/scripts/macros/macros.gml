@@ -51,7 +51,7 @@ function macros()
 	#macro settings_file				user_directory_get() + "settings.midata"
 	#macro recent_file					user_directory_get() + "recent.midata"
 	#macro key_file						user_directory_get() + "key.midata"
-	#macro log_file						user_directory_get() + "log.txt"
+	#macro log_file						working_directory + "log.txt"
 	#macro temp_file					file_directory + "tmp.file"
 	#macro temp_image					file_directory + "tmp.png"
 	#macro download_image_file			file_directory + "download.png"

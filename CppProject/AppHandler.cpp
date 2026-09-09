@@ -59,17 +59,19 @@ namespace CppProject
 			StringType::AddQThread(QThread::currentThread());
 			StringType::AddGMLStrings();
 
-			// Set paths
-			QDir().mkpath(user_directory_get());
-			QDir().mkpath(projects_directory_get());
-			file_delete_lib(log_file);
-
+			// Set paths (working directory first: the user, projects and log paths
+			// derive from it, so it must be resolved before anything is created or
+			// deleted - launching with a different working directory would misplace them)
 		#if RELEASE_MODE
 			gmlGlobal::working_directory = QCoreApplication::applicationDirPath() + "/";
 		#else
 			gmlGlobal::working_directory = QDir::currentPath() + "/";
 			DEBUG("Debug mode enabled");
 		#endif
+			QDir().mkpath(user_directory_get());
+			QDir().mkpath(projects_directory_get());
+			file_delete_lib(log_file);
+			DEBUG("Starting Mine-imator");
 			DEBUG("Mine-imator version " + mineimator_version_full + " (" + mineimator_version_date + ")");
 		#if OS_WINDOWS
 			BOOL is64Bit;

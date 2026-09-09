@@ -47,6 +47,14 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 * Linux CI installs the system libraries this CppProject links
   (x264, gnutls, nettle, sndio, va, vdpau, bz2, lzma)
 
+* **log.txt now lands next to the executable** (release builds, all
+  platforms) instead of `Data/log.txt` (Windows) / `~/Mine-imator/`
+  (Linux/macOS), so it is easy to find and attach to bug reports. The
+  startup sequence now also resolves the working directory *before*
+  creating/deleting any user, projects or log paths (previously they
+  were derived from an unset path when the launcher's working directory
+  differed from the executable's folder), and writes a first
+  "Starting Mine-imator" line immediately after the log is reset.
 * **First run never reached the interface** (the "creates a Projects
   folder but no window appears" bug): the continuation base ships its
   GameMaker development defaults, with `dev_mode` enabled. In dev mode
