@@ -5,9 +5,10 @@ function popup_about_draw()
 	// Header
 	draw_box(dx, dy, dw, 128, false, c_overlay, a_overlay)
 	
-	// Logo
+	// Logo (moved up + scaled to fit: the Reforged lockup is taller than the
+	// old wordmark and its REFORGED tag overlapped the version text below)
 	gpu_set_tex_filter(true)
-	draw_sprite_ext(spr_logo, 0, dx + dw / 2, dy + 54, .75, .75, 0, c_white, draw_get_alpha())
+	draw_sprite_ext(spr_logo, 0, dx + dw / 2, dy + 42, .65, .65, 0, c_white, draw_get_alpha())
 	gpu_set_tex_filter(false)
 	
 	// Program info
@@ -83,6 +84,12 @@ function popup_about_draw()
 	draw_label(text_get("aboutmoddevelopment"), dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
 	dy += 26
 	draw_label("mbanders", dx, dy, fa_left, fa_bottom, c_text_secondary, a_text_secondary, font_label)
+	
+	// Reforged
+	dy += 34
+	draw_label("Reforged", dx, dy, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_subheading)
+	dy += 26
+	draw_button_text("OmniNodeCo", dx, dy, popup_open_url, link_reforged, link_reforged, font_label)
 	
 	dx += 130 + 24
 	dy = content_y + 176

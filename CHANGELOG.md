@@ -80,6 +80,11 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   backtrace). CMake now refreshes the manifest at configure time and
   copies all 683 sprite frames from `GmProject/sprites` into
   `Asset/Sprites/` so the index.qrc glob embeds them.
+* **About (credits) screen:** the Reforged logo lockup (taller than the
+  original wordmark this screen was laid out for) overlapped the version
+  text - it is now moved up and scaled to fit the header again. The
+  credits also had no mention of Reforged: a "Reforged" section now
+  credits OmniNodeCo, linking to the repository.
 * **First run never reached the interface** (the "creates a Projects
   folder but no window appears" bug): the continuation base ships its
   GameMaker development defaults, with `dev_mode` enabled. In dev mode
