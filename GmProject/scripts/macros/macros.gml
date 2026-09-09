@@ -108,7 +108,7 @@ function macros()
 	#macro link_modelbench				"https://www.mineimator.com/modelbench"
 	#macro link_twitter					"https://www.mineimator.com/tweets"
 	#macro link_discord					"https://www.mineimator.com/discord"
-	#macro link_reforged				"https://github.com/OmniNodeCo/Mine-imator"
+	#macro link_reforged				"https://github.com/OmniNodeCo/Mine-imator-Reforged"
 	#macro link_donate					"https://www.mineimator.com/donate"
 	#macro show_modelbench_popup		!dev_mode && true
 	#macro http_ok						200
