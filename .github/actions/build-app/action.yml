@@ -152,6 +152,80 @@ runs:
       shell: bash
       run: ./Setup.sh Release x86_64
 
+    # Run the freshly built app once (on a copy of the install folder, so the
+    # packaged zip stays pristine) and dump its log. A healthy run reaches the
+    # "Assets stage:" loading-screen trace within the wait time; a crash, hang
+    # or missing-file dialog before that fails the step with the log printed.
+    - name: Smoke test (Windows)
+      if: inputs.platform == 'windows'
+      shell: pwsh
+      run: |
+        $src = "install/Mine-imator"
+        $dir = "smoke-run/Mine-imator"
+        New-Item -ItemType Directory -Force -Path "smoke-run" | Out-Null
+        Copy-Item -Recurse $src $dir
+        $p = Start-Process -FilePath "$dir/Mine-imator.exe" -WorkingDirectory $dir -PassThru
+        if ($p.WaitForExit(90000)) {
+          "SMOKE: app exited by itself with code $($p.ExitCode)"
+          $exited = $true
+        } else {
+          "SMOKE: app still running after 90s (expected for a healthy GUI app) - stopping it"
+          Stop-Process -Id $p.Id -Force
+          $exited = $false
+        }
+        $log = Join-Path $dir "log.txt"
+        "SMOKE: ----- log.txt -----"
+        if (-not (Test-Path $log)) {
+          "SMOKE: no log.txt was created - the app died before logging anything"
+          exit 1
+        }
+        Get-Content $log | ForEach-Object { "SMOKE: $_" }
+        "SMOKE: ----- end of log -----"
+        $content = Get-Content $log -Raw
+        if ($content -match "FATAL|Missing file|Could not unzip") {
+          "SMOKE: FAILED - fatal error in log"
+          exit 1
+        }
+        if ($content -notmatch "Assets stage: ") {
+          "SMOKE: FAILED - log shows no asset-loading progress (app never reached the loading screen)"
+          exit 1
+        }
+        "SMOKE: OK - app reached the asset loading stage"
+
+    - name: Smoke test (Linux)
+      if: inputs.platform == 'linux'
+      shell: bash
+      run: |
+        set -uo pipefail
+        sudo apt-get install -y -q xvfb libgl1-mesa-dri libglx-mesa0 >/dev/null 2>&1 || sudo apt-get install -y -q xvfb >/dev/null 2>&1 || true
+        cp -r install/Mine-imator smoke-run-Mine-imator
+        cd smoke-run-Mine-imator
+        set +e
+        xvfb-run -a -s "-screen 0 1280x800x24" env LIBGL_ALWAYS_SOFTWARE=1 QT_QPA_PLATFORM=xcb timeout 90s ./Mine-imator
+        code=$?
+        set -e
+        echo "SMOKE: app exit code: $code (124 = still running at timeout, expected for a healthy GUI app)"
+        echo "SMOKE: ----- log.txt -----"
+        if [ ! -f log.txt ]; then
+          echo "SMOKE: no log.txt was created - the app died before logging anything"
+          exit 1
+        fi
+        sed "s/^/SMOKE: /" log.txt
+        echo "SMOKE: ----- end of log -----"
+        if grep -qE "FATAL|Missing file|Could not unzip" log.txt; then
+          echo "SMOKE: FAILED - fatal error in log"
+          exit 1
+        fi
+        if grep -q "shaders_are_supported: no" log.txt; then
+          echo "SMOKE: SKIP - no OpenGL on this runner, cannot test further"
+          exit 0
+        fi
+        if ! grep -q "Assets stage: " log.txt; then
+          echo "SMOKE: FAILED - log shows no asset-loading progress (app never reached the loading screen)"
+          exit 1
+        fi
+        echo "SMOKE: OK - app reached the asset loading stage"
+
     - name: Package (Windows)
       if: inputs.platform == 'windows'
       shell: pwsh

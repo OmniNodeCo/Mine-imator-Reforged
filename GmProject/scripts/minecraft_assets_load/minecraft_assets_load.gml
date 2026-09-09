@@ -5,6 +5,13 @@ function minecraft_assets_load()
 {
 	with (mc_assets)
 	{
+		// Trace stage transitions in the log (startup diagnostics)
+		if (load_assets_stage != asset_load_stage_logged)
+		{
+			log("Assets stage: " + load_assets_stage)
+			asset_load_stage_logged = load_assets_stage
+		}
+		
 		switch (load_assets_stage)
 		{
 			// Unzip archive

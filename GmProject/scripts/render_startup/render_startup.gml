@@ -246,4 +246,6 @@ function render_startup()
 	
 		log("Saved default render settings", render_default_file)
 	}
+	
+	log("Render startup complete")
 }

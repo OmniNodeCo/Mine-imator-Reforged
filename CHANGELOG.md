@@ -55,6 +55,18 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   were derived from an unset path when the launcher's working directory
   differed from the executable's folder), and writes a first
   "Starting Mine-imator" line immediately after the log is reset.
+* **Startup is now observable:** the first-run asset loading pipeline
+  (unzip -> biomes -> textures -> misc -> models -> blocks) logged
+  nothing on the happy path, leaving log.txt ending at "Render init"
+  with no way to tell where a silent startup death happened. Every
+  loading stage is now traced into log.txt, along with markers for
+  camera init and render startup completion.
+* **CI smoke tests:** Build check now actually runs the freshly built
+  app for 90s on Windows and Linux (on a copy of the install folder),
+  prints its log, and fails if the app crashes, dies before logging,
+  hits a fatal/missing-file error, or never reaches the asset loading
+  screen - catching "builds fine but doesn't open" regressions before
+  release.
 * **First run never reached the interface** (the "creates a Projects
   folder but no window appears" bug): the continuation base ships its
   GameMaker development defaults, with `dev_mode` enabled. In dev mode
