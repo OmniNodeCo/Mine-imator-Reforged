@@ -67,6 +67,19 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   hits a fatal/missing-file error, or never reaches the asset loading
   screen - catching "builds fine but doesn't open" regressions before
   release.
+* **Startup crash in the Minecraft font (run 34363231187, all platforms):**
+  `CppProject/Asset/Sprites` is git-ignored in this base (the C# CppGen
+  copies frames there on Windows dev machines), but CI uses the C++
+  CppGen, which writes a `Generated/Assets.cmake` manifest instead - and
+  nothing consumed it. Builds therefore embedded **zero** sprite
+  resources: every `:/Sprites/...` load returned a null QImage, frames
+  never made it onto a texture page, and the first `SpriteFont`
+  construction (`new_minecraft_font`, right after "Assets startup")
+  dereferenced a null texture page location and crashed (SIGSEGV /
+  0xC0000005 - reproduced by the new smoke tests and pinpointed by a gdb
+  backtrace). CMake now refreshes the manifest at configure time and
+  copies all 683 sprite frames from `GmProject/sprites` into
+  `Asset/Sprites/` so the index.qrc glob embeds them.
 * **First run never reached the interface** (the "creates a Projects
   folder but no window appears" bug): the continuation base ships its
   GameMaker development defaults, with `dev_mode` enabled. In dev mode

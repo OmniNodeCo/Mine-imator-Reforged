@@ -148,6 +148,49 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 add_definitions(${Qt5Widgets_DEFINITIONS})
 set(LIBS ${LIBS} Qt5::Widgets Qt5::Network)
 
+# Sprite frames are NOT committed (CppProject/Asset/Sprites is gitignored);
+# the GameMaker source PNGs are copied into it at configure time using the
+# CppGen assets manifest, so the asset glob below finds them and embeds them
+# into index.qrc. Without this, every ":/Sprites/..." resource is missing at
+# runtime: sprite images load as null and the first SpriteFont creation
+# (new_minecraft_font during startup) crashes on a null texture page location.
+get_filename_component(REPO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE)
+if(WIN32)
+	set(CPPGEN_EXE "${REPO_DIR}/CppGen/Win64/CppGen.exe")
+elseif(APPLE)
+	set(CPPGEN_EXE "${REPO_DIR}/CppGen/Mac/CppGen")
+else()
+	set(CPPGEN_EXE "${REPO_DIR}/CppGen/Linux/CppGen")
+endif()
+set(CPPGEN_ASSET_MANIFEST "${CMAKE_CURRENT_SOURCE_DIR}/Generated/Assets.cmake")
+if(EXISTS "${CPPGEN_EXE}")
+	execute_process(
+		COMMAND "${CPPGEN_EXE}" "${REPO_DIR}" "${REPO_DIR}/CppGen/gml.json" "--assets-manifest"
+		WORKING_DIRECTORY "${REPO_DIR}"
+		RESULT_VARIABLE CPPGEN_ASSET_MANIFEST_RESULT
+	)
+	if(NOT CPPGEN_ASSET_MANIFEST_RESULT EQUAL 0)
+		message(FATAL_ERROR "CppGen failed to generate the assets manifest (exit ${CPPGEN_ASSET_MANIFEST_RESULT}).")
+	endif()
+endif()
+if(NOT EXISTS "${CPPGEN_ASSET_MANIFEST}")
+	message(FATAL_ERROR
+		"Assets manifest not found at ${CPPGEN_ASSET_MANIFEST}.\n"
+		"Run CppGen first (Setup.ps1 CppGen on Windows, Setup.sh CppGen on macOS/Linux).")
+endif()
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${CPPGEN_ASSET_MANIFEST}")
+include("${CPPGEN_ASSET_MANIFEST}")
+foreach(SPRITE_ENTRY IN LISTS CPPGEN_SPRITE_RESOURCE_ENTRIES)
+	string(REPLACE "|" ";" SPRITE_ENTRY_PARTS "${SPRITE_ENTRY}")
+	list(GET SPRITE_ENTRY_PARTS 0 SPRITE_SOURCE)
+	list(GET SPRITE_ENTRY_PARTS 1 SPRITE_ALIAS)
+	set(SPRITE_SOURCE_FILE "${REPO_DIR}/${SPRITE_SOURCE}")
+	if(NOT EXISTS "${SPRITE_SOURCE_FILE}")
+		message(FATAL_ERROR "Sprite frame source missing: ${SPRITE_SOURCE_FILE}")
+	endif()
+	configure_file("${SPRITE_SOURCE_FILE}" "${CMAKE_CURRENT_SOURCE_DIR}/Asset/${SPRITE_ALIAS}" COPYONLY)
+endforeach()
+
 # Find sprite and shader assets and create a project
 file(GLOB_RECURSE ASSETS RELATIVE "${CMAKE_SOURCE_DIR}" "*.png" "*.vsh" "*.fsh" "*.d3d")
 source_group(TREE "${CMAKE_SOURCE_DIR}/Asset" FILES ${ASSETS})
