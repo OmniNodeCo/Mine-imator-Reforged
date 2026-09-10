@@ -1,0 +1,22 @@
+{
+ "rigs": [
+  {
+   "name": "Wooden crate",
+   "author": "Mine-imator Reforged",
+   "description": "A classic 16x16 wooden crate prop",
+   "file": "crate.zip"
+  },
+  {
+   "name": "Traffic cone",
+   "author": "Mine-imator Reforged",
+   "description": "Orange traffic cone with reflective stripe",
+   "file": "traffic-cone.zip"
+  },
+  {
+   "name": "Speaker",
+   "author": "Mine-imator Reforged",
+   "description": "Audio speaker with woofer detail",
+   "file": "speaker.zip"
+  }
+ ]
+}

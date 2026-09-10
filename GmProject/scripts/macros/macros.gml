@@ -20,10 +20,10 @@ function macros()
 	
 	// Versions
 	#macro mineimator_version			"2.0.2"							// Base Mine-imator version
-	#macro mineimator_version_sub		"Reforged 1.0.3"		// Mod name and version (e.g. "Community Build 1.0.0")
+	#macro mineimator_version_sub		"Reforged 1.0.4"		// Mod name and version (e.g. "Community Build 1.0.0")
 	#macro mineimator_version_extra		""								// Additional suffix (e.g. "Alpha 1" or "Pre-Release 2")
 	#macro mineimator_version_full		(mineimator_version + ((mineimator_version_sub != "") ? " " + mineimator_version_sub : "") + ((mineimator_version_extra != "") ? " (" + mineimator_version_extra + ")" : ""))
-	#macro mineimator_version_date		"2026.09.07"
+	#macro mineimator_version_date		"2026.09.10"
 	#macro minecraft_version			"26.3-snapshot-9"
 	#macro gm_runtime					GM_runtime_version
 	
@@ -38,6 +38,7 @@ function macros()
 	#macro projects_directory			working_directory + "Projects/"
 	#macro schematics_directory			working_directory + "Schematics/"
 	#macro particles_directory			working_directory + "Particles/"
+	#macro rigs_directory				working_directory + "Rigs/"
 	#macro fonts_directory				data_directory + "Fonts/"
 	#macro languages_directory			data_directory + "Languages/"
 	#macro minecraft_directory			data_directory + "Minecraft/"
@@ -109,6 +110,10 @@ function macros()
 	#macro link_twitter					"https://www.mineimator.com/tweets"
 	#macro link_discord					"https://www.mineimator.com/discord"
 	#macro link_reforged				"https://github.com/OmniNodeCo/Mine-imator-Reforged"
+	// Rig center catalog (index.json + rig zips in this repo, Rigs/ folder).
+	// Points at the Reforged branch so new rigs can be added without an app
+	// update; repoint (e.g. to master) when the folder is synced elsewhere.
+	#macro link_rigs					"https://github.com/OmniNodeCo/Mine-imator-Reforged/raw/arena/01a07263-mine-imator-reforged/Rigs/"
 	#macro link_donate					"https://www.mineimator.com/donate"
 	#macro show_modelbench_popup		!dev_mode && true
 	#macro http_ok						200

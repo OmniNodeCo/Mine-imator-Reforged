@@ -472,7 +472,9 @@
 			"save": "Save project",
 			"saveas": "Save project as...",
 			"import": "Import asset...",
-			"worldimport": "Import from world..."
+			"worldimport": "Import from world...",
+			"videoplayer": "Video player",
+			"downloadrigs": "Download rigs..."
 		},
 		"edit": "Edit",
 		"edit/": {
@@ -612,6 +614,24 @@
 		"downloading": "Downloading...",
 		"name": "Skin of %1",
 		"done": "Done"
+	},
+	"videoplayer/": {
+		"caption": "Video player",
+		"openhint": "Open a video file to play it here",
+		"open": "Open video",
+		"openfail": "Could not open the video. Check that the file exists and the format is supported.",
+		"play": "Play/Pause (Space)",
+		"volume": "Volume"
+	},
+	"rigcenter/": {
+		"caption": "Download rigs",
+		"search": "Search rigs...",
+		"downloading": "Downloading %1... %2%",
+		"done": "%1 downloaded and imported",
+		"loading": "Loading rig library...",
+		"empty": "No rigs found",
+		"offline": "Could not reach the rig library. Check your internet connection.",
+		"more": "And %1 more..."
 	},
 	"saveas/": {
 		"caption": "Save project as",

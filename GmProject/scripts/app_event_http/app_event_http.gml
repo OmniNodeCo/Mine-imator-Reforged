@@ -197,4 +197,57 @@ function app_event_http()
 			}
 		}
 	}
+	
+	// Rig library index
+	else if (async_load[?"id"] = http_rigs_index)
+	{
+		http_rigs_index = null
+		
+		if (async_load[?"status"] = 0 && async_load[?"http_status"] = http_ok)
+		{
+			var decodedmap = json_decode(async_load[?"result"]);
+			if (ds_map_valid(decodedmap) && ds_list_valid(decodedmap[?"rigs"]))
+			{
+				popup_rigcenter.list = decodedmap[?"rigs"]
+				popup_rigcenter.loading = false
+				popup_rigcenter.fail_message = ""
+				log("Rig center: loaded", ds_list_size(popup_rigcenter.list), "rigs")
+			}
+			else
+			{
+				popup_rigcenter.loading = false
+				popup_rigcenter.fail_message = text_get("rigcenteroffline")
+			}
+		}
+		else
+		{
+			popup_rigcenter.loading = false
+			popup_rigcenter.fail_message = text_get("rigcenteroffline")
+		}
+	}
+	
+	// Rig download
+	else if (async_load[?"id"] = http_rigs_file)
+	{
+		if (async_load[?"status"] = 1)
+			popup_rigcenter.progress = (async_load[?"sizeDownloaded"] / max(1, async_load[?"contentLength"]))
+		else
+		{
+			http_rigs_file = null
+			
+			if (async_load[?"status"] = 0 && async_load[?"http_status"] = http_ok && file_exists_lib(popup_rigcenter.downloading_path))
+			{
+				popup_rigcenter.progress = 1
+				log("Rig center: downloaded", popup_rigcenter.downloading_path)
+				toast_new(e_toast.INFO, text_get("rigcenterdone", popup_rigcenter.downloading_name))
+				asset_load(popup_rigcenter.downloading_path)
+				popup_rigcenter.downloading = ""
+			}
+			else
+			{
+				popup_rigcenter.fail_message = text_get("rigcenteroffline")
+				popup_rigcenter.downloading = ""
+			}
+		}
+	}
 }

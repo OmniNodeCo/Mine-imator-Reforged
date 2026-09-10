@@ -1,0 +1,64 @@
+{
+ "name": "Traffic cone",
+ "texture": "traffic_cone.png",
+ "texture_size": [
+  64,
+  40
+ ],
+ "parts": [
+  {
+   "name": "base",
+   "position": [
+    0,
+    1,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -8,
+      -1,
+      -8
+     ],
+     "to": [
+      8,
+      1,
+      8
+     ],
+     "uv": [
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "name": "cone",
+   "position": [
+    0,
+    2,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -3,
+      0,
+      -3
+     ],
+     "to": [
+      3,
+      12,
+      3
+     ],
+     "uv": [
+      0,
+      22
+     ]
+    }
+   ]
+  }
+ ]
+}

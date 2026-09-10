@@ -1,0 +1,91 @@
+{
+ "name": "Speaker",
+ "texture": "speaker.png",
+ "texture_size": [
+  64,
+  64
+ ],
+ "parts": [
+  {
+   "name": "body",
+   "position": [
+    0,
+    11,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -6,
+      -10,
+      -6
+     ],
+     "to": [
+      6,
+      10,
+      6
+     ],
+     "uv": [
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "name": "foot_left",
+   "position": [
+    -4,
+    1,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -2,
+      -1,
+      -4
+     ],
+     "to": [
+      2,
+      1,
+      4
+     ],
+     "uv": [
+      0,
+      36
+     ]
+    }
+   ]
+  },
+  {
+   "name": "foot_right",
+   "position": [
+    4,
+    1,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -2,
+      -1,
+      -4
+     ],
+     "to": [
+      2,
+      1,
+      4
+     ],
+     "uv": [
+      0,
+      36
+     ]
+    }
+   ]
+  }
+ ]
+}

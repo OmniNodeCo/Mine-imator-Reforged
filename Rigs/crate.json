@@ -1,0 +1,37 @@
+{
+ "name": "Wooden crate",
+ "texture": "crate.png",
+ "texture_size": [
+  64,
+  32
+ ],
+ "parts": [
+  {
+   "name": "crate",
+   "position": [
+    0,
+    8,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -8,
+      -8,
+      -8
+     ],
+     "to": [
+      8,
+      8,
+      8
+     ],
+     "uv": [
+      0,
+      0
+     ]
+    }
+   ]
+  }
+ ]
+}

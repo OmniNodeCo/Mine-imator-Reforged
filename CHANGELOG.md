@@ -4,6 +4,36 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.0.4 (2026-09-10)
+
+### New features
+
+* **In-app video player** (File ▸ Video player): open `.mp4`, `.mov`, `.avi`,
+  `.mkv` and `.webm` files and play them inside Mine-imator — without
+  leaving the app or fighting external players. Play/pause (button or
+  spacebar), a click/drag seek bar with time display, and volume controls.
+  Video is decoded with FFmpeg (already used for audio import) and streamed
+  to a texture with smooth scaling; the file's audio track is played through
+  the regular sound system and used as the playback clock, with a frame
+  delta fallback for silent videos. New `video_*` GML functions back the
+  player (`CppProject/Media/VideoPlayer.cpp`)
+* **Downloadable rigs center** (File ▸ Download rigs): browse a small online
+  library of community rigs, search it by name/author/description, download
+  with a progress bar and import the rig straight into the project's
+  resources. The catalog lives in `Rigs/index.json` in this repository and
+  grows over time — rigs land in the `Rigs` folder next to the exe and are
+  offered for import immediately. Three starter rigs ship with the catalog
+  (wooden crate, traffic cone, speaker)
+
+### Earlier Reforged releases
+
+* 1.0.3 (2026-09-07): version identity shown as "Reforged 1.0.3",
+  `log.txt` written next to the executable, dev mode disabled for
+  releases, tracing + Linux/Windows CI smoke tests, startup crash fix
+  (missing sprite embedding in CI builds), About screen Reforged
+  credits with logo fix
+* 1.0.1 / 1.0.2: restored CI pipelines, first Reforged branding
+
 ## Reforged on Continuation Build 1.0.15 Alpha 1 (2026-09-07)
 
 ### Fixes

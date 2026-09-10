@@ -18,6 +18,8 @@ function app_startup_window()
 	http_download_assets_zip = null
 	http_alert_news = null
 	http_downloadskin = null
+	http_rigs_index = null
+	http_rigs_file = null
 	
 	window_width = 1
 	window_height = 1
