@@ -37,7 +37,7 @@ on:
       mc_range:
         description: "Minecraft assets range (start:end, single version like 26.2, or empty = latest release only)"
         required: false
-        default: ""
+        default: "26.2"
       no_latest:
         description: "Do NOT auto-include the latest Minecraft release"
         required: false
