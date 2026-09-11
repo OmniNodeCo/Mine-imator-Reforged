@@ -83,14 +83,83 @@ def shape(from_, to, uv, **kw):
     s.update(kw)
     return s
 
+PROJECT_FORMAT = 35          # e_project.FORMAT_CTB_106 (project_format macro)
+MATERIAL_FORMAT_LABPBR = 2   # e_material.FORMAT_LABPBR (resource default)
+CREATED_IN = "2.0.2 Reforged 1.0.5"
+
+def normalize_screen_parts(parts):
+    """Makes every video-screen part sample the whole texture.
+
+    The engine squares each part's texture grid (texture_size -> max(w,h)),
+    so a non-square screen face would only show a cropped part of the video
+    frame. A square noscale box spanning the full grid ([0,1] UV) plus a Y
+    scale keeps the same rendered footprint while showing the full frame.
+    """
+    for part in parts:
+        if part.get('texture', '').endswith('screen.png') and part.get('shapes'):
+            s = part['shapes'][0]
+            w = s['to'][0] - s['from'][0]
+            h = s['to'][1] - s['from'][1]
+            assert w > 0 and h > 0, part['name']
+            cx = part['position'][0] + (s['from'][0] + s['to'][0]) / 2
+            cy = part['position'][1] + (s['from'][1] + s['to'][1]) / 2
+            s['from'] = [-w / 2, -w / 2, s['from'][2]]
+            s['to'] = [w / 2, w / 2, s['to'][2]]
+            part['position'] = [cx, cy, part['position'][2]]
+            part['scale'] = [1, h / w, 1]
+            part['texture_size'] = [w, w]
+            s['uv'] = [0, 0]
+        normalize_screen_parts(part.get('parts', []))
+
+def miobject(name, member, safe):
+    """Builds a .miobject (engine object save format) importing the rig's
+    model resource as a library template. Verified against object_save /
+    project_save_objects / project_load_objects."""
+    return {
+        "format": PROJECT_FORMAT,
+        "created_in": CREATED_IN,
+        "templates": [{
+            "id": f"reftpl_{safe}",
+            "type": "model",
+            "name": name,
+            "model": f"refres_{safe}",
+            # The engine writes null references as the string "null"
+            # (json_save_value quotes it, value_get_save_id converts back)
+            "model_tex": "null",
+            "model_tex_material": "null",
+            "model_tex_normal": "null",
+        }],
+        "timelines": [],
+        "resources": [{
+            "id": f"refres_{safe}",
+            "type": "model",
+            "filename": member + ".mimodel",
+            "material_format": MATERIAL_FORMAT_LABPBR,
+        }],
+    }
+
 def write_rig(slug, model, textures):
+    normalize_screen_parts(model['parts'])
     with open(f'Rigs/{slug}.json', 'w') as f:
         json.dump(model, f, indent=1)
+    pack_rig(slug, model, textures)
+    print(f"  {slug}.zip  ({len(textures)} textures)")
+
+def pack_rig(slug, model, textures, jsonname=None):
+    """Packs a rig zip: <name>.miobject (the importable object) +
+    <name>.mimodel (the model resource) + textures. res_load() only takes
+    the rig path for .mimodel files (.json falls through to the Minecraft
+    block model loader), and rigs are imported as objects via .miobject."""
+    if jsonname is None:
+        jsonname = f'Rigs/{slug}.json'
+    member = jsonname.replace('\\', '/').rsplit('/', 1)[-1][:-len('.json')]
+    safe = "".join(c if c.isalnum() or c == '_' else '_' for c in member)
     with zipfile.ZipFile(f'Rigs/{slug}.zip', 'w', zipfile.ZIP_DEFLATED) as z:
-        z.write(f'Rigs/{slug}.json', f'{slug.replace("-", "_")}.json')
+        z.write(jsonname, member + '.mimodel')
+        miobj = miobject(model['name'], member, safe)
+        z.writestr(member + '.miobject', json.dumps(miobj, indent=1))
         for fn in textures:
             z.write(f'Rigs/{fn}', fn)
-    print(f"  {slug}.zip  ({len(textures)} textures)")
 
 def save(img, name):
     img.save(f'Rigs/{name}')
@@ -253,17 +322,18 @@ def stickman():
     write_rig('stickman', model, ['stickman.png'])
 
 # ---------------------------------------------------------------- screen texture helper
-def screen_texture(name, w, h, scale=4):
-    img = canvas(w * scale, h * scale)
-    for y in range(h * scale):
-        g = 16 + int(10 * y / (h * scale))
-        for x in range(w * scale):
+def screen_texture(name, size):
+    """Square placeholder (the engine pads textures to squares; the video
+    frame replaces this texture at runtime and fills the whole square)."""
+    img = canvas(size, size)
+    for y in range(size):
+        g = 16 + int(10 * y / size)
+        for x in range(size):
             img.putpixel((x, y), (g - 2, g - 1, g + 4, 255))
     d = ImageDraw.Draw(img)
-    d.ellipse([w*scale - 3*scale, h*scale - 3*scale, w*scale - 1*scale, h*scale - 1*scale],
+    d.ellipse([size - size//14, size - size//14, size - 2, size - 2],
               fill=(60, 160, 70, 255))
     save(img, name)
-    return [w, h]
 
 # ---------------------------------------------------------------- 3. Monitor (video screen)
 def monitor():
@@ -282,7 +352,8 @@ def monitor():
         d.rectangle([x + 1, y + 1, x + w - 2, y + h - 2], fill=(16, 17, 20, 255))
     paint_faces(img, uv_frame, 18, 11, 1, plastic, plastic, plastic, bezel, plastic, plastic)
     save(img, 'monitor.png')
-    ssize = screen_texture('monitor_screen.png', 16, 9)
+    screen_texture('monitor_screen.png', 64)
+    ssize = [16, 16]
 
     model = {
         "name": "Monitor",
@@ -313,7 +384,8 @@ def billboard():
     paint_faces(img, uv_leg, 2, 10, 2, metal_d, metal_d, metal_d, metal, metal_d, metal_d)
     paint_faces(img, uv_frame, 36, 22, 2, metal, metal, metal_d, metal, metal_d, metal)
     save(img, 'billboard.png')
-    ssize = screen_texture('billboard_screen.png', 32, 18)
+    screen_texture('billboard_screen.png', 128)
+    ssize = [32, 32]
 
     model = {
         "name": "Billboard",
@@ -654,37 +726,19 @@ def barrier():
     }
     write_rig('barrier', model, ['barrier.png'])
 
-# ---------------------------------------------------------------- fix UVs of the 4 existing rigs
-def fix_existing():
-    # uv anchor = front face top-left = region origin + (d, d)
-    fixes = {
-        'crate.json':      [{"old": [0, 0], "new": [16, 16]}],
-        'traffic_cone.json': [{"old": [0, 0], "new": [16, 16]}, {"old": [0, 22], "new": [6, 28]}],
-        'speaker.json':    [{"old": [0, 0], "new": [12, 12]}, {"old": [0, 36], "new": [8, 44]}],
-        'tv.json':         [{"old": [0, 0], "new": [5, 5]}, {"old": [46, 20], "new": [49, 23]}],
-        # screen parts keep uv [0,0]: their front face spans the whole texture
-    }
-    for fn, changes in fixes.items():
-        p = f'Rigs/{fn}'
-        model = json.load(open(p))
-        changed = []
-        def walk(parts):
-            for part in parts:
-                for s in part.get('shapes', []):
-                    for ch in changes:
-                        if s['uv'] == ch['old']:
-                            s['uv'] = ch['new']
-                            changed.append((part['name'], ch['old'], ch['new']))
-                if 'parts' in part:
-                    walk(part['parts'])
-        walk(model['parts'])
-        with open(p, 'w') as f:
-            json.dump(model, f, indent=1)
-        print(f"  fixed {fn}: {changed}")
-    # re-zip the fixed models
+# ---------------------------------------------------------------- repack the pre-existing rigs
+def repack_existing():
+    """The four original rigs already have correct UVs in Rigs/*.json; they
+    need re-packing as .miobject + .mimodel (previously packed as .json,
+    which does not import). The TV screen part is normalized to a full-frame
+    screen and gets a square placeholder texture."""
+    screen_texture('screen.png', 56)  # square TV screen placeholder
     for slug, jsonname in (('crate', 'crate.json'), ('traffic-cone', 'traffic_cone.json'),
                            ('speaker', 'speaker.json'), ('tv', 'tv.json')):
         model = json.load(open(f'Rigs/{jsonname}'))
+        normalize_screen_parts(model['parts'])
+        with open(f'Rigs/{jsonname}', 'w') as f:
+            json.dump(model, f, indent=1)
         textures = [model['texture']]
         def collect(parts):
             for part in parts:
@@ -692,11 +746,8 @@ def fix_existing():
                     textures.append(part['texture'])
                 collect(part.get('parts', []))
         collect(model['parts'])
-        with zipfile.ZipFile(f'Rigs/{slug}.zip', 'w', zipfile.ZIP_DEFLATED) as z:
-            z.write(f'Rigs/{jsonname}', jsonname)
-            for t in textures:
-                z.write(f'Rigs/{t}', t)
-        print(f"  re-zipped {slug}.zip")
+        pack_rig(slug, model, textures, jsonname=f'Rigs/{jsonname}')
+        print(f"  re-packed {slug}.zip")
 
 # ---------------------------------------------------------------- catalog index
 def index():
@@ -730,6 +781,6 @@ if __name__ == '__main__':
     print("Generating rigs...")
     mannequin(); stickman(); monitor(); billboard(); table(); chair()
     bookshelf(); barrel(); chest(); streetlamp(); bench(); barrier()
-    fix_existing()
+    repack_existing()
     index()
     print("Done.")

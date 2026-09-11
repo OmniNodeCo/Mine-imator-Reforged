@@ -24,7 +24,7 @@ function tab_timeline_editor_info()
 	
 	// Video screen (models with a screen part)
 	if (tl_edit.type = e_tl_type.MODEL && tl_edit.temp.model != null && instance_exists(tl_edit.temp.model)
-		&& tl_edit.temp.model.model_block_map != null && !is_undefined(tl_edit.temp.model.model_block_map[?"screen.png"]))
+		&& tl_edit.temp.model.model_texture_map != null && !is_undefined(tl_edit.temp.model.model_texture_map[?"screen.png"]))
 	{
 		// Video file
 		tab_control(ui_small_height)

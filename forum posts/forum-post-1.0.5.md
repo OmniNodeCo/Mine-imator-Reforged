@@ -1,4 +1,4 @@
-**Mine-imator Reforged 1.0.4**
+**Mine-imator Reforged 1.0.5**
 
 based on Mine-imator 2.0.2 (Continuation Build 1.0.15 Alpha 1)
 
@@ -12,7 +12,8 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 
 - **Video screens in animations (TVs):** download the "TV (video screen)" rig from the new rig center, drag it into your scene, select it and attach a video file - .mp4, .mov, .avi, .mkv or .webm - in the Info panel. The video plays right on the TV's screen: scrub the timeline and the TV shows that exact moment, hit play and it plays along with your animation, and rendered images and videos include the video on the screen. Each TV has its own volume control, up to 8 videos can play at the same time, and attaching or removing a video is undoable like any other edit.
 - **Downloadable rigs center (File > Download rigs, or the "Download rigs" entry in the workbench create panel):** browse an online rig library from inside the app, search it by name, author or description, and download rigs with one click - a progress bar shows the download and the rig is imported into your library automatically. Downloaded rigs are also saved to the Rigs folder next to the executable. The catalog launches with 16 rigs: a posable mannequin and a stick figure with IK-ready limbs (rotate any part to pose them, and their arms and legs work with the frame editor's IK targets - the mannequin even accepts player skins), three video screens for the new TV feature (retro TV, desktop monitor, big billboard), furniture (table, chair, bookshelf, barrel, chest with a posable lid, park bench) and props (street lamp, traffic barrier, wooden crate, traffic cone, speaker). It will grow with future updates - rig authors can submit more via pull request or issue on GitHub.
-- Version bumped to Reforged 1.0.4.
+- Rigs download as proper Mine-imator object files (.miobject) and import straight into the workbench Model list.
+- Version bumped to Reforged 1.0.5.
 
 **Known limitations**
 
@@ -24,6 +25,17 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 - The underlying Continuation Build base is alpha quality - expect the occasional rough edge.
 
 [spoiler="Show hidden contents — full changelog"]
+
+[spoiler="Version 1.0.5 (2026-09-11)"]
+[b]Fixes[/b]
+- Rigs from the download center now import properly: every rig pack contains a .miobject (the Mine-imator object file) plus its .mimodel model and textures, so downloads land in the workbench Model list like any imported object. Previously the packs carried a bare .json model, which the importer does not treat as a rig, so nothing was imported
+- Importing zipped objects/models now also finds .mimodel files inside archives, and prefers .miobject when a zip contains several importable files
+- Fixed a crash ("Invalid id 0") when scrolling the rig center list to the bottom
+- Video screens (TV, monitor, billboard) now show the full video frame instead of a cropped strip, and work on imported rigs
+
+[b]Versioning[/b]
+- Version bumped to Reforged 1.0.5 (full in-app version 2.0.2 Reforged 1.0.5)
+[/spoiler]
 
 [spoiler="Version 1.0.4 (2026-09-10)"]
 [b]New features[/b]

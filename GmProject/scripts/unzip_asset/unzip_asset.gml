@@ -14,11 +14,17 @@ function unzip_asset(fn)
 	if (!file_exists_lib(validfile)) // Try sub-folder
 		validfile = file_find_single(unzip_directory + name + "/", "miproject;.mproj;.mani;")
 	
+	// Look for object (prefer .miobject - rigs import as objects)
+	if (!file_exists_lib(validfile))
+		validfile = file_find_single(unzip_directory, "miobject;")
+	if (!file_exists_lib(validfile)) // Try sub-folder
+		validfile = file_find_single(unzip_directory + name + "/", "miobject;")
+	
 	// Look for object
 	if (!file_exists_lib(validfile))
-		validfile = file_find_single(unzip_directory, "miobject;miparticles;.object;.particles;.json;")
+		validfile = file_find_single(unzip_directory, "miobject;miparticles;.object;.particles;.json;.mimodel;")
 	if (!file_exists_lib(validfile)) // Try sub-folder
-		validfile = file_find_single(unzip_directory + name + "/", "miobject;miparticles;.object;.particles;.json;")
+		validfile = file_find_single(unzip_directory + name + "/", "miobject;miparticles;.object;.particles;.json;.mimodel;")
 	
 	if (!file_exists_lib(validfile))
 		return ""

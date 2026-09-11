@@ -4,6 +4,30 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.0.5 (2026-09-11)
+
+### Fixes
+
+* **Rigs from the download center now import properly.** Rig packs ship as
+  proper Mine-imator object files: each download contains a `.miobject`
+  (the importable object) plus its `.mimodel` model and textures, so
+  downloaded rigs land in the workbench Model list like any imported
+  object. (Previously the packs carried a bare `.json` model, which the
+  importer does not treat as a rig — nothing was imported.)
+* Importing zipped objects/models now also finds `.mimodel` files inside
+  archives, and `.miobject` files are preferred when a zip contains
+  several importable files
+* Fixed a crash ("Invalid id 0") when scrolling the rig center list to the
+  bottom — the scroll offset was capped for a smaller list than the popup
+  shows, so the last rows read past the end of the results
+* Video screens (TV, monitor, billboard) now show the **full** video
+  frame: the engine squares every part's texture grid, so the screen parts
+  are built as square faces that span the whole texture with a scale for
+  the aspect ratio, instead of cropping the frame to a strip. Screen
+  detection also works for imported rigs (it previously only matched
+  Minecraft block models), and the video frame updates every frame on the
+  screen part's cached shape textures
+
 ## Reforged 1.0.4 (2026-09-10)
 
 ### New features

@@ -29,15 +29,11 @@ function tl_remove_clean()
 		if (part_list != null)
 			ds_list_destroy(part_list)
 		
-		// Restore the model's screen texture and free the video player
+		// Free the video player (the model's own textures are never modified,
+		// only the bodypart timeline's cached shape textures, and those are
+		// destroyed together with this timeline)
 		if (video_slot >= 0)
 		{
-			if (temp != null && temp.model != null && instance_exists(temp.model)
-				&& temp.model.model_texture_map != null
-				&& video_last_tex != -1 && temp.model.model_texture_map[?"screen.png"] = video_last_tex
-				&& video_orig_tex != -1)
-				temp.model.model_texture_map[?"screen.png"] = video_orig_tex
-			
 			video_slot_free(video_slot)
 			video_slot = -1
 		}
