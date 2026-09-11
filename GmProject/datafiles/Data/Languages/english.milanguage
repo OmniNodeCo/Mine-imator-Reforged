@@ -623,6 +623,7 @@
 		"downloading": "Downloading %1... %2%",
 		"done": "%1 downloaded and imported",
 		"loading": "Loading rig library...",
+		"refresh": "Reload the rig library from the server",
 		"empty": "No rigs found",
 		"offline": "Could not reach the rig library. Check your internet connection.",
 		"more": "And %1 more..."

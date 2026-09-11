@@ -47,13 +47,24 @@ function popup_rigcenter_draw()
 	var filteredcount;
 	filteredcount = array_length(popup.filtered)
 	
+	// Rows that fit in the list area, and the highest safe scroll offset.
+	// Never let scroll + row count exceed the array length: out-of-bounds
+	// array reads return undefined, and using that as a ds map id is a
+	// fatal "Invalid id 0" crash.
+	var visiblerows, maxscroll;
+	visiblerows = max(1, floor(listh / rowh))
+	maxscroll = max(0, filteredcount - visiblerows)
+	
+	// Clamp the current scroll (the search may have shrunk the list)
+	popup.scroll = clamp(popup.scroll, 0, maxscroll)
+	
 	// Scroll with the mouse wheel
 	if (app_mouse_box(content_x, listy, content_width, listh, ""))
 	{
 		if (mouse_wheel_up())
 			popup.scroll = max(0, popup.scroll - 1)
 		if (mouse_wheel_down())
-			popup.scroll = min(max(0, filteredcount - 4), popup.scroll + 1)
+			popup.scroll = min(maxscroll, popup.scroll + 1)
 	}
 	
 	// Status line
@@ -66,10 +77,10 @@ function popup_rigcenter_draw()
 	else
 	{
 		// Rows
-		var visiblerows;
-		visiblerows = min(filteredcount, floor(listh / rowh))
+		var shownrows;
+		shownrows = min(filteredcount, visiblerows)
 		
-		for (var r = 0; r < visiblerows; r++)
+		for (var r = 0; r < shownrows; r++)
 		{
 			var rig, rowx, rowy;
 			rig = popup.filtered[popup.scroll + r]
@@ -102,8 +113,8 @@ function popup_rigcenter_draw()
 		}
 		
 		// More note
-		if (filteredcount > visiblerows)
-			draw_label(text_get("rigcentermore", filteredcount - visiblerows), content_x + content_width / 2, listy + listh - 8, fa_center, fa_bottom, c_text_tertiary, a_text_tertiary, font_caption)
+		if (filteredcount > shownrows)
+			draw_label(text_get("rigcentermore", filteredcount - shownrows), content_x + content_width / 2, listy + listh - 8, fa_center, fa_bottom, c_text_tertiary, a_text_tertiary, font_caption)
 	}
 }
 
