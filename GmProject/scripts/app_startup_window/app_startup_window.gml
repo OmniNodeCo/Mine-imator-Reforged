@@ -21,6 +21,11 @@ function app_startup_window()
 	http_rigs_index = null
 	http_rigs_file = null
 	
+	// Video screen players (see video_slots)
+	video_slot_used = array()
+	for (var i = 0; i < 8; i++)
+		video_slot_used[i] = false
+	
 	window_width = 1
 	window_height = 1
 	window_set_focus()

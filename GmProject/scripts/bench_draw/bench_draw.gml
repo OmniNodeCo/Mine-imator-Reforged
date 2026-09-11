@@ -76,8 +76,8 @@ function bench_draw()
 	
 	// Left, asset types
 	var types, divides, lefth, skipasset;
-	types = 13
-	divides = 4
+	types = 14
+	divides = 5
 	lefth = (types * 32) + (divides * 9)
 	for (var i = 0; i < ds_list_size(bench_type_list.item); i++)
 	{
@@ -95,7 +95,7 @@ function bench_draw()
 			dy += (window_compact ? 28 : 32)
 		}
 		
-		if (i = 2 || i = 6 || i = 9)
+		if (i = 2 || i = 6 || i = 9 || i = 14)
 		{
 			draw_divide(dx + 5, dy + 4, 184)
 			dy += 9

@@ -403,6 +403,8 @@
 			"packcaption": "Open resource pack",
 			"sound": "Sounds",
 			"soundcaption": "Open sound",
+			"video": "Video files",
+			"videocaption": "Open video",
 			"project": "Mine-imator projects",
 			"backup": "Mine-imator project backups",
 			"projectcaption": "Open project",
@@ -473,7 +475,6 @@
 			"saveas": "Save project as...",
 			"import": "Import asset...",
 			"worldimport": "Import from world...",
-			"videoplayer": "Video player",
 			"downloadrigs": "Download rigs..."
 		},
 		"edit": "Edit",
@@ -606,6 +607,7 @@
 		"cameratip": "A virtual camera the animation is seen through, with optional effects.",
 		"backgroundtip": "A timeline that can change the environment during the animation.",
 		"audiotip": "An audio track that can play sound files such as .mp3 and .wav in the animation.",
+		"downloadrigs": "Download rigs",
 		"pathtip": "A 3D path that can be used for moving objects and particles along. Paths are built by parenting path points."
 	},
 	"downloadskin/": {
@@ -614,14 +616,6 @@
 		"downloading": "Downloading...",
 		"name": "Skin of %1",
 		"done": "Done"
-	},
-	"videoplayer/": {
-		"caption": "Video player",
-		"openhint": "Open a video file to play it here",
-		"open": "Open video",
-		"openfail": "Could not open the video. Check that the file exists and the format is supported.",
-		"play": "Play/Pause (Space)",
-		"volume": "Volume"
 	},
 	"rigcenter/": {
 		"caption": "Download rigs",
@@ -3748,6 +3742,10 @@
 		"text": "Text",
 		"textsample": "Sample text",
 		"type": "Type",
+		"videofile": "Video file",
+		"videochoose": "Choose video file...",
+		"videoremove": "Remove",
+		"videovolume": "Volume",
 		"rotpoint/": {
 			"custom": "Custom rotation point",
 			"x": "X",

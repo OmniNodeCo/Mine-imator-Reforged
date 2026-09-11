@@ -8,22 +8,34 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
 ### New features
 
-* **In-app video player** (File ▸ Video player): open `.mp4`, `.mov`, `.avi`,
-  `.mkv` and `.webm` files and play them inside Mine-imator — without
-  leaving the app or fighting external players. Play/pause (button or
-  spacebar), a click/drag seek bar with time display, and volume controls.
-  Video is decoded with FFmpeg (already used for audio import) and streamed
-  to a texture with smooth scaling; the file's audio track is played through
-  the regular sound system and used as the playback clock, with a frame
-  delta fallback for silent videos. New `video_*` GML functions back the
-  player (`CppProject/Media/VideoPlayer.cpp`)
-* **Downloadable rigs center** (File ▸ Download rigs): browse a small online
-  library of community rigs, search it by name/author/description, download
-  with a progress bar and import the rig straight into the project's
-  resources. The catalog lives in `Rigs/index.json` in this repository and
-  grows over time — rigs land in the `Rigs` folder next to the exe and are
-  offered for import immediately. Three starter rigs ship with the catalog
-  (wooden crate, traffic cone, speaker)
+* **Video screens in animations (TVs)**: place a TV in your scene, attach a
+  video file and it plays on the screen — scrub the timeline and the TV
+  shows that moment; rendered image and video exports include the video on
+  the screen. The "TV (video screen)" rig ships in the new rig center:
+  download it, add it to the scene (drag from the library or the workbench
+  Model type), select it and pick a video file in the Info panel
+  (`.mp4`, `.mov`, `.avi`, `.mkv`, `.webm`), with a volume control per TV.
+  Video is decoded with FFmpeg and streamed to the screen part's texture
+  (`CppProject/Media/VideoPlayer.cpp`); any model rig with a part textured
+  `"screen.png"` becomes a video screen. Up to 8 videos play at once, the
+  file's audio follows editor playback, and any model's screen part can be
+  attached/removed at any time (undoable)
+* **Downloadable rigs center** (File ▸ Download rigs, and a "Download rigs"
+  entry in the workbench create panel): browse a small online library of
+  rigs, search it by name/author/description, download with a progress bar
+  and import the rig straight into the project's resources. The catalog
+  lives in `Rigs/index.json` in this repository and grows over time — rigs
+  land in the `Rigs` folder next to the exe. Four starter rigs ship with the
+  catalog: TV (video screen), wooden crate, traffic cone and speaker
+
+### Known limitations
+
+* The TV's audio plays in the editor; rendered video exports do not include
+  it yet (only timeline audio tracks are mixed into exports)
+* Video files are referenced by their file path — moving/deleting the file
+  shows the TV's normal screen again
+* Videos with an aspect ratio other than the screen part's are stretched to
+  fit it
 
 ### Earlier Reforged releases
 

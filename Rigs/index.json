@@ -1,6 +1,12 @@
 {
  "rigs": [
   {
+   "name": "TV (video screen)",
+   "author": "Mine-imator Reforged",
+   "description": "Retro TV - attach a video file and it plays on the screen",
+   "file": "tv.zip"
+  },
+  {
    "name": "Wooden crate",
    "author": "Mine-imator Reforged",
    "description": "A classic 16x16 wooden crate prop",

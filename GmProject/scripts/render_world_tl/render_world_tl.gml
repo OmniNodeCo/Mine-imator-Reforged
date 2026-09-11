@@ -295,6 +295,9 @@ function render_world_tl()
 			{
 				if (temp.model != null)
 				{
+					// Video screen part (plays the attached video at the animation time)
+					tl_video_update()
+					
 					var res = value_inherit[e_value.TEXTURE_OBJ];
 					if (res = null)
 						res = temp.model_tex

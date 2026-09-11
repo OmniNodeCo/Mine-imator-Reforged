@@ -39,6 +39,8 @@ function app_startup_interface_bench()
 	list_item_add("typeaudio", e_tl_type.AUDIO, "", null, icons.NOTE, null, bench_click)
 	list_item_add("typebackground", e_tl_type.BACKGROUND, "", null, icons.CLOUD, null, bench_click)
 	
+	list_item_add("benchdownloadrigs", null, "", null, icons.DOWNLOAD, null, bench_click_rigs)
+	
 	list_edit = null
 	
 	// Workbench settings

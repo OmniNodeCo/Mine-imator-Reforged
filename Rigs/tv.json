@@ -1,0 +1,96 @@
+{
+ "name": "TV",
+ "texture": "tv.png",
+ "texture_size": [
+  64,
+  32
+ ],
+ "parts": [
+  {
+   "name": "feet",
+   "position": [
+    0,
+    1.25,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -3,
+      -1.25,
+      -1.5
+     ],
+     "to": [
+      3,
+      1.25,
+      1.5
+     ],
+     "uv": [
+      46,
+      20
+     ]
+    }
+   ]
+  },
+  {
+   "name": "body",
+   "position": [
+    0,
+    8.5,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -9,
+      -6,
+      -2.5
+     ],
+     "to": [
+      9,
+      6,
+      2.5
+     ],
+     "uv": [
+      0,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "name": "screen",
+   "position": [
+    0,
+    8.5,
+    2.55
+   ],
+   "texture": "screen.png",
+   "texture_size": [
+    14,
+    8
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -7,
+      -4,
+      -0.05
+     ],
+     "to": [
+      7,
+      4,
+      0.05
+     ],
+     "uv": [
+      0,
+      0
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -2,9 +2,6 @@
 
 function popup_close()
 {
-	if (popup = popup_videoplayer)
-		video_close()
-	
 	if (popup = popup_modelbench)
 		popup_modelbench.not_now = true
 	

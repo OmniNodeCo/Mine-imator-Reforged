@@ -6,6 +6,7 @@
 #include "Render/Texture.hpp"
 
 #include <algorithm>
+#include <cmath>
 
 extern "C"
 {
@@ -18,11 +19,13 @@ extern "C"
 
 namespace CppProject
 {
-	// In-app video player: decodes a video file with FFmpeg and streams the
-	// frames into a texture the GML side draws. Audio is played through the
-	// existing Sound/SoundInstance system (a Sound decodes the file's best
-	// audio stream); when audio exists it is used as the playback master
-	// clock, otherwise playback runs on the frame delta.
+	// Video screens in the animation ("TV" rigs): each timeline object that has
+	// a video attached gets one of these players. The GML side positions the
+	// player at the current animation time every frame (video_display), so the
+	// screen shows the right frame while scrubbing, playing and exporting.
+	// Audio is played through the existing Sound/SoundInstance system and
+	// follows the editor playback state (video_audio_update); exports render
+	// frame by frame and are silent, like other editor-only audio.
 	struct VideoPlayerState
 	{
 		StringType filename;
@@ -37,9 +40,8 @@ namespace CppProject
 		RealType timeBase = 0.0;
 		RealType duration = 0.0;
 
-		// Clock
+		// Clock (animation time)
 		RealType clock = 0.0;
-		BoolType playing = false;
 		BoolType eof = false;
 
 		// Frame pipeline (one frame of lookahead)
@@ -53,6 +55,7 @@ namespace CppProject
 		Sound* sound = nullptr;
 		IntType soundInstance = -1;
 		RealType volume = 1.0;
+		BoolType audioStarted = false;
 
 		~VideoPlayerState()
 		{
@@ -62,6 +65,7 @@ namespace CppProject
 		void Close()
 		{
 			StopAudio();
+			audioStarted = false;
 			if (sound)
 			{
 				delete sound;
@@ -92,7 +96,7 @@ namespace CppProject
 			framePts = -1.0;
 			vstream = -1;
 			timeBase = duration = clock = 0.0;
-			playing = eof = false;
+			eof = false;
 			filename = "";
 		}
 
@@ -151,7 +155,7 @@ namespace CppProject
 			packet = av_packet_alloc();
 			filename = file;
 
-			// Decode the file's audio (any container); silent playback if none
+			// Decode the file's audio (any container); silent screen if none
 			sound = new Sound(file);
 			if (!sound->buffer.size())
 			{
@@ -234,6 +238,25 @@ namespace CppProject
 			}
 		}
 
+		// Seek the demuxer to just before the target and flush the decoder
+		void SeekTo(RealType sec)
+		{
+			if (duration > 0.0)
+				sec = std::clamp(sec, 0.0, duration);
+
+			eof = false;
+			clock = sec;
+			audioStarted = false; // Allow the audio to start again from here
+
+			av_seek_frame(fmt, vstream,
+				(int64_t)(sec / timeBase), AVSEEK_FLAG_BACKWARD);
+			avcodec_flush_buffers(vctx);
+			pendingPts = -1.0;
+			pendingImage = QImage();
+
+			Advance();
+		}
+
 		void StartAudio(RealType offset)
 		{
 			StopAudio();
@@ -247,8 +270,6 @@ namespace CppProject
 			audio_sound_gain(soundInstance, volume, 0);
 			if (offset > 0.0)
 				audio_sound_set_track_position(soundInstance, offset);
-			if (!playing)
-				audio_pause_sound(soundInstance);
 		}
 
 		void StopAudio()
@@ -266,159 +287,126 @@ namespace CppProject
 		}
 	};
 
-	VideoPlayerState videoPlayer;
+	// Video players, one per screen object. GML allocates slots (0-7).
+	static VideoPlayerState videoPlayers[8];
+
+	static VideoPlayerState& VideoSlot(IntType slot)
+	{
+		return videoPlayers[std::clamp<IntType>(slot, 0, 7)];
+	}
 
 	// ---- GML interface ----
 
-	void video_seek(RealType sec); // Defined below; used by video_play
-
-	IntType video_open(StringType file)
+	IntType video_open(StringType file, IntType slot)
 	{
-		if (!videoPlayer.Open(file))
+		VideoPlayerState& player = VideoSlot(slot);
+		if (!player.Open(file))
 			return 0;
 
 		// Show the first frame
-		videoPlayer.Advance();
+		player.Advance();
 		return 1;
 	}
 
-	void video_close()
+	void video_close(IntType slot)
 	{
-		videoPlayer.Close();
+		VideoSlot(slot).Close();
 	}
 
-	void video_update(RealType deltaSec)
+	void video_display(RealType timeSec, IntType slot)
 	{
-		if (videoPlayer.vstream < 0)
+		VideoPlayerState& player = VideoSlot(slot);
+		if (player.vstream < 0)
 			return;
 
-		if (videoPlayer.playing)
-		{
-			// Use the audio position as the master clock while the audio
-			// instance is alive; otherwise run on the frame delta (covers
-			// files without audio and audio that ended before the video)
-			if (videoPlayer.AudioPlaying())
-				videoPlayer.clock = audio_sound_get_track_position(videoPlayer.soundInstance);
-			else
-				videoPlayer.clock += deltaSec;
+		if (player.duration > 0.0)
+			timeSec = std::clamp(timeSec, 0.0, player.duration);
 
-			if (videoPlayer.duration > 0.0 && videoPlayer.clock >= videoPlayer.duration)
-			{
-				videoPlayer.clock = videoPlayer.duration;
-				videoPlayer.playing = false;
-				videoPlayer.StopAudio();
-			}
+		// Seeking to a new point in the animation (scrubbing, export jumps);
+		// small forward steps just advance the decode pipeline
+		if (timeSec < player.clock - 0.001 || timeSec > player.clock + 0.3)
+			player.SeekTo(timeSec);
+		else
+			player.clock = timeSec;
+
+		player.Advance();
+	}
+
+	void video_audio_update(IntType playing, IntType slot)
+	{
+		VideoPlayerState& player = VideoSlot(slot);
+		if (!player.sound || !App->audioSupported)
+			return;
+
+		// Exports and paused timelines are silent
+		if (!playing)
+		{
+			if (player.AudioPlaying())
+				audio_pause_sound(player.soundInstance);
+			return;
 		}
 
-		videoPlayer.Advance();
-	}
-
-	void video_play(IntType play)
-	{
-		if (videoPlayer.vstream < 0)
-			return;
-
-		BoolType wantPlaying = (play != 0);
-
-		// Restart from the beginning when replaying after the end
-		if (wantPlaying && !videoPlayer.playing
-			&& videoPlayer.duration > 0.0 && videoPlayer.clock >= videoPlayer.duration - 0.01)
-			video_seek(0);
-
-		videoPlayer.playing = wantPlaying;
-
-		if (!videoPlayer.sound)
-			return;
-
-		if (wantPlaying)
+		if (player.AudioPlaying())
 		{
-			if (videoPlayer.AudioPlaying())
-				audio_resume_sound(videoPlayer.soundInstance);
-			else
-				videoPlayer.StartAudio(videoPlayer.clock);
+			audio_resume_sound(player.soundInstance);
+
+			// Follow seeks (scrubbing while playing)
+			RealType audioPos = audio_sound_get_track_position(player.soundInstance);
+			if (std::fabs(audioPos - player.clock) > 0.3)
+				audio_sound_set_track_position(player.soundInstance, player.clock);
 		}
-		else if (videoPlayer.AudioPlaying())
-			audio_pause_sound(videoPlayer.soundInstance);
+		else if (!player.audioStarted)
+		{
+			// Start once; if the video's audio ended it stays silent until a seek
+			player.StartAudio(player.clock);
+			player.audioStarted = true;
+		}
 	}
 
-	IntType video_playing()
+	RealType video_duration(IntType slot)
 	{
-		return (videoPlayer.playing ? 1 : 0);
+		return VideoSlot(slot).duration;
 	}
 
-	void video_seek(RealType sec)
+	IntType video_texture(IntType slot)
 	{
-		if (videoPlayer.vstream < 0)
-			return;
-
-		if (videoPlayer.duration > 0.0)
-			sec = std::clamp(sec, 0.0, videoPlayer.duration);
-
-		videoPlayer.eof = false;
-		videoPlayer.clock = sec;
-
-		// Seek the demuxer to just before the target and flush the decoder
-		av_seek_frame(videoPlayer.fmt, videoPlayer.vstream,
-			(int64_t)(sec / videoPlayer.timeBase), AVSEEK_FLAG_BACKWARD);
-		avcodec_flush_buffers(videoPlayer.vctx);
-		videoPlayer.pendingPts = -1.0;
-		videoPlayer.pendingImage = QImage();
-
-		// Decode up to the seek target
-		videoPlayer.Advance();
-
-		// Move the audio with us
-		if (videoPlayer.AudioPlaying())
-			audio_sound_set_track_position(videoPlayer.soundInstance, sec);
-		else if (videoPlayer.sound && videoPlayer.playing)
-			videoPlayer.StartAudio(sec);
-	}
-
-	RealType video_position()
-	{
-		return videoPlayer.clock;
-	}
-
-	RealType video_duration()
-	{
-		return videoPlayer.duration;
-	}
-
-	IntType video_texture()
-	{
-		if (videoPlayer.texture)
-			return videoPlayer.texture->GetId();
+		VideoPlayerState& player = VideoSlot(slot);
+		if (player.texture)
+			return player.texture->GetId();
 		return -1;
 	}
 
-	IntType video_width()
+	IntType video_width(IntType slot)
 	{
-		if (videoPlayer.vctx)
-			return videoPlayer.vctx->width;
+		VideoPlayerState& player = VideoSlot(slot);
+		if (player.vctx)
+			return player.vctx->width;
 		return 0;
 	}
 
-	IntType video_height()
+	IntType video_height(IntType slot)
 	{
-		if (videoPlayer.vctx)
-			return videoPlayer.vctx->height;
+		VideoPlayerState& player = VideoSlot(slot);
+		if (player.vctx)
+			return player.vctx->height;
 		return 0;
 	}
 
-	IntType video_has_audio()
+	IntType video_has_audio(IntType slot)
 	{
-		return (videoPlayer.sound ? 1 : 0);
+		return (VideoSlot(slot).sound ? 1 : 0);
 	}
 
-	void video_volume(RealType vol)
+	void video_volume(RealType vol, IntType slot)
 	{
-		videoPlayer.volume = std::clamp(vol, 0.0, 1.0);
-		if (videoPlayer.AudioPlaying())
-			audio_sound_gain(videoPlayer.soundInstance, videoPlayer.volume, 0);
+		VideoPlayerState& player = VideoSlot(slot);
+		player.volume = std::clamp(vol, 0.0, 1.0);
+		if (player.AudioPlaying())
+			audio_sound_gain(player.soundInstance, player.volume, 0);
 	}
 
-	RealType video_volume_get()
+	RealType video_volume_get(IntType slot)
 	{
-		return videoPlayer.volume;
+		return VideoSlot(slot).volume;
 	}
 }

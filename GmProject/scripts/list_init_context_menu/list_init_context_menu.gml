@@ -249,7 +249,6 @@ function list_init_context_menu(name)
 			{
 				list_item_add(text_get("toolbarfileimport"), undefined, text_control_name(keybinds[e_keybind.IMPORT_ASSET].keybind), null, icons.ASSET_IMPORT, null, action_toolbar_import_asset, true)
 				list_item_add(text_get("toolbarfileworldimport"), undefined, "", null, icons.SCENERY, null, world_import_begin, false)
-				list_item_add(text_get("toolbarfilevideoplayer"), undefined, "", null, icons.CAMERA, null, popup_videoplayer_show, false)
 				list_item_add(text_get("toolbarfiledownloadrigs"), undefined, "", null, icons.DOWNLOAD, null, popup_rigcenter_show, false)
 			}
 			

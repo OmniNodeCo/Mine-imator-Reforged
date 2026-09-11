@@ -430,6 +430,8 @@ function app_startup_interface_tabs()
 			tbx_rot_point_x = new_textbox_ndecimals()
 			tbx_rot_point_y = new_textbox_ndecimals()
 			tbx_rot_point_z = new_textbox_ndecimals()
+			tbx_video_volume = new_textbox_integer()
+			tbx_video_volume.suffix = "%"
 		}
 		
 		// Hierarchy

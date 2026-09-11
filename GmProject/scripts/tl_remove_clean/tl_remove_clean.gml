@@ -29,6 +29,19 @@ function tl_remove_clean()
 		if (part_list != null)
 			ds_list_destroy(part_list)
 		
+		// Restore the model's screen texture and free the video player
+		if (video_slot >= 0)
+		{
+			if (temp != null && temp.model != null && instance_exists(temp.model)
+				&& temp.model.model_texture_map != null
+				&& video_last_tex != -1 && temp.model.model_texture_map[?"screen.png"] = video_last_tex
+				&& video_orig_tex != -1)
+				temp.model.model_texture_map[?"screen.png"] = video_orig_tex
+			
+			video_slot_free(video_slot)
+			video_slot = -1
+		}
+		
 		// Clear references
 		if (part_of = null && temp != null)
 			temp.count--

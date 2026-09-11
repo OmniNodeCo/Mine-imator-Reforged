@@ -13,6 +13,15 @@ function tl_event_create()
 	display_name = ""
 	temp = null
 	text = text_get("timelineeditortextsample")
+	
+	// Video screen
+	video_file = ""
+	video_vol = 1
+	video_slot = -1
+	video_loaded_file = ""
+	video_fail = false
+	video_orig_tex = -1
+	video_last_tex = -1
 	color_tag = null
 	color_tag_inherit = null
 	lock = false

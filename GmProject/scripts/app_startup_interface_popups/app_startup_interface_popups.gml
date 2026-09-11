@@ -50,13 +50,6 @@ function app_startup_interface_popups()
 		tbx_username = new_textbox(true, 0, "")
 	}
 	
-	// Video player
-	popup_videoplayer = new_popup("videoplayer", popup_videoplayer_draw, 640, 400, true, true, false, true)
-	with (popup_videoplayer)
-	{
-		fail_message = ""
-	}
-	
 	// Downloadable rigs center
 	popup_rigcenter = new_popup("rigcenter", popup_rigcenter_draw, 640, 480, true, true, false, true)
 	with (popup_rigcenter)

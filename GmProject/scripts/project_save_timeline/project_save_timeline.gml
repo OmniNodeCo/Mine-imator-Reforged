@@ -21,6 +21,12 @@ function project_save_timeline()
 		if (type = e_temp_type.TEXT)
 			json_save_var("text", json_string_encode(text))
 		
+		if (type = e_tl_type.MODEL && video_file != "")
+		{
+			json_save_var("video_file", json_string_encode(video_file))
+			json_save_var("video_volume", video_vol)
+		}
+		
 		if (part_of != null)
 		{
 			if (type = e_temp_type.SPECIAL_BLOCK)

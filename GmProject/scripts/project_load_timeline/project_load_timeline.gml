@@ -28,6 +28,12 @@ function project_load_timeline(map)
 		if (type = e_temp_type.TEXT)
 			text = value_get_string(map[?"text"], text)
 		
+		if (type = e_tl_type.MODEL)
+		{
+			video_file = value_get_string(map[?"video_file"], "")
+			video_vol = value_get_real(map[?"video_volume"], 1)
+		}
+		
 		part_of = value_get_save_id(map[?"part_of"], part_of)
 		if (part_of != null)
 		{
