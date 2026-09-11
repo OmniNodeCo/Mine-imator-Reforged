@@ -1,0 +1,124 @@
+{
+ "name": "Billboard",
+ "texture": "billboard.png",
+ "texture_size": [
+  86,
+  24
+ ],
+ "description": "Large roadside billboard - attach a video file and it plays on the screen.",
+ "parts": [
+  {
+   "name": "leg_left",
+   "position": [
+    -14,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      0,
+      -1
+     ],
+     "to": [
+      1,
+      10,
+      1
+     ],
+     "uv": [
+      2,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "leg_right",
+   "position": [
+    14,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      0,
+      -1
+     ],
+     "to": [
+      1,
+      10,
+      1
+     ],
+     "uv": [
+      2,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "frame",
+   "position": [
+    0,
+    10,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -18,
+      0,
+      -1
+     ],
+     "to": [
+      18,
+      22,
+      1
+     ],
+     "uv": [
+      11,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "screen",
+   "position": [
+    0,
+    12,
+    1
+   ],
+   "texture": "billboard_screen.png",
+   "texture_size": [
+    32,
+    18
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -16,
+      0,
+      0
+     ],
+     "to": [
+      16,
+      18,
+      0.2
+     ],
+     "uv": [
+      0,
+      0
+     ]
+    }
+   ]
+  }
+ ]
+}

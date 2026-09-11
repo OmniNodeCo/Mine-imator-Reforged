@@ -16,12 +16,15 @@ function popup_rigcenter_show()
 		downloading_name = ""
 		progress = 0
 		fail_message = ""
-		
-		if (is_undefined(list))
-		{
-			loading = true
-			http_rigs_index = http_get(link_rigs + "index.json")
-		}
+	}
+	
+	// Fetch the catalog on first open (http_rigs_* live on the app object,
+	// the HTTP handler runs in app scope - keep the request out of the
+	// with-block above so it is not stored on the popup)
+	if (is_undefined(popup_rigcenter.list) && http_rigs_index = null)
+	{
+		popup_rigcenter.loading = true
+		http_rigs_index = http_get(link_rigs + "index.json")
 	}
 	
 	popup_show(popup_rigcenter)

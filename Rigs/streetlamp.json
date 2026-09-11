@@ -1,0 +1,119 @@
+{
+ "name": "Street lamp",
+ "texture": "streetlamp.png",
+ "texture_size": [
+  72,
+  28
+ ],
+ "description": "Street lamp with a lit lamp head on an arm.",
+ "parts": [
+  {
+   "name": "base",
+   "position": [
+    0,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -3,
+      0,
+      -3
+     ],
+     "to": [
+      3,
+      1,
+      3
+     ],
+     "uv": [
+      6,
+      6
+     ]
+    }
+   ]
+  },
+  {
+   "name": "post",
+   "position": [
+    0,
+    1,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      0,
+      -1
+     ],
+     "to": [
+      1,
+      26,
+      1
+     ],
+     "uv": [
+      27,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "arm",
+   "position": [
+    0,
+    27,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      -0.5,
+      -1
+     ],
+     "to": [
+      1,
+      0.5,
+      7
+     ],
+     "uv": [
+      42,
+      8
+     ]
+    }
+   ]
+  },
+  {
+   "name": "head",
+   "position": [
+    0,
+    26,
+    7
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -2,
+      -1,
+      -2
+     ],
+     "to": [
+      2,
+      2,
+      2
+     ],
+     "uv": [
+      59,
+      4
+     ]
+    }
+   ]
+  }
+ ]
+}

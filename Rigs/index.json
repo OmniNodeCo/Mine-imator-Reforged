@@ -1,10 +1,82 @@
 {
  "rigs": [
   {
+   "name": "Posable mannequin (IK)",
+   "author": "Mine-imator Reforged",
+   "description": "Posable figure with IK-ready bending arms and legs - rotate parts to pose, use IK targets in the frame editor. Also works with player skins.",
+   "file": "mannequin.zip"
+  },
+  {
+   "name": "Stick figure (IK)",
+   "author": "Mine-imator Reforged",
+   "description": "Thin posable stick figure with IK-ready limbs, perfect for animation practice.",
+   "file": "stickman.zip"
+  },
+  {
    "name": "TV (video screen)",
    "author": "Mine-imator Reforged",
    "description": "Retro TV - attach a video file and it plays on the screen",
    "file": "tv.zip"
+  },
+  {
+   "name": "Monitor (video screen)",
+   "author": "Mine-imator Reforged",
+   "description": "Desktop monitor - attach a video file and it plays on the screen",
+   "file": "monitor.zip"
+  },
+  {
+   "name": "Billboard (video screen)",
+   "author": "Mine-imator Reforged",
+   "description": "Large roadside billboard - attach a video file and it plays on the screen",
+   "file": "billboard.zip"
+  },
+  {
+   "name": "Table",
+   "author": "Mine-imator Reforged",
+   "description": "Wooden table with four legs",
+   "file": "table.zip"
+  },
+  {
+   "name": "Chair",
+   "author": "Mine-imator Reforged",
+   "description": "Wooden chair with backrest",
+   "file": "chair.zip"
+  },
+  {
+   "name": "Bookshelf",
+   "author": "Mine-imator Reforged",
+   "description": "Blocky bookshelf stacked with books",
+   "file": "bookshelf.zip"
+  },
+  {
+   "name": "Barrel",
+   "author": "Mine-imator Reforged",
+   "description": "Wooden barrel with metal hoops",
+   "file": "barrel.zip"
+  },
+  {
+   "name": "Chest",
+   "author": "Mine-imator Reforged",
+   "description": "Treasure chest with a posable lid - rotate the lid part to open it",
+   "file": "chest.zip"
+  },
+  {
+   "name": "Street lamp",
+   "author": "Mine-imator Reforged",
+   "description": "Street lamp with a lit lamp head on an arm",
+   "file": "streetlamp.zip"
+  },
+  {
+   "name": "Park bench",
+   "author": "Mine-imator Reforged",
+   "description": "Park bench with wooden slats and metal sides",
+   "file": "bench.zip"
+  },
+  {
+   "name": "Traffic barrier",
+   "author": "Mine-imator Reforged",
+   "description": "Striped construction barrier",
+   "file": "barrier.zip"
   },
   {
    "name": "Wooden crate",

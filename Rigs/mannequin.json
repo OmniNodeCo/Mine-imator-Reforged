@@ -1,0 +1,217 @@
+{
+ "name": "IK mannequin",
+ "texture": "mannequin.png",
+ "texture_size": [
+  64,
+  64
+ ],
+ "player_skin": true,
+ "description": "Posable mannequin with IK-ready arms and legs. Works with player skins.",
+ "parts": [
+  {
+   "name": "body",
+   "position": [
+    0,
+    12,
+    0
+   ],
+   "bend": {
+    "offset": 6,
+    "end_offset": 6,
+    "size": 10,
+    "part": "upper",
+    "axis": [
+     "x",
+     "y",
+     "z"
+    ]
+   },
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -4,
+      0,
+      -2
+     ],
+     "to": [
+      4,
+      12,
+      2
+     ],
+     "uv": [
+      20,
+      20
+     ]
+    }
+   ],
+   "parts": [
+    {
+     "name": "head",
+     "position": [
+      0,
+      12,
+      0
+     ],
+     "shapes": [
+      {
+       "type": "box",
+       "from": [
+        -4,
+        0,
+        -4
+       ],
+       "to": [
+        4,
+        8,
+        4
+       ],
+       "uv": [
+        8,
+        8
+       ]
+      }
+     ]
+    },
+    {
+     "name": "right_arm",
+     "position": [
+      -6,
+      10,
+      0
+     ],
+     "bend": {
+      "offset": -4,
+      "end_offset": 6,
+      "part": "lower",
+      "axis": "x",
+      "direction_min": 0,
+      "invert": true
+     },
+     "shapes": [
+      {
+       "type": "box",
+       "from": [
+        -2,
+        -10,
+        -2
+       ],
+       "to": [
+        2,
+        2,
+        2
+       ],
+       "uv": [
+        44,
+        20
+       ]
+      }
+     ]
+    },
+    {
+     "name": "left_arm",
+     "position": [
+      6,
+      10,
+      0
+     ],
+     "bend": {
+      "offset": -4,
+      "end_offset": 6,
+      "part": "lower",
+      "axis": "x",
+      "direction_min": 0,
+      "invert": true
+     },
+     "shapes": [
+      {
+       "type": "box",
+       "from": [
+        -2,
+        -10,
+        -2
+       ],
+       "to": [
+        2,
+        2,
+        2
+       ],
+       "uv": [
+        36,
+        52
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "name": "right_leg",
+   "position": [
+    -2,
+    12,
+    0
+   ],
+   "bend": {
+    "offset": -6,
+    "end_offset": 6,
+    "part": "lower",
+    "axis": "x",
+    "direction_min": 0
+   },
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -2,
+      -12,
+      -2
+     ],
+     "to": [
+      2,
+      0,
+      2
+     ],
+     "uv": [
+      4,
+      20
+     ]
+    }
+   ]
+  },
+  {
+   "name": "left_leg",
+   "position": [
+    2,
+    12,
+    0
+   ],
+   "bend": {
+    "offset": -6,
+    "end_offset": 6,
+    "part": "lower",
+    "axis": "x",
+    "direction_min": 0
+   },
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -2,
+      -12,
+      -2
+     ],
+     "to": [
+      2,
+      0,
+      2
+     ],
+     "uv": [
+      20,
+      52
+     ]
+    }
+   ]
+  }
+ ]
+}

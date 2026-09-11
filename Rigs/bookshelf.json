@@ -1,13 +1,14 @@
 {
- "name": "Wooden crate",
- "texture": "crate.png",
+ "name": "Bookshelf",
+ "texture": "bookshelf.png",
  "texture_size": [
-  64,
+  65,
   32
  ],
+ "description": "Blocky bookshelf stacked with books.",
  "parts": [
   {
-   "name": "crate",
+   "name": "shelf",
    "position": [
     0,
     8,

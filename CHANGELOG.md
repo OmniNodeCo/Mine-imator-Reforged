@@ -21,12 +21,17 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   file's audio follows editor playback, and any model's screen part can be
   attached/removed at any time (undoable)
 * **Downloadable rigs center** (File ▸ Download rigs, and a "Download rigs"
-  entry in the workbench create panel): browse a small online library of
+  entry in the workbench create panel): browse an online library of 16
   rigs, search it by name/author/description, download with a progress bar
   and import the rig straight into the project's resources. The catalog
   lives in `Rigs/index.json` in this repository and grows over time — rigs
-  land in the `Rigs` folder next to the exe. Four starter rigs ship with the
-  catalog: TV (video screen), wooden crate, traffic cone and speaker
+  land in the `Rigs` folder next to the exe. Highlights: a posable
+  mannequin and stick figure with IK-ready limbs (any model part can be
+  rotated to pose, and limbs support IK targets in the frame editor; the
+  mannequin also accepts player skins), three video screens (TV, monitor,
+  billboard), furniture (table, chair, bookshelf, barrel, chest with a
+  posable lid, park bench) and props (street lamp, traffic barrier, crate,
+  traffic cone, speaker). `Tools/generate_rigs.py` regenerates the catalog
 
 ### Known limitations
 

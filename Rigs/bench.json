@@ -1,0 +1,187 @@
+{
+ "name": "Park bench",
+ "texture": "bench.png",
+ "texture_size": [
+  89,
+  15
+ ],
+ "description": "Park bench with wooden slats and metal sides.",
+ "parts": [
+  {
+   "name": "side_left",
+   "position": [
+    -7,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      0,
+      -3
+     ],
+     "to": [
+      1,
+      9,
+      3
+     ],
+     "uv": [
+      6,
+      6
+     ]
+    }
+   ]
+  },
+  {
+   "name": "side_right",
+   "position": [
+    7,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      0,
+      -3
+     ],
+     "to": [
+      1,
+      9,
+      3
+     ],
+     "uv": [
+      6,
+      6
+     ]
+    }
+   ]
+  },
+  {
+   "name": "seat",
+   "position": [
+    0,
+    9,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -8,
+      0,
+      -2.7
+     ],
+     "to": [
+      8,
+      0.8,
+      -0.9
+     ],
+     "uv": [
+      19,
+      2
+     ]
+    },
+    {
+     "type": "box",
+     "from": [
+      -8,
+      0,
+      -0.9
+     ],
+     "to": [
+      8,
+      0.8,
+      0.9
+     ],
+     "uv": [
+      19,
+      2
+     ]
+    },
+    {
+     "type": "box",
+     "from": [
+      -8,
+      0,
+      0.9
+     ],
+     "to": [
+      8,
+      0.8,
+      2.7
+     ],
+     "uv": [
+      19,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "backrest",
+   "position": [
+    0,
+    9,
+    -3
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -8,
+      0,
+      -0.5
+     ],
+     "to": [
+      8,
+      2,
+      0.5
+     ],
+     "uv": [
+      55,
+      1
+     ]
+    },
+    {
+     "type": "box",
+     "from": [
+      -8,
+      3,
+      -0.5
+     ],
+     "to": [
+      8,
+      5,
+      0.5
+     ],
+     "uv": [
+      55,
+      1
+     ]
+    },
+    {
+     "type": "box",
+     "from": [
+      -8,
+      6,
+      -0.5
+     ],
+     "to": [
+      8,
+      8,
+      0.5
+     ],
+     "uv": [
+      55,
+      1
+     ]
+    }
+   ]
+  }
+ ]
+}

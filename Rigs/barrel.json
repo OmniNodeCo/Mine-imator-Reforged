@@ -1,13 +1,14 @@
 {
- "name": "Wooden crate",
- "texture": "crate.png",
+ "name": "Barrel",
+ "texture": "barrel.png",
  "texture_size": [
-  64,
-  32
+  57,
+  30
  ],
+ "description": "Wooden barrel with metal hoops.",
  "parts": [
   {
-   "name": "crate",
+   "name": "barrel",
    "position": [
     0,
     8,
@@ -17,18 +18,18 @@
     {
      "type": "box",
      "from": [
+      -7,
       -8,
-      -8,
-      -8
+      -7
      ],
      "to": [
+      7,
       8,
-      8,
-      8
+      7
      ],
      "uv": [
-      16,
-      16
+      14,
+      14
      ]
     }
    ]

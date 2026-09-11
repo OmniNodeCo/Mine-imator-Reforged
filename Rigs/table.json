@@ -1,0 +1,146 @@
+{
+ "name": "Table",
+ "texture": "table.png",
+ "texture_size": [
+  74,
+  16
+ ],
+ "description": "Wooden table with four legs.",
+ "parts": [
+  {
+   "name": "top",
+   "position": [
+    0,
+    14,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -10,
+      0,
+      -6
+     ],
+     "to": [
+      10,
+      2,
+      6
+     ],
+     "uv": [
+      12,
+      12
+     ]
+    }
+   ]
+  },
+  {
+   "name": "leg_front_left",
+   "position": [
+    -8,
+    0,
+    4
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      0,
+      -1
+     ],
+     "to": [
+      1,
+      14,
+      1
+     ],
+     "uv": [
+      67,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "leg_front_right",
+   "position": [
+    8,
+    0,
+    4
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      0,
+      -1
+     ],
+     "to": [
+      1,
+      14,
+      1
+     ],
+     "uv": [
+      67,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "leg_back_left",
+   "position": [
+    -8,
+    0,
+    -4
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      0,
+      -1
+     ],
+     "to": [
+      1,
+      14,
+      1
+     ],
+     "uv": [
+      67,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "leg_back_right",
+   "position": [
+    8,
+    0,
+    -4
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      0,
+      -1
+     ],
+     "to": [
+      1,
+      14,
+      1
+     ],
+     "uv": [
+      67,
+      2
+     ]
+    }
+   ]
+  }
+ ]
+}

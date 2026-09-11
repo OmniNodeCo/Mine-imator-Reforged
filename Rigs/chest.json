@@ -1,88 +1,79 @@
 {
- "name": "Speaker",
- "texture": "speaker.png",
+ "name": "Chest",
+ "texture": "chest.png",
  "texture_size": [
-  64,
-  64
+  105,
+  20
  ],
+ "description": "Treasure chest with a posable lid - rotate the lid part to open it.",
  "parts": [
   {
-   "name": "body",
+   "name": "base",
    "position": [
     0,
-    11,
+    5,
     0
    ],
    "shapes": [
     {
      "type": "box",
      "from": [
-      -6,
-      -10,
-      -6
+      -7,
+      -5,
+      -5
      ],
      "to": [
-      6,
+      7,
+      5,
+      5
+     ],
+     "uv": [
       10,
-      6
-     ],
-     "uv": [
-      12,
-      12
+      10
      ]
     }
    ]
   },
   {
-   "name": "foot_left",
+   "name": "lid",
    "position": [
-    -4,
-    1,
-    0
+    0,
+    10,
+    -5
    ],
    "shapes": [
     {
      "type": "box",
      "from": [
-      -2,
-      -1,
-      -4
+      -7,
+      0,
+      0
      ],
      "to": [
-      2,
-      1,
-      4
+      7,
+      5,
+      10
      ],
      "uv": [
-      8,
-      44
+      59,
+      10
      ]
-    }
-   ]
-  },
-  {
-   "name": "foot_right",
-   "position": [
-    4,
-    1,
-    0
-   ],
-   "shapes": [
+    },
     {
      "type": "box",
      "from": [
-      -2,
       -1,
-      -4
+      1,
+      10
      ],
      "to": [
-      2,
       1,
-      4
+      3.5,
+      11
      ],
      "uv": [
-      8,
-      44
+      99,
+      1
      ]
     }
    ]

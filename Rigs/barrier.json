@@ -1,0 +1,173 @@
+{
+ "name": "Traffic barrier",
+ "texture": "barrier.png",
+ "texture_size": [
+  136,
+  10
+ ],
+ "description": "Striped construction barrier.",
+ "parts": [
+  {
+   "name": "foot_left",
+   "position": [
+    -10,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -4,
+      0,
+      -2
+     ],
+     "to": [
+      4,
+      1,
+      2
+     ],
+     "uv": [
+      4,
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "name": "foot_right",
+   "position": [
+    10,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -4,
+      0,
+      -2
+     ],
+     "to": [
+      4,
+      1,
+      2
+     ],
+     "uv": [
+      4,
+      4
+     ]
+    }
+   ]
+  },
+  {
+   "name": "post_left",
+   "position": [
+    -10,
+    1,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      0,
+      -1
+     ],
+     "to": [
+      1,
+      8,
+      1
+     ],
+     "uv": [
+      27,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "post_right",
+   "position": [
+    10,
+    1,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -1,
+      0,
+      -1
+     ],
+     "to": [
+      1,
+      8,
+      1
+     ],
+     "uv": [
+      27,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "board",
+   "position": [
+    0,
+    4,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -12,
+      0,
+      -0.5
+     ],
+     "to": [
+      12,
+      5,
+      0.5
+     ],
+     "uv": [
+      35,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "name": "rail",
+   "position": [
+    0,
+    9.5,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -12,
+      0,
+      -0.5
+     ],
+     "to": [
+      12,
+      1,
+      0.5
+     ],
+     "uv": [
+      86,
+      1
+     ]
+    }
+   ]
+  }
+ ]
+}

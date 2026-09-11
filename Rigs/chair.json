@@ -1,0 +1,173 @@
+{
+ "name": "Chair",
+ "texture": "chair.png",
+ "texture_size": [
+  57,
+  11
+ ],
+ "description": "Wooden chair with backrest.",
+ "parts": [
+  {
+   "name": "seat",
+   "position": [
+    0,
+    8,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -4,
+      0,
+      -4
+     ],
+     "to": [
+      4,
+      1,
+      4
+     ],
+     "uv": [
+      8,
+      8
+     ]
+    }
+   ]
+  },
+  {
+   "name": "leg_front_left",
+   "position": [
+    -3.5,
+    0,
+    3.5
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -0.5,
+      0,
+      -0.5
+     ],
+     "to": [
+      0.5,
+      8,
+      0.5
+     ],
+     "uv": [
+      34,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "name": "leg_front_right",
+   "position": [
+    3.5,
+    0,
+    3.5
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -0.5,
+      0,
+      -0.5
+     ],
+     "to": [
+      0.5,
+      8,
+      0.5
+     ],
+     "uv": [
+      34,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "name": "leg_back_left",
+   "position": [
+    -3.5,
+    0,
+    -3.5
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -0.5,
+      0,
+      -0.5
+     ],
+     "to": [
+      0.5,
+      8,
+      0.5
+     ],
+     "uv": [
+      34,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "name": "leg_back_right",
+   "position": [
+    3.5,
+    0,
+    -3.5
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -0.5,
+      0,
+      -0.5
+     ],
+     "to": [
+      0.5,
+      8,
+      0.5
+     ],
+     "uv": [
+      34,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "name": "backrest",
+   "position": [
+    0,
+    9,
+    -3.5
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -4,
+      0,
+      -0.5
+     ],
+     "to": [
+      4,
+      10,
+      0.5
+     ],
+     "uv": [
+      39,
+      1
+     ]
+    }
+   ]
+  }
+ ]
+}
