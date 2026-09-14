@@ -1,0 +1,180 @@
+{
+ "name": "Armor stand",
+ "texture": "armorstand.png",
+ "texture_size": [
+  80,
+  11
+ ],
+ "description": "Armor stand with posable arms - rotate an arm part to swing it.",
+ "parts": [
+  {
+   "name": "base",
+   "position": [
+    0,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -7,
+      0,
+      -1
+     ],
+     "to": [
+      7,
+      1,
+      1
+     ],
+     "uv": [
+      2,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "base_crossed",
+   "position": [
+    0,
+    0,
+    0
+   ],
+   "rotation": [
+    0,
+    90,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -7,
+      0,
+      -1
+     ],
+     "to": [
+      7,
+      1,
+      1
+     ],
+     "uv": [
+      2,
+      2
+     ]
+    }
+   ]
+  },
+  {
+   "name": "post",
+   "position": [
+    0,
+    1,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -0.5,
+      0,
+      -0.5
+     ],
+     "to": [
+      0.5,
+      10,
+      0.5
+     ],
+     "uv": [
+      34,
+      1
+     ]
+    }
+   ],
+   "parts": [
+    {
+     "name": "arm_left",
+     "position": [
+      0.5,
+      8,
+      0
+     ],
+     "shapes": [
+      {
+       "type": "box",
+       "from": [
+        0,
+        -0.5,
+        -0.5
+       ],
+       "to": [
+        5,
+        0.5,
+        0.5
+       ],
+       "uv": [
+        39,
+        1
+       ]
+      }
+     ]
+    },
+    {
+     "name": "arm_right",
+     "position": [
+      -0.5,
+      8,
+      0
+     ],
+     "shapes": [
+      {
+       "type": "box",
+       "from": [
+        -5,
+        -0.5,
+        -0.5
+       ],
+       "to": [
+        0,
+        0.5,
+        0.5
+       ],
+       "uv": [
+        39,
+        1
+       ]
+      }
+     ]
+    },
+    {
+     "name": "shoulder",
+     "position": [
+      0,
+      2,
+      0
+     ],
+     "shapes": [
+      {
+       "type": "box",
+       "from": [
+        -2,
+        0,
+        -2
+       ],
+       "to": [
+        2,
+        1,
+        2
+       ],
+       "uv": [
+        67,
+        4
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

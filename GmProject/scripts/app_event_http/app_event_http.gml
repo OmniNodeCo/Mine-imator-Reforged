@@ -238,9 +238,8 @@ function app_event_http()
 			if (async_load[?"status"] = 0 && async_load[?"http_status"] = http_ok && file_exists_lib(popup_rigcenter.downloading_path))
 			{
 				popup_rigcenter.progress = 1
-				log("Rig center: downloaded", popup_rigcenter.downloading_path)
+				log("Rig center: saved", popup_rigcenter.downloading_path)
 				toast_new(e_toast.INFO, text_get("rigcenterdone", popup_rigcenter.downloading_name))
-				asset_load(popup_rigcenter.downloading_path)
 				popup_rigcenter.downloading = ""
 			}
 			else

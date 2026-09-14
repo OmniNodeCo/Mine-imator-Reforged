@@ -14,6 +14,7 @@ function settings_startup()
 	
 	setting_project_folder = projects_directory
 	directory_create_lib(setting_project_folder)
+	setting_rigs_dir = rigs_directory
 	
 	closed_toast_list = ds_list_create()
 	

@@ -95,6 +95,102 @@
    "author": "Mine-imator Reforged",
    "description": "Audio speaker with woofer detail",
    "file": "speaker.zip"
+  },
+  {
+   "name": "Armor stand",
+   "author": "Mine-imator Reforged",
+   "description": "Armor stand with posable arms - rotate an arm part to swing it",
+   "file": "armor-stand.zip"
+  },
+  {
+   "name": "Crafting table",
+   "author": "Mine-imator Reforged",
+   "description": "Classic crafting table block",
+   "file": "crafting-table.zip"
+  },
+  {
+   "name": "Furnace",
+   "author": "Mine-imator Reforged",
+   "description": "Stone furnace with a lit front",
+   "file": "furnace.zip"
+  },
+  {
+   "name": "Torch",
+   "author": "Mine-imator Reforged",
+   "description": "Wooden torch with a glowing head",
+   "file": "torch.zip"
+  },
+  {
+   "name": "Lantern",
+   "author": "Mine-imator Reforged",
+   "description": "Hanging lantern with a glowing body",
+   "file": "lantern.zip"
+  },
+  {
+   "name": "Oak door",
+   "author": "Mine-imator Reforged",
+   "description": "Oak door on a hinge - rotate the hinge part to swing it open",
+   "file": "door.zip"
+  },
+  {
+   "name": "Fence",
+   "author": "Mine-imator Reforged",
+   "description": "Oak fence with two posts and rails",
+   "file": "fence.zip"
+  },
+  {
+   "name": "Oak tree",
+   "author": "Mine-imator Reforged",
+   "description": "Oak tree with a leafy canopy",
+   "file": "tree.zip"
+  },
+  {
+   "name": "Sofa",
+   "author": "Mine-imator Reforged",
+   "description": "Three-seat sofa with cushions and armrests",
+   "file": "sofa.zip"
+  },
+  {
+   "name": "Anvil",
+   "author": "Mine-imator Reforged",
+   "description": "Classic anvil on a sturdy base",
+   "file": "anvil.zip"
+  },
+  {
+   "name": "Cauldron",
+   "author": "Mine-imator Reforged",
+   "description": "Iron cauldron filled with water",
+   "file": "cauldron.zip"
+  },
+  {
+   "name": "Hay bale",
+   "author": "Mine-imator Reforged",
+   "description": "Bale of hay with banded sides",
+   "file": "hay-bale.zip"
+  },
+  {
+   "name": "Archery target",
+   "author": "Mine-imator Reforged",
+   "description": "Archery target on wooden legs",
+   "file": "target.zip"
+  },
+  {
+   "name": "Fire hydrant",
+   "author": "Mine-imator Reforged",
+   "description": "Classic red fire hydrant",
+   "file": "hydrant.zip"
+  },
+  {
+   "name": "Stop sign",
+   "author": "Mine-imator Reforged",
+   "description": "Road stop sign on a pole",
+   "file": "stopsign.zip"
+  },
+  {
+   "name": "Campfire",
+   "author": "Mine-imator Reforged",
+   "description": "Campfire with crossed logs, a stone ring and glowing embers",
+   "file": "campfire.zip"
   }
  ]
 }

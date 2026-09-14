@@ -6,14 +6,27 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
 ## Reforged 1.0.5 (2026-09-11)
 
+### New features
+
+* **Rig catalog doubled to 32 rigs.** New: armor stand (posable arms),
+  oak door (posable hinge — rotate it open), crafting table, furnace,
+  torch, lantern, fence, oak tree, sofa, anvil, cauldron, hay bale,
+  archery target, fire hydrant, stop sign and campfire — joining the
+  mannequin/stick figure (IK), video screens (TV, monitor, billboard),
+  furniture and street props
+* **Rig downloads save where you want.** Clicking a rig in the download
+  center opens a save dialog — pick any folder and the rig pack (.zip) is
+  downloaded there (the last used folder is remembered). The pack contains
+  a `.miobject` plus its `.mimodel` and textures, so you can import it
+  into any project afterwards with File ▸ Import. Rigs are no longer
+  imported automatically
+
 ### Fixes
 
-* **Rigs from the download center now import properly.** Rig packs ship as
-  proper Mine-imator object files: each download contains a `.miobject`
-  (the importable object) plus its `.mimodel` model and textures, so
-  downloaded rigs land in the workbench Model list like any imported
-  object. (Previously the packs carried a bare `.json` model, which the
-  importer does not treat as a rig — nothing was imported.)
+* Rig packs ship as proper Mine-imator object files: each download
+  contains a `.miobject` (the importable object) plus its `.mimodel`
+  model and textures. (Previously the packs carried a bare `.json` model,
+  which the importer does not treat as a rig — nothing imported.)
 * Importing zipped objects/models now also finds `.mimodel` files inside
   archives, and `.miobject` files are preferred when a zip contains
   several importable files
@@ -45,7 +58,7 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   file's audio follows editor playback, and any model's screen part can be
   attached/removed at any time (undoable)
 * **Downloadable rigs center** (File ▸ Download rigs, and a "Download rigs"
-  entry in the workbench create panel): browse an online library of 16
+  entry in the workbench create panel): browse an online library of
   rigs, search it by name/author/description, download with a progress bar
   and import the rig straight into the project's resources. The catalog
   lives in `Rigs/index.json` in this repository and grows over time — rigs

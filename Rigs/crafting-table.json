@@ -1,0 +1,38 @@
+{
+ "name": "Crafting table",
+ "texture": "craftingtable.png",
+ "texture_size": [
+  65,
+  32
+ ],
+ "description": "Classic crafting table block.",
+ "parts": [
+  {
+   "name": "table",
+   "position": [
+    0,
+    8,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -8,
+      -8,
+      -8
+     ],
+     "to": [
+      8,
+      8,
+      8
+     ],
+     "uv": [
+      16,
+      16
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,92 @@
+{
+ "name": "Archery target",
+ "texture": "target.png",
+ "texture_size": [
+  36,
+  15
+ ],
+ "description": "Archery target on wooden legs.",
+ "parts": [
+  {
+   "name": "leg_left",
+   "position": [
+    -5,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -0.5,
+      0,
+      -0.5
+     ],
+     "to": [
+      0.5,
+      4,
+      0.5
+     ],
+     "uv": [
+      1,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "name": "leg_right",
+   "position": [
+    5,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -0.5,
+      0,
+      -0.5
+     ],
+     "to": [
+      0.5,
+      4,
+      0.5
+     ],
+     "uv": [
+      1,
+      1
+     ]
+    }
+   ]
+  },
+  {
+   "name": "face",
+   "position": [
+    0,
+    4,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -7,
+      0,
+      -0.5
+     ],
+     "to": [
+      7,
+      14,
+      0.5
+     ],
+     "uv": [
+      6,
+      1
+     ]
+    }
+   ]
+  }
+ ]
+}

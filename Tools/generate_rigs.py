@@ -726,6 +726,596 @@ def barrier():
     }
     write_rig('barrier', model, ['barrier.png'])
 
+
+# ---------------------------------------------------------------- 17. Armor stand (posable arms)
+def armor_stand():
+    p = TexPacker('armorstand')
+    stone, stone_d = (150, 150, 155), (110, 110, 116)
+    wood, wood_d = (146, 110, 66), (104, 76, 44)
+    uv_base = p.add(14, 1, 2)
+    uv_post = p.add(1, 10, 1)
+    uv_bar = p.add(11, 1, 1)
+    uv_shoulder = p.add(4, 1, 4)
+    img, size = p.finish()
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 5)
+    paint_faces(img, uv_base, 14, 1, 2, stone_d, stone_d, plain(stone_d), plain(stone), plain(stone_d), plain(stone_d))
+    paint_faces(img, uv_post, 1, 10, 1, wood_d, wood_d, plain(wood_d), plain(wood), plain(wood_d), plain(wood))
+    paint_faces(img, uv_bar, 11, 1, 1, wood_d, wood_d, plain(wood_d), plain(wood), plain(wood_d), plain(wood))
+    paint_faces(img, uv_shoulder, 4, 1, 4, stone_d, stone_d, plain(stone_d), plain(stone), plain(stone_d), plain(stone_d))
+    save(img, 'armorstand.png')
+
+    model = {
+        "name": "Armor stand",
+        "texture": "armorstand.png",
+        "texture_size": size,
+        "description": "Armor stand with posable arms - rotate an arm part to swing it.",
+        "parts": [
+            {"name": "base", "position": [0, 0, 0],
+             "shapes": [shape([-7, 0, -1], [7, 1, 1], uv_base)]},
+            {"name": "base_crossed", "position": [0, 0, 0], "rotation": [0, 90, 0],
+             "shapes": [shape([-7, 0, -1], [7, 1, 1], uv_base)]},
+            {"name": "post", "position": [0, 1, 0],
+             "shapes": [shape([-0.5, 0, -0.5], [0.5, 10, 0.5], uv_post)],
+             "parts": [
+                 {"name": "arm_left", "position": [0.5, 8, 0],
+                  "shapes": [shape([0, -0.5, -0.5], [5, 0.5, 0.5], uv_bar)]},
+                 {"name": "arm_right", "position": [-0.5, 8, 0],
+                  "shapes": [shape([-5, -0.5, -0.5], [0, 0.5, 0.5], uv_bar)]},
+                 {"name": "shoulder", "position": [0, 2, 0],
+                  "shapes": [shape([-2, 0, -2], [2, 1, 2], uv_shoulder)]},
+             ]},
+        ],
+    }
+    write_rig('armor-stand', model, ['armorstand.png'])
+
+# ---------------------------------------------------------------- 18. Crafting table
+def crafting_table():
+    p = TexPacker('craftingtable')
+    uv = p.add(16, 16, 16)
+    img, size = p.finish()
+    wood, wood_d = (160, 118, 70), (114, 80, 44)
+    def grid(i, x, y, w, h):
+        noise(i, x, y, w, h, wood, 6)
+        d = ImageDraw.Draw(i)
+        d.rectangle([x, y, x + w - 1, y + h - 1], outline=wood_d, width=2)
+        for k in (w // 3, 2 * w // 3):
+            d.line([x + k, y + 2, x + k, y + h - 3], fill=wood_d, width=1)
+            d.line([x + 2, y + k, x + w - 3, y + k], fill=wood_d, width=1)
+    def side(i, x, y, w, h):
+        noise(i, x, y, w, h, wood, 7)
+        d = ImageDraw.Draw(i)
+        d.rectangle([x + 2, y + h // 2, x + w // 2 - 1, y + h - 2], fill=(96, 72, 46, 255))
+        d.rectangle([x + w // 2 + 1, y + h // 2, x + w - 3, y + h - 2], fill=(120, 88, 56, 255))
+    paint_faces(img, uv, 16, 16, 16, grid, side, side, side, side, side)
+    save(img, 'craftingtable.png')
+
+    model = {
+        "name": "Crafting table",
+        "texture": "craftingtable.png",
+        "texture_size": size,
+        "description": "Classic crafting table block.",
+        "parts": [
+            {"name": "table", "position": [0, 8, 0],
+             "shapes": [shape([-8, -8, -8], [8, 8, 8], uv)]},
+        ],
+    }
+    write_rig('crafting-table', model, ['craftingtable.png'])
+
+# ---------------------------------------------------------------- 19. Furnace
+def furnace():
+    p = TexPacker('furnace')
+    uv = p.add(16, 16, 16)
+    img, size = p.finish()
+    stone, stone_d = (124, 124, 124), (92, 92, 92)
+    def side(i, x, y, w, h):
+        noise(i, x, y, w, h, stone, 8)
+    def front(i, x, y, w, h):
+        noise(i, x, y, w, h, stone, 8)
+        d = ImageDraw.Draw(i)
+        d.rectangle([x + 3, y + h // 2, x + w - 4, y + h - 2], fill=(28, 28, 30, 255))
+        d.rectangle([x + 4, y + h - 5, x + w - 5, y + h - 3], fill=(240, 150, 40, 255))
+        d.rectangle([x + 5, y + h - 4, x + 6, y + h - 3], fill=(255, 220, 90, 255))
+    paint_faces(img, uv, 16, 16, 16, side, side, side, front, side, side)
+    save(img, 'furnace.png')
+
+    model = {
+        "name": "Furnace",
+        "texture": "furnace.png",
+        "texture_size": size,
+        "description": "Stone furnace with a lit front.",
+        "parts": [
+            {"name": "furnace", "position": [0, 8, 0],
+             "shapes": [shape([-8, -8, -8], [8, 8, 8], uv)]},
+        ],
+    }
+    write_rig('furnace', model, ['furnace.png'])
+
+# ---------------------------------------------------------------- 20. Torch
+def torch():
+    p = TexPacker('torch')
+    uv_stick = p.add(1, 10, 1)
+    uv_head = p.add(2, 2, 2)
+    img, size = p.finish()
+    wood, wood_d = (140, 104, 60), (100, 72, 40)
+    glow, glow_d = (255, 216, 96), (232, 160, 40)
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 6)
+    paint_faces(img, uv_stick, 1, 10, 1, wood_d, wood_d, plain(wood_d), plain(wood), plain(wood_d), plain(wood))
+    paint_faces(img, uv_head, 2, 2, 2, glow_d, glow_d, plain(glow_d), plain(glow), plain(glow_d), plain(glow_d))
+    save(img, 'torch.png')
+
+    model = {
+        "name": "Torch",
+        "texture": "torch.png",
+        "texture_size": size,
+        "description": "Wooden torch with a glowing head.",
+        "parts": [
+            {"name": "stick", "position": [0, 0, 0],
+             "shapes": [shape([-0.5, 0, -0.5], [0.5, 10, 0.5], uv_stick)],
+             "parts": [
+                 {"name": "flame", "position": [0, 10, 0],
+                  "shapes": [shape([-1, 0, -1], [1, 2, 1], uv_head)]},
+             ]},
+        ],
+    }
+    write_rig('torch', model, ['torch.png'])
+
+# ---------------------------------------------------------------- 21. Lantern
+def lantern():
+    p = TexPacker('lantern')
+    iron, iron_d = (56, 60, 66), (40, 44, 50)
+    glow = (255, 214, 110)
+    uv_chain = p.add(1, 3, 1)
+    uv_cap = p.add(7, 1, 7)
+    uv_body = p.add(6, 6, 6)
+    img, size = p.finish()
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 5)
+    paint_faces(img, uv_chain, 1, 3, 1, iron_d, iron_d, plain(iron_d), plain(iron), plain(iron_d), plain(iron))
+    paint_faces(img, uv_cap, 7, 1, 7, iron, iron, plain(iron_d), plain(iron), plain(iron_d), plain(iron_d))
+    def window(i, x, y, w, h):
+        noise(i, x, y, w, h, iron_d, 4)
+        d = ImageDraw.Draw(i)
+        d.rectangle([x + 1, y + 1, x + w - 2, y + h - 2], fill=glow + (255,))
+    paint_faces(img, uv_body, 6, 6, 6, iron, glow, window, window, window, window)
+    save(img, 'lantern.png')
+
+    model = {
+        "name": "Lantern",
+        "texture": "lantern.png",
+        "texture_size": size,
+        "description": "Hanging lantern with a glowing body.",
+        "parts": [
+            {"name": "chain", "position": [0, 13, 0],
+             "shapes": [shape([-0.5, 0, -0.5], [0.5, 3, 0.5], uv_chain)]},
+            {"name": "cap", "position": [0, 12, 0],
+             "shapes": [shape([-3.5, 0, -3.5], [3.5, 1, 3.5], uv_cap)]},
+            {"name": "body", "position": [0, 6, 0],
+             "shapes": [shape([-3, 0, -3], [3, 6, 3], uv_body)]},
+        ],
+    }
+    write_rig('lantern', model, ['lantern.png'])
+
+# ---------------------------------------------------------------- 22. Oak door (posable)
+def door():
+    p = TexPacker('door')
+    uv_hinge = p.add(1, 16, 1)
+    uv_door = p.add(16, 16, 1)
+    img, size = p.finish()
+    wood, wood_d = (158, 120, 70), (108, 78, 44)
+    def doorface(i, x, y, w, h):
+        noise(i, x, y, w, h, wood, 7)
+        if w < 4 or h < 4:
+            return
+        d = ImageDraw.Draw(i)
+        d.rectangle([x + 1, y + 1, x + w - 2, y + h - 2], outline=wood_d, width=1)
+        d.line([x + 1, y + h // 2, x + w - 2, y + h // 2], fill=wood_d, width=1)
+        if w >= 8:
+            d.rectangle([x + w - 5, y + h // 2 - 4, x + w - 4, y + h // 2 - 2], fill=(70, 70, 74, 255))
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 6)
+    paint_faces(img, uv_hinge, 1, 16, 1, wood_d, wood_d, plain(wood_d), plain(wood), plain(wood_d), plain(wood))
+    paint_faces(img, uv_door, 16, 16, 1, plain(wood), plain(wood), doorface, doorface, doorface, doorface)
+    save(img, 'door.png')
+
+    model = {
+        "name": "Oak door",
+        "texture": "door.png",
+        "texture_size": size,
+        "description": "Oak door on a hinge - rotate the hinge part to swing it open.",
+        "parts": [
+            {"name": "hinge", "position": [-8, 0, 0],
+             "shapes": [shape([-0.5, 0, -0.5], [0.5, 16, 0.5], uv_hinge)],
+             "parts": [
+                 {"name": "door", "position": [8, 0, 0],
+                  "shapes": [shape([-8, 0, -0.75], [8, 16, 0.75], uv_door)]},
+             ]},
+        ],
+    }
+    write_rig('door', model, ['door.png'])
+
+# ---------------------------------------------------------------- 23. Fence
+def fence():
+    p = TexPacker('fence')
+    wood, wood_d = (156, 118, 72), (110, 80, 46)
+    uv_post = p.add(2, 6, 2)
+    uv_rail = p.add(16, 1, 1)
+    img, size = p.finish()
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 6)
+    paint_faces(img, uv_post, 2, 6, 2, wood_d, wood_d, plain(wood_d), plain(wood), plain(wood_d), plain(wood))
+    paint_faces(img, uv_rail, 16, 1, 1, wood_d, wood_d, plain(wood_d), plain(wood), plain(wood_d), plain(wood))
+    save(img, 'fence.png')
+
+    model = {
+        "name": "Fence",
+        "texture": "fence.png",
+        "texture_size": size,
+        "description": "Oak fence with two posts and rails.",
+        "parts": [
+            {"name": "post_left", "position": [-8, 0, 0],
+             "shapes": [shape([-1, 0, -1], [1, 6, 1], uv_post)]},
+            {"name": "post_right", "position": [8, 0, 0],
+             "shapes": [shape([-1, 0, -1], [1, 6, 1], uv_post)]},
+            {"name": "rail_lower", "position": [0, 2, 0],
+             "shapes": [shape([-8, 0, -0.5], [8, 1.25, 0.5], uv_rail)]},
+            {"name": "rail_upper", "position": [0, 4, 0],
+             "shapes": [shape([-8, 0, -0.5], [8, 1.25, 0.5], uv_rail)]},
+        ],
+    }
+    write_rig('fence', model, ['fence.png'])
+
+# ---------------------------------------------------------------- 24. Oak tree
+def tree():
+    p = TexPacker('tree')
+    bark, bark_d = (110, 84, 52), (82, 60, 34)
+    leaf, leaf_d = (74, 124, 56), (54, 96, 40)
+    uv_trunk = p.add(4, 10, 4)
+    uv_leaf = p.add(16, 8, 16)
+    uv_leaf_top = p.add(8, 4, 8)
+    img, size = p.finish()
+    def barkface(i, x, y, w, h):
+        noise(i, x, y, w, h, bark, 7)
+        d = ImageDraw.Draw(i)
+        for k in range(1, w, 2):
+            d.line([x + k, y, x + k, y + h - 1], fill=bark_d, width=1)
+    def leaves(i, x, y, w, h):
+        noise(i, x, y, w, h, leaf, 12)
+        d = ImageDraw.Draw(i)
+        for k in range(0, w, 2):
+            for j in range(0, h, 2):
+                if random.random() < 0.3:
+                    d.point((x + k, y + j), fill=leaf_d + (255,))
+    paint_faces(img, uv_trunk, 4, 10, 4, bark_d, bark_d, barkface, barkface, barkface, barkface)
+    paint_faces(img, uv_leaf, 16, 8, 16, leaf_d, leaf_d, leaves, leaves, leaves, leaves)
+    paint_faces(img, uv_leaf_top, 8, 4, 8, leaf_d, leaf_d, leaves, leaves, leaves, leaves)
+    save(img, 'tree.png')
+
+    model = {
+        "name": "Oak tree",
+        "texture": "tree.png",
+        "texture_size": size,
+        "description": "Oak tree with a leafy canopy.",
+        "parts": [
+            {"name": "trunk", "position": [0, 0, 0],
+             "shapes": [shape([-2, 0, -2], [2, 11, 2], uv_trunk)],
+             "parts": [
+                 {"name": "leaves", "position": [0, 9, 0],
+                  "shapes": [shape([-8, 0, -8], [8, 8, 8], uv_leaf)],
+                  "parts": [
+                      {"name": "leaves_top", "position": [0, 8, 0],
+                       "shapes": [shape([-4, 0, -4], [4, 4, 4], uv_leaf_top)]},
+                  ]},
+             ]},
+        ],
+    }
+    write_rig('tree', model, ['tree.png'])
+
+# ---------------------------------------------------------------- 25. Sofa
+def sofa():
+    p = TexPacker('sofa')
+    fab, fab_d = (128, 96, 158), (100, 72, 128)
+    wood_d = (84, 60, 40)
+    uv_base = p.add(24, 4, 10)
+    uv_back = p.add(24, 12, 2)
+    uv_arm = p.add(2, 8, 10)
+    uv_cushion = p.add(10, 2, 8)
+    uv_foot = p.add(2, 2, 2)
+    img, size = p.finish()
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 6)
+    paint_faces(img, uv_base, 24, 4, 10, fab_d, fab_d, plain(fab_d), plain(fab), plain(fab_d), plain(fab_d))
+    paint_faces(img, uv_back, 24, 12, 2, fab_d, fab_d, plain(fab_d), plain(fab), plain(fab_d), plain(fab_d))
+    paint_faces(img, uv_arm, 2, 8, 10, fab_d, fab_d, plain(fab_d), plain(fab), plain(fab_d), plain(fab_d))
+    paint_faces(img, uv_cushion, 10, 2, 8, fab_d, fab_d, plain(fab_d), plain(fab), plain(fab_d), plain(fab_d))
+    paint_faces(img, uv_foot, 2, 2, 2, wood_d, wood_d, plain(wood_d), plain(wood_d), plain(wood_d), plain(wood_d))
+    save(img, 'sofa.png')
+
+    model = {
+        "name": "Sofa",
+        "texture": "sofa.png",
+        "texture_size": size,
+        "description": "Three-seat sofa with cushions and armrests.",
+        "parts": [
+            {"name": "foot_front_left", "position": [-10, 0, 4],
+             "shapes": [shape([-1, 0, -1], [1, 2, 1], uv_foot)]},
+            {"name": "foot_front_right", "position": [10, 0, 4],
+             "shapes": [shape([-1, 0, -1], [1, 2, 1], uv_foot)]},
+            {"name": "foot_back_left", "position": [-10, 0, -4],
+             "shapes": [shape([-1, 0, -1], [1, 2, 1], uv_foot)]},
+            {"name": "foot_back_right", "position": [10, 0, -4],
+             "shapes": [shape([-1, 0, -1], [1, 2, 1], uv_foot)]},
+            {"name": "base", "position": [0, 2, 0],
+             "shapes": [shape([-12, 0, -5], [12, 4, 5], uv_base)]},
+            {"name": "cushion_left", "position": [-5.5, 6, 0],
+             "shapes": [shape([-5, 0, -4], [5, 1.5, 4], uv_cushion)]},
+            {"name": "cushion_right", "position": [5.5, 6, 0],
+             "shapes": [shape([-5, 0, -4], [5, 1.5, 4], uv_cushion)]},
+            {"name": "backrest", "position": [0, 6, -4],
+             "shapes": [shape([-12, 0, -1], [12, 12, 1], uv_back)]},
+            {"name": "armrest_left", "position": [-13, 6, 0],
+             "shapes": [shape([-1, 0, -5], [1, 8, 5], uv_arm)]},
+            {"name": "armrest_right", "position": [13, 6, 0],
+             "shapes": [shape([-1, 0, -5], [1, 8, 5], uv_arm)]},
+        ],
+    }
+    write_rig('sofa', model, ['sofa.png'])
+
+# ---------------------------------------------------------------- 26. Anvil
+def anvil():
+    p = TexPacker('anvil')
+    iron, iron_d = (72, 74, 80), (50, 52, 58)
+    uv_base = p.add(6, 2, 4)
+    uv_waist = p.add(3, 3, 2)
+    uv_top = p.add(12, 2, 4)
+    img, size = p.finish()
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 5)
+    paint_faces(img, uv_base, 6, 2, 4, iron_d, iron_d, plain(iron_d), plain(iron), plain(iron_d), plain(iron_d))
+    paint_faces(img, uv_waist, 3, 3, 2, iron_d, iron_d, plain(iron_d), plain(iron), plain(iron_d), plain(iron_d))
+    paint_faces(img, uv_top, 12, 2, 4, iron, iron, plain(iron_d), plain(iron), plain(iron_d), plain(iron_d))
+    save(img, 'anvil.png')
+
+    model = {
+        "name": "Anvil",
+        "texture": "anvil.png",
+        "texture_size": size,
+        "description": "Classic anvil on a sturdy base.",
+        "parts": [
+            {"name": "base", "position": [0, 0, 0],
+             "shapes": [shape([-3, 0, -2], [3, 2, 2], uv_base)]},
+            {"name": "waist", "position": [0, 2, 0],
+             "shapes": [shape([-1.5, 0, -1], [1.5, 3, 1], uv_waist)]},
+            {"name": "top", "position": [0, 5, 0],
+             "shapes": [shape([-6, 0, -2], [6, 2, 2], uv_top)]},
+        ],
+    }
+    write_rig('anvil', model, ['anvil.png'])
+
+# ---------------------------------------------------------------- 27. Cauldron
+def cauldron():
+    p = TexPacker('cauldron')
+    iron, iron_d = (66, 68, 74), (46, 48, 54)
+    water = (52, 92, 168)
+    uv_body = p.add(12, 8, 12)
+    uv_rim = p.add(14, 1, 14)
+    img, size = p.finish()
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 6)
+    def waterface(i, x, y, w, h):
+        noise(i, x, y, w, h, water, 8)
+    paint_faces(img, uv_body, 12, 8, 12, water, iron_d, plain(iron_d), plain(iron), plain(iron_d), plain(iron_d))
+    paint_faces(img, uv_rim, 14, 1, 14, iron, iron, plain(iron_d), plain(iron), plain(iron_d), plain(iron_d))
+    save(img, 'cauldron.png')
+
+    model = {
+        "name": "Cauldron",
+        "texture": "cauldron.png",
+        "texture_size": size,
+        "description": "Iron cauldron filled with water.",
+        "parts": [
+            {"name": "body", "position": [0, 0, 0],
+             "shapes": [shape([-6, 0, -6], [6, 8, 6], uv_body)]},
+            {"name": "rim", "position": [0, 8, 0],
+             "shapes": [shape([-7, 0, -7], [7, 1, 7], uv_rim)]},
+        ],
+    }
+    write_rig('cauldron', model, ['cauldron.png'])
+
+# ---------------------------------------------------------------- 28. Hay bale
+def hay_bale():
+    p = TexPacker('haybale')
+    uv = p.add(16, 16, 16)
+    img, size = p.finish()
+    hay, hay_d = (196, 168, 76), (150, 124, 48)
+    def side(i, x, y, w, h):
+        noise(i, x, y, w, h, hay, 10)
+        d = ImageDraw.Draw(i)
+        for k in range(0, w, 3):
+            d.line([x + k, y, x + k, y + h - 1], fill=hay_d, width=1)
+    def top(i, x, y, w, h):
+        noise(i, x, y, w, h, hay, 10)
+        d = ImageDraw.Draw(i)
+        for k in range(0, w, 3):
+            d.line([x + k, y, x + k, y + h - 1], fill=hay_d, width=1)
+        for k in range(0, h, 4):
+            d.line([x, y + k, x + w - 1, y + k], fill=hay_d, width=1)
+    paint_faces(img, uv, 16, 16, 16, top, top, side, side, side, side)
+    save(img, 'haybale.png')
+
+    model = {
+        "name": "Hay bale",
+        "texture": "haybale.png",
+        "texture_size": size,
+        "description": "Bale of hay with banded sides.",
+        "parts": [
+            {"name": "bale", "position": [0, 8, 0],
+             "shapes": [shape([-8, -8, -8], [8, 8, 8], uv)]},
+        ],
+    }
+    write_rig('hay-bale', model, ['haybale.png'])
+
+# ---------------------------------------------------------------- 29. Archery target
+def target():
+    p = TexPacker('target')
+    wood, wood_d = (128, 96, 56), (92, 66, 36)
+    uv_leg = p.add(1, 4, 1)
+    uv_face = p.add(14, 14, 1)
+    img, size = p.finish()
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 6)
+    paint_faces(img, uv_leg, 1, 4, 1, wood_d, wood_d, plain(wood_d), plain(wood), plain(wood_d), plain(wood))
+    def rings(i, x, y, w, h):
+        noise(i, x, y, w, h, (232, 232, 228), 4)
+        if w < 8 or h < 8:
+            return
+        d = ImageDraw.Draw(i)
+        cx, cy = x + w / 2, y + h / 2
+        for r, col in ((w / 2 - 1, (40, 40, 44)), (w / 2 - 1 - w / 5, (226, 60, 48)),
+                       (w / 2 - 1 - 2 * w / 5, (240, 240, 236)), (w / 2 - 1 - 3 * w / 5, (226, 60, 48))):
+            if r <= 1:
+                continue
+            d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=col, width=1)
+        d.ellipse([cx - 2, cy - 2, cx + 2, cy + 2], fill=(240, 200, 60, 255))
+    paint_faces(img, uv_face, 14, 14, 1, wood_d, wood_d, plain(wood_d), rings, plain(wood_d), plain(wood_d))
+    save(img, 'target.png')
+
+    model = {
+        "name": "Archery target",
+        "texture": "target.png",
+        "texture_size": size,
+        "description": "Archery target on wooden legs.",
+        "parts": [
+            {"name": "leg_left", "position": [-5, 0, 0],
+             "shapes": [shape([-0.5, 0, -0.5], [0.5, 4, 0.5], uv_leg)]},
+            {"name": "leg_right", "position": [5, 0, 0],
+             "shapes": [shape([-0.5, 0, -0.5], [0.5, 4, 0.5], uv_leg)]},
+            {"name": "face", "position": [0, 4, 0],
+             "shapes": [shape([-7, 0, -0.5], [7, 14, 0.5], uv_face)]},
+        ],
+    }
+    write_rig('target', model, ['target.png'])
+
+# ---------------------------------------------------------------- 30. Fire hydrant
+def hydrant():
+    p = TexPacker('hydrant')
+    red, red_d = (196, 54, 44), (150, 36, 30)
+    uv_base = p.add(6, 1, 6)
+    uv_barrel = p.add(4, 7, 4)
+    uv_dome = p.add(3, 1, 3)
+    uv_nozzle = p.add(1, 2, 2)
+    img, size = p.finish()
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 5)
+    paint_faces(img, uv_base, 6, 1, 6, red_d, red_d, plain(red_d), plain(red), plain(red_d), plain(red_d))
+    paint_faces(img, uv_barrel, 4, 7, 4, red_d, red_d, plain(red_d), plain(red), plain(red_d), plain(red_d))
+    paint_faces(img, uv_dome, 3, 1, 3, red_d, red_d, plain(red_d), plain(red), plain(red_d), plain(red_d))
+    paint_faces(img, uv_nozzle, 1, 2, 2, red_d, red_d, plain(red_d), plain(red), plain(red_d), plain(red_d))
+    save(img, 'hydrant.png')
+
+    model = {
+        "name": "Fire hydrant",
+        "texture": "hydrant.png",
+        "texture_size": size,
+        "description": "Classic red fire hydrant.",
+        "parts": [
+            {"name": "base", "position": [0, 0, 0],
+             "shapes": [shape([-3, 0, -3], [3, 1, 3], uv_base)]},
+            {"name": "barrel", "position": [0, 1, 0],
+             "shapes": [shape([-2, 0, -2], [2, 7, 2], uv_barrel)],
+             "parts": [
+                 {"name": "dome", "position": [0, 7, 0],
+                  "shapes": [shape([-1.5, 0, -1.5], [1.5, 1, 1.5], uv_dome)]},
+                 {"name": "nozzle_left", "position": [-2, 4, 0],
+                  "shapes": [shape([-0.5, -1, -1], [0.5, 1, 1], uv_nozzle)]},
+                 {"name": "nozzle_right", "position": [2, 4, 0],
+                  "shapes": [shape([-0.5, -1, -1], [0.5, 1, 1], uv_nozzle)]},
+                 {"name": "cap_front", "position": [0, 4, 2],
+                  "shapes": [shape([-1, -1, -0.5], [1, 1, 0.5], uv_nozzle)]},
+             ]},
+        ],
+    }
+    write_rig('hydrant', model, ['hydrant.png'])
+
+# ---------------------------------------------------------------- 31. Stop sign
+def stopsign():
+    p = TexPacker('stopsign')
+    gray, gray_d = (150, 152, 158), (108, 110, 116)
+    red = (188, 40, 34)
+    uv_post = p.add(1, 12, 1)
+    uv_sign = p.add(10, 10, 1)
+    img, size = p.finish()
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 5)
+    paint_faces(img, uv_post, 1, 12, 1, gray_d, gray_d, plain(gray_d), plain(gray), plain(gray_d), plain(gray))
+    def sign(i, x, y, w, h):
+        noise(i, x, y, w, h, red, 6)
+        d = ImageDraw.Draw(i)
+        m = 1
+        # white border octagon (square with cut corners)
+        d.polygon([(x + m + 2, y + m), (x + w - m - 3, y + m), (x + w - m, y + m + 2), (x + w - m, y + h - m - 3),
+                   (x + w - m - 3, y + h - m), (x + m + 2, y + h - m), (x + m, y + h - m - 3), (x + m, y + m + 2)],
+                  outline=(240, 240, 240, 255))
+        d.line([x + 3, y + h // 2, x + w - 4, y + h // 2], fill=(240, 240, 240, 255), width=2)
+    paint_faces(img, uv_sign, 10, 10, 1, red, red, sign, sign, sign, sign)
+    save(img, 'stopsign.png')
+
+    model = {
+        "name": "Stop sign",
+        "texture": "stopsign.png",
+        "texture_size": size,
+        "description": "Road stop sign on a pole.",
+        "parts": [
+            {"name": "post", "position": [0, 0, 0],
+             "shapes": [shape([-0.5, 0, -0.5], [0.5, 12, 0.5], uv_post)]},
+            {"name": "sign", "position": [0, 12, 0],
+             "shapes": [shape([-5, 0, -0.5], [5, 10, 0.5], uv_sign)]},
+        ],
+    }
+    write_rig('stopsign', model, ['stopsign.png'])
+
+# ---------------------------------------------------------------- 32. Campfire
+def campfire():
+    p = TexPacker('campfire')
+    log, log_d = (96, 68, 38), (70, 48, 26)
+    stone, stone_d = (128, 128, 132), (94, 94, 100)
+    ember = (236, 120, 36)
+    uv_log = p.add(12, 1, 2)
+    uv_stone = p.add(2, 1, 2)
+    uv_ember = p.add(6, 1, 6)
+    img, size = p.finish()
+    def plain(c):
+        return lambda i, x, y, w, h: noise(i, x, y, w, h, c, 6)
+    paint_faces(img, uv_log, 12, 1, 2, log_d, log_d, plain(log_d), plain(log), plain(log_d), plain(log_d))
+    paint_faces(img, uv_stone, 2, 1, 2, stone_d, stone_d, plain(stone_d), plain(stone), plain(stone_d), plain(stone_d))
+    def embers(i, x, y, w, h):
+        noise(i, x, y, w, h, ember, 20)
+    paint_faces(img, uv_ember, 6, 0.5, 6, ember, ember, embers, embers, embers, embers)
+    save(img, 'campfire.png')
+
+    def stone_at(x, z):
+        return {"name": f"stone_{x}_{z}", "position": [x, 0, z],
+                "shapes": [shape([-1, 0, -1], [1, 1, 1], uv_stone)]}
+
+    model = {
+        "name": "Campfire",
+        "texture": "campfire.png",
+        "texture_size": size,
+        "description": "Campfire with crossed logs, a stone ring and glowing embers.",
+        "parts": [
+            stone_at(-5, 0), stone_at(5, 0), stone_at(0, -5), stone_at(0, 5),
+            stone_at(-4, -4), stone_at(4, 4), stone_at(4, -4), stone_at(-4, 4),
+            {"name": "log_a", "position": [0, 0, 0],
+             "shapes": [shape([-6, 0.5, -1], [6, 1.5, 1], uv_log)]},
+            {"name": "log_b", "position": [0, 0, 0], "rotation": [0, 90, 0],
+             "shapes": [shape([-6, 0.5, -1], [6, 1.5, 1], uv_log)]},
+            {"name": "embers", "position": [0, 1.5, 0],
+             "shapes": [shape([-3, 0, -3], [3, 1, 3], uv_ember)]},
+        ],
+    }
+    write_rig('campfire', model, ['campfire.png'])
+
 # ---------------------------------------------------------------- repack the pre-existing rigs
 def repack_existing():
     """The four original rigs already have correct UVs in Rigs/*.json; they
@@ -768,6 +1358,22 @@ def index():
         ("Wooden crate", "A classic 16x16 wooden crate prop", "crate.zip"),
         ("Traffic cone", "Orange traffic cone with reflective stripe", "traffic-cone.zip"),
         ("Speaker", "Audio speaker with woofer detail", "speaker.zip"),
+        ("Armor stand", "Armor stand with posable arms - rotate an arm part to swing it", "armor-stand.zip"),
+        ("Crafting table", "Classic crafting table block", "crafting-table.zip"),
+        ("Furnace", "Stone furnace with a lit front", "furnace.zip"),
+        ("Torch", "Wooden torch with a glowing head", "torch.zip"),
+        ("Lantern", "Hanging lantern with a glowing body", "lantern.zip"),
+        ("Oak door", "Oak door on a hinge - rotate the hinge part to swing it open", "door.zip"),
+        ("Fence", "Oak fence with two posts and rails", "fence.zip"),
+        ("Oak tree", "Oak tree with a leafy canopy", "tree.zip"),
+        ("Sofa", "Three-seat sofa with cushions and armrests", "sofa.zip"),
+        ("Anvil", "Classic anvil on a sturdy base", "anvil.zip"),
+        ("Cauldron", "Iron cauldron filled with water", "cauldron.zip"),
+        ("Hay bale", "Bale of hay with banded sides", "hay-bale.zip"),
+        ("Archery target", "Archery target on wooden legs", "target.zip"),
+        ("Fire hydrant", "Classic red fire hydrant", "hydrant.zip"),
+        ("Stop sign", "Road stop sign on a pole", "stopsign.zip"),
+        ("Campfire", "Campfire with crossed logs, a stone ring and glowing embers", "campfire.zip"),
     ]
     d = {"rigs": [
         {"name": n, "author": "Mine-imator Reforged", "description": desc, "file": f}
@@ -781,6 +1387,9 @@ if __name__ == '__main__':
     print("Generating rigs...")
     mannequin(); stickman(); monitor(); billboard(); table(); chair()
     bookshelf(); barrel(); chest(); streetlamp(); bench(); barrier()
+    armor_stand(); crafting_table(); furnace(); torch(); lantern(); door()
+    fence(); tree(); sofa(); anvil(); cauldron(); hay_bale()
+    target(); hydrant(); stopsign(); campfire()
     repack_existing()
     index()
     print("Done.")

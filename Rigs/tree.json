@@ -1,0 +1,96 @@
+{
+ "name": "Oak tree",
+ "texture": "tree.png",
+ "texture_size": [
+  115,
+  24
+ ],
+ "description": "Oak tree with a leafy canopy.",
+ "parts": [
+  {
+   "name": "trunk",
+   "position": [
+    0,
+    0,
+    0
+   ],
+   "shapes": [
+    {
+     "type": "box",
+     "from": [
+      -2,
+      0,
+      -2
+     ],
+     "to": [
+      2,
+      11,
+      2
+     ],
+     "uv": [
+      4,
+      4
+     ]
+    }
+   ],
+   "parts": [
+    {
+     "name": "leaves",
+     "position": [
+      0,
+      9,
+      0
+     ],
+     "shapes": [
+      {
+       "type": "box",
+       "from": [
+        -8,
+        0,
+        -8
+       ],
+       "to": [
+        8,
+        8,
+        8
+       ],
+       "uv": [
+        33,
+        16
+       ]
+      }
+     ],
+     "parts": [
+      {
+       "name": "leaves_top",
+       "position": [
+        0,
+        8,
+        0
+       ],
+       "shapes": [
+        {
+         "type": "box",
+         "from": [
+          -4,
+          0,
+          -4
+         ],
+         "to": [
+          4,
+          4,
+          4
+         ],
+         "uv": [
+          90,
+          8
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

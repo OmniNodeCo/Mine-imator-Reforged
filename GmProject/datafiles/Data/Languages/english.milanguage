@@ -394,6 +394,8 @@
 		"resetrender": "Are you sure you want to reset all render settings?"
 	},
 	"filedialog/": {
+		"saverig": "Rig pack",
+		"saverigcaption": "Choose where to save the rig pack",
 		"open/": {
 			"image": "Images",
 			"imagecaption": "Open image or Minecraft map",
@@ -621,9 +623,9 @@
 		"caption": "Download rigs",
 		"search": "Search rigs...",
 		"downloading": "Downloading %1... %2%",
-		"done": "%1 downloaded and imported",
 		"loading": "Loading rig library...",
 		"refresh": "Reload the rig library from the server",
+		"done": "%1 saved",
 		"empty": "No rigs found",
 		"offline": "Could not reach the rig library. Check your internet connection.",
 		"more": "And %1 more..."

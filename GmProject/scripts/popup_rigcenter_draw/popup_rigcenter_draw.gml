@@ -120,7 +120,7 @@ function popup_rigcenter_draw()
 
 /// popup_rigcenter_download(rig)
 /// @arg rig
-/// @desc Starts downloading the given rig entry.
+/// @desc Asks where to save the given rig entry and starts downloading it there.
 
 function popup_rigcenter_download(rig)
 {
@@ -131,13 +131,23 @@ function popup_rigcenter_download(rig)
 	filename = rig[?"file"]
 	name = rig[?"name"]
 	
+	// Ask the user where to save the rig pack
+	var path;
+	path = file_dialog_save(text_get("filedialogsaverig") + " (*.zip)|*.zip", filename, setting_rigs_dir, text_get("filedialogsaverigcaption"))
+	if (path = "")
+		return 0
+	path = filename_new_ext(path, ".zip")
+	
 	popup.downloading = filename
-	popup.downloading_path = rigs_directory + filename_name(filename)
+	popup.downloading_path = path
 	popup.downloading_name = name
 	popup.progress = 0
 	popup.fail_message = ""
 	
-	log("Rig center: downloading", filename)
-	http_rigs_file = http_get_file(link_rigs + filename, popup.downloading_path)
+	// Remember the folder for the next download
+	setting_rigs_dir = filename_dir(path)
+	
+	log("Rig center: downloading", filename, "to", path)
+	http_rigs_file = http_get_file(link_rigs + filename, path)
 	return 1
 }

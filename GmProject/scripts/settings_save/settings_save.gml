@@ -57,6 +57,7 @@ function settings_save()
 		
 		json_save_var("fps", room_speed)
 		json_save_var("project_folder", json_string_encode(setting_project_folder))
+		json_save_var("rigs_dir", json_string_encode(setting_rigs_dir))
 		json_save_var_bool("backup", setting_backup)
 		json_save_var("backup_time", setting_backup_time)
 		json_save_var("backup_amount", setting_backup_amount)
