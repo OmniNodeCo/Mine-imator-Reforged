@@ -26,7 +26,7 @@ os.makedirs('Rigs', exist_ok=True)
 
 PROJECT_FORMAT = 35          # e_project.FORMAT_CTB_106 (project_format macro)
 MATERIAL_FORMAT_LABPBR = 2   # e_material.FORMAT_LABPBR (resource default)
-CREATED_IN = "2.0.2 Reforged 1.0.6"
+CREATED_IN = "2.0.2 Reforged 1.0.7"
 
 # ---------------------------------------------------------------- helpers
 def canvas(w, h):

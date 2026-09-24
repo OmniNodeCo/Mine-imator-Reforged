@@ -4,6 +4,27 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.0.7 (2026-09-24)
+
+### Upgraded assets
+
+* **Minecraft 26.3 final.** The bundled Minecraft assets are upgraded from
+  the 26.3 snapshot 9 preview to the full 26.3 release, with the final
+  textures and models (including the copper chests and copper golem
+  statues). 26.3 is the default on a fresh install; 26.2 ships alongside
+  it and both are selectable in Settings
+* **Self-hosted asset updates.** The in-app asset updater now checks this
+  project's own GitHub releases instead of mineimator.com, so new
+  Minecraft versions can be downloaded straight from the app (Update
+  notification -> download) without shipping a new build. Future releases
+  publish the `versions.midata` feed next to the per-version asset files
+
+### Fixes
+
+* When the default Minecraft asset version is missing (e.g. a development
+  build without the release assets), the app now falls back to the newest
+  available version in `Data/Minecraft` instead of failing to start
+
 ## Reforged 1.0.6 (2026-09-24)
 
 ### New features

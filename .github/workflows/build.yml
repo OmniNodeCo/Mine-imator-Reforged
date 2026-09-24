@@ -75,7 +75,22 @@ jobs:
         run: python3 Tools/fetch_minecraft_assets.py --latest --dry-run
 
       - name: Live range check (validates release.yml's default range)
-        run: python3 Tools/fetch_minecraft_assets.py --range 1.21:26.3 --dry-run
+        run: |
+          RANGE=$(python3 - <<'EOF'
+          import re
+          s = open(".github/workflows/release.yml").read()
+          m = re.search(r"mc_range:.*?default: \"([^\"]*)\"", s, re.S)
+          if m is None:
+              raise SystemExit("error: no mc_range default found in release.yml")
+          print(m.group(1))
+          EOF
+          )
+          echo "Default mc_range: ${RANGE:-<latest only>}"
+          if [ -n "$RANGE" ]; then
+            python3 Tools/fetch_minecraft_assets.py --range "$RANGE" --latest --dry-run
+          else
+            python3 Tools/fetch_minecraft_assets.py --latest --dry-run
+          fi
 
       - name: Validate workflow/action YAML
         run: |

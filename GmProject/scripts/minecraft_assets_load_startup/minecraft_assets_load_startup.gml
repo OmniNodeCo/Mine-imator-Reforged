@@ -48,7 +48,34 @@ function minecraft_assets_load_startup()
 		log("Could not load " + string(app.setting_minecraft_assets_version) + " assets. Resetting to default", minecraft_version)
 		app.setting_minecraft_assets_version = minecraft_version
 		if (!minecraft_assets_load_startup_version())
-			return false
+		{
+			// Default is missing too (e.g. development build without the
+			// release assets) - fall back to the newest available version
+			var newest, versionslist;
+			newest = ""
+			versionslist = file_find(minecraft_directory, ".midata")
+			for (var v = 0; v < array_length(versionslist); v++)
+			{
+				var version;
+				version = filename_new_ext(filename_name(versionslist[v]), "")
+				
+				if (version = "versions" || version = "languages" || version = "legacy")
+					continue
+				
+				if (version_newer(version, newest))
+					newest = version
+			}
+			
+			if (newest != "")
+			{
+				log("Falling back to newest available assets", newest)
+				app.setting_minecraft_assets_version = newest
+				if (!minecraft_assets_load_startup_version())
+					return false
+			}
+			else
+				return false
+		}
 	}
 	
 	// Load splash from folder

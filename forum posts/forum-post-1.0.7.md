@@ -1,8 +1,8 @@
-**Mine-imator Reforged 1.0.6**
+**Mine-imator Reforged 1.0.7**
 
 based on Mine-imator 2.0.2 (Continuation Build 1.0.15 Alpha 1)
 
-Two features headline this release: video screens you can put in your animation (TVs), and a downloadable rigs center.
+This release upgrades the bundled Minecraft assets to the full 26.3 release - and sets up in-app asset updates for the future.
 
 **Download:** [Github Release](https://github.com/OmniNodeCo/Mine-imator-Reforged/releases)
 
@@ -10,11 +10,9 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 
 **What's new**
 
-- **Video screens in animations (TVs):** download the "TV (video screen)" rig from the new rig center, drag it into your scene, select it and attach a video file - .mp4, .mov, .avi, .mkv or .webm - in the Info panel. The video plays right on the TV's screen: scrub the timeline and the TV shows that exact moment, hit play and it plays along with your animation, and rendered images and videos include the video on the screen. Each TV has its own volume control, up to 8 videos can play at the same time, and attaching or removing a video is undoable like any other edit.
-- **Downloadable rigs center (File > Download rigs, or the "Download rigs" entry in the workbench create panel):** a curated rig catalog inside the app. The best community rigs are right there: WinnyThailandFX's Character Model V3 and V2.3 and his Simple Easy Facial Rig V2, bWater's Studio's IK Rig and Roy Anims' rig pack (clicking these opens the author's official download page in your browser), plus the open-source LapisFR face rig (feminine and masculine variants) and the CC-licensed Alchemist and Traveller piglin models, which download directly - you choose where to save them (save dialog, folder remembered), and the pack is a normal .zip you can import into any project afterwards via File > Import. The catalog also ships Reforged's own feature rigs: the posable mannequin with IK-ready limbs (works with player skins) and the TV, monitor and billboard video screens for the video feature. Full credits and sources are in the repository (Rigs/CREDITS.md) - big thanks to the rig authors. It will grow with future updates - rig authors can submit more via pull request or issue on GitHub.
-- Rigs download to a folder of your choice; the pack contains a .miobject that imports cleanly via File > Import.
-- The rig catalog is now a curated community catalog: WinnyThailandFX's Character Model V3/V2.3 and facial rig, bWater's IK Rig and Roy Anims' pack (linked to their official pages), the LapisFR face rig and CC-licensed piglin models (hosted), plus the mannequin and video screens.
-- Version bumped to Reforged 1.0.6.
+- **Minecraft 26.3 final assets:** the bundled assets move from the 26.3 snapshot 9 preview to the complete 26.3 release, with the final textures and models (including the copper chests and copper golem statues). 26.3 is the default on a fresh install, and 26.2 ships alongside it - switch between them any time in Settings.
+- **In-app asset updates, self-hosted:** the asset updater now checks this project's own GitHub releases instead of mineimator.com. When a new Minecraft version comes out, the app can download it straight from the Update notification - no new build required. Future releases publish the update feed next to the asset files.
+- Version bumped to Reforged 1.0.7.
 
 **Known limitations**
 
@@ -26,6 +24,18 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 - The underlying Continuation Build base is alpha quality - expect the occasional rough edge.
 
 [spoiler="Show hidden contents — full changelog"]
+
+[spoiler="Version 1.0.7 (2026-09-24)"]
+[b]Upgraded assets[/b]
+- Minecraft 26.3 final: bundled assets upgraded from the 26.3 snapshot 9 preview to the full 26.3 release, with the final textures and models (including the copper chests and copper golem statues). 26.3 is the default on a fresh install; 26.2 ships alongside it, both selectable in Settings
+- Self-hosted asset updates: the in-app asset updater now checks this project's own GitHub releases instead of mineimator.com, so new Minecraft versions can be downloaded straight from the app (Update notification -> download) without shipping a new build
+
+[b]Fixes[/b]
+- When the default Minecraft asset version is missing (e.g. a development build without the release assets), the app now falls back to the newest available version in Data/Minecraft instead of failing to start
+
+[b]Versioning[/b]
+- Version bumped to Reforged 1.0.7 (full in-app version 2.0.2 Reforged 1.0.7)
+[/spoiler]
 
 [spoiler="Version 1.0.6 (2026-09-24)"]
 [b]New features[/b]

@@ -24,7 +24,8 @@ python3 Tools/fetch_minecraft_assets.py --self-test   # no network needed
 Explicit ids (`--mc-version`) and range endpoints resolve against every
 manifest entry — releases, pre-releases, and snapshots. If an id has no final
 release yet, it automatically falls back to its newest `{id}-*` pre-release
-(e.g. `--range 1.21:26.3` currently ends at `26.3-pre-2`). Range bodies cover
+(e.g. `--range 1.21:26.3` fell back to `26.3-pre-2` before 26.3 shipped). Range
+bodies cover
 releases only, so output stays stable day to day; add `--include-snapshots`
 to fetch every snapshot inside the range as well. `--range` is optional:
 a lone id (`--range 26.2`) fetches exactly that version, an empty end
@@ -58,7 +59,8 @@ entries appended, so existing texture slots never shift):
 * `block_textures`, `block_textures_animated` (PNGs with animation `.mcmeta`),
   `item_textures`, `model_textures` (entity textures), `particle_textures`
 
-Inherited from the template (`26.2`, format 9 — itself cloned from `1.20.2`):
+Inherited from the template (`26.3-snapshot-9`, format 9 — itself cloned from
+`26.2`/`1.20.2`):
 
 * `characters`, `special_blocks` (+ their `.mimodel`/`.miframes` rigs),
   `blocks`, `biomes`, `armor`, `sherds`, `map_colors`, `particles`, `swatches`,

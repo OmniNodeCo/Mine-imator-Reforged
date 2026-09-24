@@ -20,11 +20,11 @@ function macros()
 	
 	// Versions
 	#macro mineimator_version			"2.0.2"							// Base Mine-imator version
-	#macro mineimator_version_sub		"Reforged 1.0.6"		// Mod name and version (e.g. "Community Build 1.0.0")
+	#macro mineimator_version_sub		"Reforged 1.0.7"		// Mod name and version (e.g. "Community Build 1.0.0")
 	#macro mineimator_version_extra		""								// Additional suffix (e.g. "Alpha 1" or "Pre-Release 2")
 	#macro mineimator_version_full		(mineimator_version + ((mineimator_version_sub != "") ? " " + mineimator_version_sub : "") + ((mineimator_version_extra != "") ? " (" + mineimator_version_extra + ")" : ""))
 	#macro mineimator_version_date		"2026.09.24"
-	#macro minecraft_version			"26.3-snapshot-9"
+	#macro minecraft_version			"26.3"
 	#macro gm_runtime					GM_runtime_version
 	
 	// File formats
@@ -97,7 +97,7 @@ function macros()
 	#macro link_tutorials				"https://www.mineimator.com/tutorials2"
 	#macro link_download				"https://www.mineimator.com/download"
 	#macro link_upgrade					"https://www.mineimator.com/upgrade"
-	#macro link_assets					"https://www.mineimator.com/assets/"
+	#macro link_assets					"https://github.com/OmniNodeCo/Mine-imator-Reforged/releases/latest/download/"
 	#macro link_assets_versions			link_assets + "versions.midata"
 	#macro link_news					"https://www.mineimator.com/news.php?version=" + mineimator_version + "&platform=" + string(platform_get()) + "&os=" + os_get()
 	#macro link_skins					"https://www.mineimator.com/skin?username="

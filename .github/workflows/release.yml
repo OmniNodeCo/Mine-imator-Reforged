@@ -5,7 +5,7 @@
 #      and verifies its platform artifacts exist.
 #   2. Fetches Minecraft Java assets (piston-meta -> client jars -> Mine-imator
 #      .zip/.midata packages) for the configured range (optional, e.g.
-#      1.21:26.3 or a single version like 26.2; empty = latest release only)
+#      26.2:26.3 or a single version like 26.3; empty = latest release only)
 #      plus the auto-resolved latest release.
 #   3. Injects the fetched assets into each platform zip from that build run
 #      (no recompilation) and publishes a GitHub Release with per-platform
@@ -35,9 +35,9 @@ on:
         required: false
         default: ""
       mc_range:
-        description: "Minecraft assets range (start:end, single version like 26.2, or empty = latest release only)"
+        description: "Minecraft assets range (start:end, single version like 26.3, or empty = latest release only)"
         required: false
-        default: "26.2"
+        default: "26.2:26.3"
       no_latest:
         description: "Do NOT auto-include the latest Minecraft release"
         required: false
@@ -385,15 +385,21 @@ jobs:
           try:
               changelog = open("CHANGELOG.md").read().splitlines()
               section = []
-              for line in changelog[1:]:
-                  if line.startswith("## ") and section:
-                      break
-                  section.append(line)
+              started = False
+              for line in changelog:
+                  if line.startswith("## "):
+                      if started:
+                          break
+                      started = True
+                  if started:
+                      section.append(line)
               notes.extend(section)
               notes.append("")
           except OSError:
               pass
-          notes.append("## Minecraft assets (%d versions, latest %s)" % (len(versions), latest))
+          n_versions = len(versions)
+          notes.append("## Minecraft assets (%d version%s, latest %s)"
+                       % (n_versions, "" if n_versions == 1 else "s", latest))
           notes.append("")
           notes.append("Bundled and selectable in Settings: " + ", ".join(versions))
           notes.append("")
@@ -419,3 +425,5 @@ jobs:
           files: |
             dist/*.zip
             dist/*/*.zip
+            dist/*/versions.midata
+            dist/*/[0-9]*.midata
