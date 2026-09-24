@@ -625,6 +625,7 @@
 		"downloading": "Downloading %1... %2%",
 		"loading": "Loading rig library...",
 		"refresh": "Reload the rig library from the server",
+		"link": "(official download page)",
 		"done": "%1 saved",
 		"empty": "No rigs found",
 		"offline": "Could not reach the rig library. Check your internet connection.",

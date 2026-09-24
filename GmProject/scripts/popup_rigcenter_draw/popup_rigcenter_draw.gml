@@ -97,13 +97,25 @@ function popup_rigcenter_draw()
 			draw_label(rig[?"author"], rowx + content_width - 12, rowy + 10, fa_right, fa_bottom, c_text_tertiary, a_text_tertiary, font_caption)
 			
 			// Description
-			draw_label(rig[?"description"], rowx + 12, rowy + 28, fa_left, fa_bottom, c_text_secondary, a_text_secondary, font_caption)
+			var desc;
+			desc = rig[?"description"]
+			if (!is_undefined(rig[?"url"])) // Linked rig: downloads from the author's own page
+				desc = string(desc) + "  " + text_get("rigcenterlink")
+			draw_label(desc, rowx + 12, rowy + 28, fa_left, fa_bottom, c_text_secondary, a_text_secondary, font_caption)
 			
 			// Download status / action on click
 			var filename;
 			filename = rig[?"file"]
 			
-			if (popup.downloading = filename)
+			if (is_undefined(filename)) // Linked rig: open the official download page
+			{
+				if (mouse_left_pressed && hovered)
+				{
+					log("Rig center: opening download page", rig[?"url"])
+					url_open(rig[?"url"])
+				}
+			}
+			else if (popup.downloading = filename)
 			{
 				// Progress bar under the row
 				draw_box(rowx + 2, rowy + rowh - 8, (content_width - 4) * popup.progress, 3, false, c_accent, 1)

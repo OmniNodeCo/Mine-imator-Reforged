@@ -574,6 +574,7 @@
         "video_volume": { "return": "void", "args": [ "real", "int" ] },
         "video_volume_get": { "return": "real", "args": [ "int" ] },
         "video_width": { "return": "int", "args": [ "int" ] },
+        "url_open": { "return": "void", "args": [ "string" ] },
         "vertex_begin": { "return": "void", "args": [ "int", "int" ] },
         "vertex_color": { "return": "void", "args": [ "int", "int", "real" ] },
         "vertex_create_buffer": { "return": "int", "args": [] },

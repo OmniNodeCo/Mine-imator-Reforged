@@ -5,6 +5,7 @@
 
 #include <QApplication>
 #include <QClipboard>
+#include <QDesktopServices>
 #include <QDesktopWidget>
 #include <QMessageBox>
 #include <QPushButton>
@@ -452,6 +453,11 @@ namespace CppProject
 	void thread_task_end()
 	{
 		StringType::EndOmp();
+	}
+
+	void url_open(StringType url)
+	{
+		QDesktopServices::openUrl((QString)url);
 	}
 
 	void log_message(StringType text)

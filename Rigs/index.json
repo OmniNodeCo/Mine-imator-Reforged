@@ -1,196 +1,82 @@
 {
  "rigs": [
   {
-   "name": "Posable mannequin (IK)",
-   "author": "Mine-imator Reforged",
-   "description": "Posable figure with IK-ready bending arms and legs - rotate parts to pose, use IK targets in the frame editor. Also works with player skins.",
-   "file": "mannequin.zip"
+   "name": "WinnyThailandFX Character Model V3",
+   "author": "WinnythailandFX",
+   "description": "The famous posable character model: extruded 3D look, auto-3D faces, tons of shapes. Free.",
+   "url": "https://drive.google.com/file/d/1__jXpYUQh7-kKp2ecBYJx954oEw44AGw/view"
   },
   {
-   "name": "Stick figure (IK)",
+   "name": "WinnyThailandFX Character Model V2.3",
+   "author": "WinnythailandFX",
+   "description": "The classic V2 line of the character model, still maintained. Free.",
+   "url": "https://drive.google.com/file/d/1BUtCk4TM0PcKr3-pk8imKUF_OSzwBSHJ/view"
+  },
+  {
+   "name": "Winny's Simple Easy Facial Rig V2",
+   "author": "WinnythailandFX",
+   "description": "Simple facial rig made for the WCM character model: glowing eyes, custom pupils, fake AO. Free.",
+   "url": "https://drive.google.com/file/d/1qgLSVOc9BgP0OTOzv6CKLwwyBrk_TgiD/view"
+  },
+  {
+   "name": "IK Rig",
+   "author": "bWater's Studio",
+   "description": "The IK rig: controller-based inverse kinematics with animation layers, from Maya and Blender workflows. Free.",
+   "url": "https://www.mediafire.com/file/9921c33h5yr8r5h/IK_Rig.zip/file"
+  },
+  {
+   "name": "Mine-Imator Rig Pack #1",
+   "author": "Roy Anims",
+   "description": "Classic pack: extruded blocks, head accessories and hair rigs, fishing rod, item bar, shield rigs, face rigs. Free.",
+   "url": "http://www.mediafire.com/file/bmob28pxyhrlmu4/Mine-Imator_Pack_%231.zip/file"
+  },
+  {
+   "name": "LapisFR face rig - Feminine",
+   "author": "Jossamations",
+   "description": "Open-source facial rig with poseable eyes, eyebrows and mouths. For Mine-imator 2.0.0+.",
+   "file": "lapisfr-feminine.zip"
+  },
+  {
+   "name": "LapisFR face rig - Masculine",
+   "author": "Jossamations",
+   "description": "Open-source facial rig with poseable eyes, eyebrows and mouths. For Mine-imator 2.0.0+.",
+   "file": "lapisfr-masculine.zip"
+  },
+  {
+   "name": "Alchemist (piglin)",
+   "author": "seymourimadeit",
+   "description": "Posable piglin humanoid model (CC BY-NC-SA 4.0).",
+   "file": "alchemist.zip"
+  },
+  {
+   "name": "Traveller (piglin)",
+   "author": "seymourimadeit",
+   "description": "Posable piglin traveller model (CC BY-NC-SA 4.0).",
+   "file": "traveller.zip"
+  },
+  {
+   "name": "Posable mannequin (IK)",
    "author": "Mine-imator Reforged",
-   "description": "Thin posable stick figure with IK-ready limbs, perfect for animation practice.",
-   "file": "stickman.zip"
+   "description": "Posable mannequin with IK-ready bending arms and legs - rotate parts to pose, use IK targets in the frame editor. Works with player skins.",
+   "file": "mannequin.zip"
   },
   {
    "name": "TV (video screen)",
    "author": "Mine-imator Reforged",
-   "description": "Retro TV - attach a video file and it plays on the screen",
+   "description": "Retro TV - attach a video file and it plays on the screen.",
    "file": "tv.zip"
   },
   {
    "name": "Monitor (video screen)",
    "author": "Mine-imator Reforged",
-   "description": "Desktop monitor - attach a video file and it plays on the screen",
+   "description": "Desktop monitor - attach a video file and it plays on the screen.",
    "file": "monitor.zip"
   },
   {
    "name": "Billboard (video screen)",
    "author": "Mine-imator Reforged",
-   "description": "Large roadside billboard - attach a video file and it plays on the screen",
+   "description": "Large roadside billboard - attach a video file and it plays on the screen.",
    "file": "billboard.zip"
-  },
-  {
-   "name": "Table",
-   "author": "Mine-imator Reforged",
-   "description": "Wooden table with four legs",
-   "file": "table.zip"
-  },
-  {
-   "name": "Chair",
-   "author": "Mine-imator Reforged",
-   "description": "Wooden chair with backrest",
-   "file": "chair.zip"
-  },
-  {
-   "name": "Bookshelf",
-   "author": "Mine-imator Reforged",
-   "description": "Blocky bookshelf stacked with books",
-   "file": "bookshelf.zip"
-  },
-  {
-   "name": "Barrel",
-   "author": "Mine-imator Reforged",
-   "description": "Wooden barrel with metal hoops",
-   "file": "barrel.zip"
-  },
-  {
-   "name": "Chest",
-   "author": "Mine-imator Reforged",
-   "description": "Treasure chest with a posable lid - rotate the lid part to open it",
-   "file": "chest.zip"
-  },
-  {
-   "name": "Street lamp",
-   "author": "Mine-imator Reforged",
-   "description": "Street lamp with a lit lamp head on an arm",
-   "file": "streetlamp.zip"
-  },
-  {
-   "name": "Park bench",
-   "author": "Mine-imator Reforged",
-   "description": "Park bench with wooden slats and metal sides",
-   "file": "bench.zip"
-  },
-  {
-   "name": "Traffic barrier",
-   "author": "Mine-imator Reforged",
-   "description": "Striped construction barrier",
-   "file": "barrier.zip"
-  },
-  {
-   "name": "Wooden crate",
-   "author": "Mine-imator Reforged",
-   "description": "A classic 16x16 wooden crate prop",
-   "file": "crate.zip"
-  },
-  {
-   "name": "Traffic cone",
-   "author": "Mine-imator Reforged",
-   "description": "Orange traffic cone with reflective stripe",
-   "file": "traffic-cone.zip"
-  },
-  {
-   "name": "Speaker",
-   "author": "Mine-imator Reforged",
-   "description": "Audio speaker with woofer detail",
-   "file": "speaker.zip"
-  },
-  {
-   "name": "Armor stand",
-   "author": "Mine-imator Reforged",
-   "description": "Armor stand with posable arms - rotate an arm part to swing it",
-   "file": "armor-stand.zip"
-  },
-  {
-   "name": "Crafting table",
-   "author": "Mine-imator Reforged",
-   "description": "Classic crafting table block",
-   "file": "crafting-table.zip"
-  },
-  {
-   "name": "Furnace",
-   "author": "Mine-imator Reforged",
-   "description": "Stone furnace with a lit front",
-   "file": "furnace.zip"
-  },
-  {
-   "name": "Torch",
-   "author": "Mine-imator Reforged",
-   "description": "Wooden torch with a glowing head",
-   "file": "torch.zip"
-  },
-  {
-   "name": "Lantern",
-   "author": "Mine-imator Reforged",
-   "description": "Hanging lantern with a glowing body",
-   "file": "lantern.zip"
-  },
-  {
-   "name": "Oak door",
-   "author": "Mine-imator Reforged",
-   "description": "Oak door on a hinge - rotate the hinge part to swing it open",
-   "file": "door.zip"
-  },
-  {
-   "name": "Fence",
-   "author": "Mine-imator Reforged",
-   "description": "Oak fence with two posts and rails",
-   "file": "fence.zip"
-  },
-  {
-   "name": "Oak tree",
-   "author": "Mine-imator Reforged",
-   "description": "Oak tree with a leafy canopy",
-   "file": "tree.zip"
-  },
-  {
-   "name": "Sofa",
-   "author": "Mine-imator Reforged",
-   "description": "Three-seat sofa with cushions and armrests",
-   "file": "sofa.zip"
-  },
-  {
-   "name": "Anvil",
-   "author": "Mine-imator Reforged",
-   "description": "Classic anvil on a sturdy base",
-   "file": "anvil.zip"
-  },
-  {
-   "name": "Cauldron",
-   "author": "Mine-imator Reforged",
-   "description": "Iron cauldron filled with water",
-   "file": "cauldron.zip"
-  },
-  {
-   "name": "Hay bale",
-   "author": "Mine-imator Reforged",
-   "description": "Bale of hay with banded sides",
-   "file": "hay-bale.zip"
-  },
-  {
-   "name": "Archery target",
-   "author": "Mine-imator Reforged",
-   "description": "Archery target on wooden legs",
-   "file": "target.zip"
-  },
-  {
-   "name": "Fire hydrant",
-   "author": "Mine-imator Reforged",
-   "description": "Classic red fire hydrant",
-   "file": "hydrant.zip"
-  },
-  {
-   "name": "Stop sign",
-   "author": "Mine-imator Reforged",
-   "description": "Road stop sign on a pole",
-   "file": "stopsign.zip"
-  },
-  {
-   "name": "Campfire",
-   "author": "Mine-imator Reforged",
-   "description": "Campfire with crossed logs, a stone ring and glowing embers",
-   "file": "campfire.zip"
   }
  ]
 }

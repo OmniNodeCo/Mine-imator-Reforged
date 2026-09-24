@@ -8,18 +8,21 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
 ### New features
 
-* **Rig catalog doubled to 32 rigs.** New: armor stand (posable arms),
-  oak door (posable hinge — rotate it open), crafting table, furnace,
-  torch, lantern, fence, oak tree, sofa, anvil, cauldron, hay bale,
-  archery target, fire hydrant, stop sign and campfire — joining the
-  mannequin/stick figure (IK), video screens (TV, monitor, billboard),
-  furniture and street props
-* **Rig downloads save where you want.** Clicking a rig in the download
-  center opens a save dialog — pick any folder and the rig pack (.zip) is
-  downloaded there (the last used folder is remembered). The pack contains
-  a `.miobject` plus its `.mimodel` and textures, so you can import it
-  into any project afterwards with File ▸ Import. Rigs are no longer
-  imported automatically
+* **Rig catalog is now a curated community catalog.** The best community
+  rigs are one click away in the download center: WinnyThailandFX's
+  Character Model V3 and V2.3 and his Simple Easy Facial Rig V2,
+  bWater's Studio's IK Rig and Roy Anims' rig pack open their official
+  download pages, while the open-source LapisFR face rig (feminine and
+  masculine) and the CC-licensed Alchemist and Traveller piglin models
+  download directly. Plus Reforged's own feature rigs: the posable
+  mannequin (IK) and the TV, monitor and billboard video screens.
+  Credits and sources: `Rigs/CREDITS.md`
+* **Rig downloads save where you want.** Clicking a hosted rig in the
+  download center opens a save dialog — pick any folder and the rig pack
+  (.zip) is downloaded there (the last used folder is remembered). The
+  pack contains a `.miobject` plus its `.mimodel` and textures, so you
+  can import it into any project afterwards with File ▸ Import. Rigs are
+  no longer imported automatically
 
 ### Fixes
 
