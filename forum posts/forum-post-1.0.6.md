@@ -1,4 +1,4 @@
-**Mine-imator Reforged 1.0.5**
+**Mine-imator Reforged 1.0.6**
 
 based on Mine-imator 2.0.2 (Continuation Build 1.0.15 Alpha 1)
 
@@ -14,7 +14,7 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 - **Downloadable rigs center (File > Download rigs, or the "Download rigs" entry in the workbench create panel):** a curated rig catalog inside the app. The best community rigs are right there: WinnyThailandFX's Character Model V3 and V2.3 and his Simple Easy Facial Rig V2, bWater's Studio's IK Rig and Roy Anims' rig pack (clicking these opens the author's official download page in your browser), plus the open-source LapisFR face rig (feminine and masculine variants) and the CC-licensed Alchemist and Traveller piglin models, which download directly - you choose where to save them (save dialog, folder remembered), and the pack is a normal .zip you can import into any project afterwards via File > Import. The catalog also ships Reforged's own feature rigs: the posable mannequin with IK-ready limbs (works with player skins) and the TV, monitor and billboard video screens for the video feature. Full credits and sources are in the repository (Rigs/CREDITS.md) - big thanks to the rig authors. It will grow with future updates - rig authors can submit more via pull request or issue on GitHub.
 - Rigs download to a folder of your choice; the pack contains a .miobject that imports cleanly via File > Import.
 - The rig catalog is now a curated community catalog: WinnyThailandFX's Character Model V3/V2.3 and facial rig, bWater's IK Rig and Roy Anims' pack (linked to their official pages), the LapisFR face rig and CC-licensed piglin models (hosted), plus the mannequin and video screens.
-- Version bumped to Reforged 1.0.5.
+- Version bumped to Reforged 1.0.6.
 
 **Known limitations**
 
@@ -27,9 +27,21 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 
 [spoiler="Show hidden contents — full changelog"]
 
+[spoiler="Version 1.0.6 (2026-09-24)"]
+[b]New features[/b]
+- Curated community rig catalog: WinnyThailandFX's Character Model V3/V2.3 and Simple Easy Facial Rig V2, bWater's Studio's IK Rig and Roy Anims' rig pack open their official download pages; the open-source LapisFR face rig (feminine and masculine) and CC BY-NC-SA piglin models (Alchemist, Traveller) download directly. Reforged's mannequin (IK) and TV/monitor/billboard video screens stay. Full credits, sources and licenses in Rigs/CREDITS.md
+- Linked rigs open the author's own download page in your browser (new url_open engine function) - rigs are never re-hosted without permission
+
+[b]Fixes[/b]
+- Fixed the TV screen's aspect being squashed to a square that overflowed the TV body (double-normalization in the rig generator)
+
+[b]Versioning[/b]
+- Version bumped to Reforged 1.0.6 (full in-app version 2.0.2 Reforged 1.0.6)
+[/spoiler]
+
 [spoiler="Version 1.0.5 (2026-09-11)"]
 [b]New features[/b]
-- Curated community rig catalog: WinnyThailandFX's Character Model V3/V2.3 + Simple Easy Facial Rig V2, bWater's Studio's IK Rig and Roy Anims' rig pack (open the author's official page), the open-source LapisFR face rig (F/M) and CC BY-NC-SA piglin models (direct download), plus the posable mannequin (IK) and TV/monitor/billboard video screens. Credits in Rigs/CREDITS.md
+- Rig catalog doubled to 32 rigs: armor stand (posable arms), oak door (posable hinge), crafting table, furnace, torch, lantern, fence, oak tree, sofa, anvil, cauldron, hay bale, archery target, fire hydrant, stop sign, campfire
 - Rig downloads save to a folder of your choice (save dialog, last folder remembered) instead of auto-importing; the pack is a normal .zip with a .miobject inside for easy importing
 
 [b]Fixes[/b]
