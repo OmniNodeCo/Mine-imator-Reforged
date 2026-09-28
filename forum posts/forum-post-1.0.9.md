@@ -1,19 +1,18 @@
-**Mine-imator Reforged 1.0.8**
+**Mine-imator Reforged 1.0.9**
 
 based on Mine-imator 2.0.2 (Continuation Build 1.0.15 Alpha 1)
 
-The rig center grows up: direct in-app downloads with progress, and a proper two-pane download GUI.
+A quick follow-up to 1.0.8: fixes for the rig center's layout - text that went missing and elements that sat past the popup's edge.
 
 **Download:** [Github Release](https://github.com/OmniNodeCo/Mine-imator-Reforged/releases)
 
 Available for Windows x64, Linux x64, and macOS x86_64.
 
-**What's new**
+**What's fixed**
 
-- **Direct downloads with progress:** community rigs download straight into the app now. WinnyThailandFX's Character Model V3 and V2.3 and his Simple Easy Facial Rig V2 download directly from his Google Drive with a live progress bar, percentage and file size - no browser, no clicking through a download page. Rigs hosted on MediaFire (bWater's IK Rig, Roy Anims' pack) can't be fetched that way; they keep a clearly labeled "Open download page" button. Downloaded packs are verified to be real rig zips, and if a server sends a page instead of the file the app tells you and points you to the author's page.
-- **Rig center redesign:** a two-pane download center - searchable list on the left with source tags and live per-rig progress, details on the right with the description, the rig's source, a Download button and the save location. Click a rig to select it, click it again (or hit Download) and choose where to save; the pack is a normal .zip with a .miobject inside that imports via File > Import. The rig library now downloads from the project's own GitHub releases.
-- Fixed a stack of rig center issues: the search field overlapping the list, the refresh button sitting on the close button, a failed download blanking the whole catalog, progress overflowing when the server doesn't report a file size, and reopening the window resetting a running download's progress.
-- Version bumped to Reforged 1.0.8.
+- **Missing text at the bottom of the rig center:** the details pane, the download buttons and the "And N more..." note rendered past the popup's bottom edge, and the app culls anything outside the popup - so they were invisible. The layout is now anchored to the popup's real bottom edge.
+- Multi-line text (rig descriptions, error messages) drew its lines only 2-4 pixels apart, garbling it; line spacing now matches the font height.
+- Long rig names no longer run under the author label in the list.
 
 **Known limitations**
 
@@ -25,6 +24,16 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 - The underlying Continuation Build base is alpha quality - expect the occasional rough edge.
 
 [spoiler="Show hidden contents — full changelog"]
+
+[spoiler="Version 1.0.9 (2026-09-28)"]
+[b]Fixes[/b]
+- Rig center layout: the details pane, download buttons and the "And N more..." note rendered past the popup's bottom edge (the popup framework's height value overcounts on fixed-size popups), which made their text disappear - the layout is now anchored to the popup's real bottom edge
+- Wrapped text (rig descriptions, error messages) drew its lines only 2-4 pixels apart, garbling multi-line text; line spacing now matches the font height
+- Long rig names no longer run under the author label in the list
+
+[b]Versioning[/b]
+- Version bumped to Reforged 1.0.9 (full in-app version 2.0.2 Reforged 1.0.9)
+[/spoiler]
 
 [spoiler="Version 1.0.8 (2026-09-28)"]
 [b]New features[/b]

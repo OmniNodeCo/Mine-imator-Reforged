@@ -4,6 +4,20 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.0.9 (2026-09-28)
+
+### Fixes
+
+* **Rig center layout: missing text and bottom-edge overflow.** The details
+  pane, download buttons and the "And N more..." note rendered past the
+  popup's bottom edge (the popup framework's height value overcounts on
+  fixed-size popups), which made their text disappear - the layout is now
+  anchored to the popup's real bottom edge
+* Wrapped text (rig descriptions, error messages) drew its lines only 2-4
+  pixels apart, garbling multi-line text; line spacing now matches the font
+  height
+* Long rig names no longer run under the author label in the list
+
 ## Reforged 1.0.8 (2026-09-28)
 
 ### New features
@@ -29,15 +43,6 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
 * The rig center search field and its label overlapped the rig list,
   and the refresh button sat on top of the popup's close button
-* The details pane, download buttons and the "And N more..." note
-  rendered past the popup's bottom edge (the popup framework's height
-  value overcounts on fixed-size popups), which also made their text
-  disappear - the layout is now anchored to the popup's real bottom
-  edge
-* Wrapped text (rig descriptions, error messages) drew its lines only
-  2-4 pixels apart, garbling multi-line text; line spacing now matches
-  the font height
-* Long rig names no longer run under the author label in the list
 * A failed rig download blanked the whole catalog with an "offline"
   error - failures now show next to the rig and the list stays usable
 * Download progress no longer overflows when the server doesn't report
