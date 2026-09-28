@@ -1,8 +1,8 @@
-**Mine-imator Reforged 1.0.7**
+**Mine-imator Reforged 1.0.8**
 
 based on Mine-imator 2.0.2 (Continuation Build 1.0.15 Alpha 1)
 
-This release upgrades the bundled Minecraft assets to the full 26.3 release - and sets up in-app asset updates for the future.
+The rig center grows up: direct in-app downloads with progress, and a proper two-pane download GUI.
 
 **Download:** [Github Release](https://github.com/OmniNodeCo/Mine-imator-Reforged/releases)
 
@@ -10,9 +10,10 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 
 **What's new**
 
-- **Minecraft 26.3 final assets:** the bundled assets move from the 26.3 snapshot 9 preview to the complete 26.3 release, with the final textures and models (including the copper chests and copper golem statues). 26.3 is the default on a fresh install, and 26.2 ships alongside it - switch between them any time in Settings.
-- **In-app asset updates, self-hosted:** the asset updater now checks this project's own GitHub releases instead of mineimator.com. When a new Minecraft version comes out, the app can download it straight from the Update notification - no new build required. Future releases publish the update feed next to the asset files.
-- Version bumped to Reforged 1.0.7.
+- **Direct downloads with progress:** community rigs download straight into the app now. WinnyThailandFX's Character Model V3 and V2.3 and his Simple Easy Facial Rig V2 download directly from his Google Drive with a live progress bar, percentage and file size - no browser, no clicking through a download page. Rigs hosted on MediaFire (bWater's IK Rig, Roy Anims' pack) can't be fetched that way; they keep a clearly labeled "Open download page" button. Downloaded packs are verified to be real rig zips, and if a server sends a page instead of the file the app tells you and points you to the author's page.
+- **Rig center redesign:** a two-pane download center - searchable list on the left with source tags and live per-rig progress, details on the right with the description, the rig's source, a Download button and the save location. Click a rig to select it, click it again (or hit Download) and choose where to save; the pack is a normal .zip with a .miobject inside that imports via File > Import. The rig library now downloads from the project's own GitHub releases.
+- Fixed a stack of rig center issues: the search field overlapping the list, the refresh button sitting on the close button, a failed download blanking the whole catalog, progress overflowing when the server doesn't report a file size, and reopening the window resetting a running download's progress.
+- Version bumped to Reforged 1.0.8.
 
 **Known limitations**
 
@@ -24,6 +25,21 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 - The underlying Continuation Build base is alpha quality - expect the occasional rough edge.
 
 [spoiler="Show hidden contents — full changelog"]
+
+[spoiler="Version 1.0.8 (2026-09-28)"]
+[b]New features[/b]
+- Direct rig downloads with progress: WinnyThailandFX's Character Model V3/V2.3 and Simple Easy Facial Rig V2 download straight into the app from the author's Google Drive (live progress bar, percentage, downloaded size). MediaFire-hosted rigs (bWater's IK Rig, Roy Anims' pack) keep a clearly labeled "Open download page" button. Every download is verified to be a real zip; if a server sends a page instead, the app says so and offers the author's page
+- Rig center redesign: two-pane layout (searchable list + details pane with description, source and a proper Download button), source tags and live per-row progress in the list; the rig library downloads from the project's GitHub releases now
+
+[b]Fixes[/b]
+- Rig center: the search field overlapped the list and the refresh button sat on the close button
+- A failed rig download no longer blanks the whole catalog with an "offline" error - failures show next to the rig and the list stays usable
+- Download progress no longer overflows when the server doesn't report a file size (shows downloaded amount + pulsing bar)
+- Reopening the rig center during a download keeps the progress instead of resetting it
+
+[b]Versioning[/b]
+- Version bumped to Reforged 1.0.8 (full in-app version 2.0.2 Reforged 1.0.8)
+[/spoiler]
 
 [spoiler="Version 1.0.7 (2026-09-24)"]
 [b]Upgraded assets[/b]

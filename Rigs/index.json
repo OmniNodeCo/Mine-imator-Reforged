@@ -1,82 +1,88 @@
 {
- "rigs": [
-  {
-   "name": "WinnyThailandFX Character Model V3",
-   "author": "WinnythailandFX",
-   "description": "The famous posable character model: extruded 3D look, auto-3D faces, tons of shapes. Free.",
-   "url": "https://drive.google.com/file/d/1__jXpYUQh7-kKp2ecBYJx954oEw44AGw/view"
-  },
-  {
-   "name": "WinnyThailandFX Character Model V2.3",
-   "author": "WinnythailandFX",
-   "description": "The classic V2 line of the character model, still maintained. Free.",
-   "url": "https://drive.google.com/file/d/1BUtCk4TM0PcKr3-pk8imKUF_OSzwBSHJ/view"
-  },
-  {
-   "name": "Winny's Simple Easy Facial Rig V2",
-   "author": "WinnythailandFX",
-   "description": "Simple facial rig made for the WCM character model: glowing eyes, custom pupils, fake AO. Free.",
-   "url": "https://drive.google.com/file/d/1qgLSVOc9BgP0OTOzv6CKLwwyBrk_TgiD/view"
-  },
-  {
-   "name": "IK Rig",
-   "author": "bWater's Studio",
-   "description": "The IK rig: controller-based inverse kinematics with animation layers, from Maya and Blender workflows. Free.",
-   "url": "https://www.mediafire.com/file/9921c33h5yr8r5h/IK_Rig.zip/file"
-  },
-  {
-   "name": "Mine-Imator Rig Pack #1",
-   "author": "Roy Anims",
-   "description": "Classic pack: extruded blocks, head accessories and hair rigs, fishing rod, item bar, shield rigs, face rigs. Free.",
-   "url": "http://www.mediafire.com/file/bmob28pxyhrlmu4/Mine-Imator_Pack_%231.zip/file"
-  },
-  {
-   "name": "LapisFR face rig - Feminine",
-   "author": "Jossamations",
-   "description": "Open-source facial rig with poseable eyes, eyebrows and mouths. For Mine-imator 2.0.0+.",
-   "file": "lapisfr-feminine.zip"
-  },
-  {
-   "name": "LapisFR face rig - Masculine",
-   "author": "Jossamations",
-   "description": "Open-source facial rig with poseable eyes, eyebrows and mouths. For Mine-imator 2.0.0+.",
-   "file": "lapisfr-masculine.zip"
-  },
-  {
-   "name": "Alchemist (piglin)",
-   "author": "seymourimadeit",
-   "description": "Posable piglin humanoid model (CC BY-NC-SA 4.0).",
-   "file": "alchemist.zip"
-  },
-  {
-   "name": "Traveller (piglin)",
-   "author": "seymourimadeit",
-   "description": "Posable piglin traveller model (CC BY-NC-SA 4.0).",
-   "file": "traveller.zip"
-  },
-  {
-   "name": "Posable mannequin (IK)",
-   "author": "Mine-imator Reforged",
-   "description": "Posable mannequin with IK-ready bending arms and legs - rotate parts to pose, use IK targets in the frame editor. Works with player skins.",
-   "file": "mannequin.zip"
-  },
-  {
-   "name": "TV (video screen)",
-   "author": "Mine-imator Reforged",
-   "description": "Retro TV - attach a video file and it plays on the screen.",
-   "file": "tv.zip"
-  },
-  {
-   "name": "Monitor (video screen)",
-   "author": "Mine-imator Reforged",
-   "description": "Desktop monitor - attach a video file and it plays on the screen.",
-   "file": "monitor.zip"
-  },
-  {
-   "name": "Billboard (video screen)",
-   "author": "Mine-imator Reforged",
-   "description": "Large roadside billboard - attach a video file and it plays on the screen.",
-   "file": "billboard.zip"
-  }
- ]
+    "rigs": [
+        {
+            "name": "WinnyThailandFX Character Model V3",
+            "author": "WinnythailandFX",
+            "description": "The famous posable character model: extruded 3D look, auto-3D faces, tons of shapes. Free.",
+            "url": "https://drive.google.com/file/d/1__jXpYUQh7-kKp2ecBYJx954oEw44AGw/view",
+            "filename": "winnythailandfx-character-model-v3.zip",
+            "direct": "https://drive.usercontent.google.com/download?id=1__jXpYUQh7-kKp2ecBYJx954oEw44AGw&export=download&confirm=t"
+        },
+        {
+            "name": "WinnyThailandFX Character Model V2.3",
+            "author": "WinnythailandFX",
+            "description": "The classic V2 line of the character model, still maintained. Free.",
+            "url": "https://drive.google.com/file/d/1BUtCk4TM0PcKr3-pk8imKUF_OSzwBSHJ/view",
+            "filename": "winnythailandfx-character-model-v2-3.zip",
+            "direct": "https://drive.usercontent.google.com/download?id=1BUtCk4TM0PcKr3-pk8imKUF_OSzwBSHJ&export=download&confirm=t"
+        },
+        {
+            "name": "Winny's Simple Easy Facial Rig V2",
+            "author": "WinnythailandFX",
+            "description": "Simple facial rig made for the WCM character model: glowing eyes, custom pupils, fake AO. Free.",
+            "url": "https://drive.google.com/file/d/1qgLSVOc9BgP0OTOzv6CKLwwyBrk_TgiD/view",
+            "filename": "winny-simple-easy-facial-rig-v2.zip",
+            "direct": "https://drive.usercontent.google.com/download?id=1qgLSVOc9BgP0OTOzv6CKLwwyBrk_TgiD&export=download&confirm=t"
+        },
+        {
+            "name": "IK Rig",
+            "author": "bWater's Studio",
+            "description": "The IK rig: controller-based inverse kinematics with animation layers, from Maya and Blender workflows. Free.",
+            "url": "https://www.mediafire.com/file/9921c33h5yr8r5h/IK_Rig.zip/file"
+        },
+        {
+            "name": "Mine-Imator Rig Pack #1",
+            "author": "Roy Anims",
+            "description": "Classic pack: extruded blocks, head accessories and hair rigs, fishing rod, item bar, shield rigs, face rigs. Free.",
+            "url": "http://www.mediafire.com/file/bmob28pxyhrlmu4/Mine-Imator_Pack_%231.zip/file"
+        },
+        {
+            "name": "LapisFR face rig - Feminine",
+            "author": "Jossamations",
+            "description": "Open-source facial rig with poseable eyes, eyebrows and mouths. For Mine-imator 2.0.0+.",
+            "file": "lapisfr-feminine.zip"
+        },
+        {
+            "name": "LapisFR face rig - Masculine",
+            "author": "Jossamations",
+            "description": "Open-source facial rig with poseable eyes, eyebrows and mouths. For Mine-imator 2.0.0+.",
+            "file": "lapisfr-masculine.zip"
+        },
+        {
+            "name": "Alchemist (piglin)",
+            "author": "seymourimadeit",
+            "description": "Posable piglin humanoid model (CC BY-NC-SA 4.0).",
+            "file": "alchemist.zip"
+        },
+        {
+            "name": "Traveller (piglin)",
+            "author": "seymourimadeit",
+            "description": "Posable piglin traveller model (CC BY-NC-SA 4.0).",
+            "file": "traveller.zip"
+        },
+        {
+            "name": "Posable mannequin (IK)",
+            "author": "Mine-imator Reforged",
+            "description": "Posable mannequin with IK-ready bending arms and legs - rotate parts to pose, use IK targets in the frame editor. Works with player skins.",
+            "file": "mannequin.zip"
+        },
+        {
+            "name": "TV (video screen)",
+            "author": "Mine-imator Reforged",
+            "description": "Retro TV - attach a video file and it plays on the screen.",
+            "file": "tv.zip"
+        },
+        {
+            "name": "Monitor (video screen)",
+            "author": "Mine-imator Reforged",
+            "description": "Desktop monitor - attach a video file and it plays on the screen.",
+            "file": "monitor.zip"
+        },
+        {
+            "name": "Billboard (video screen)",
+            "author": "Mine-imator Reforged",
+            "description": "Large roadside billboard - attach a video file and it plays on the screen.",
+            "file": "billboard.zip"
+        }
+    ]
 }

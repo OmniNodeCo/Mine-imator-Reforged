@@ -11,12 +11,12 @@ function popup_rigcenter_show()
 		tbx_search.text = ""
 		filtered = []
 		scroll = 0
-		downloading = ""
-		downloading_path = ""
-		downloading_name = ""
-		progress = 0
+		selected = undefined
 		fail_message = ""
 	}
+	
+	// Download state (downloading, progress, saved path) is kept across
+	// reopens so a running download stays visible
 	
 	// Fetch the catalog on first open (http_rigs_* live on the app object,
 	// the HTTP handler runs in app scope - keep the request out of the

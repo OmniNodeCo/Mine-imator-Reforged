@@ -1,20 +1,30 @@
 # Rig catalog credits
 
-The rig center catalog (`index.json`) mixes two kinds of entries:
+The rig center catalog (`index.json`) mixes three kinds of entries:
 
-* **Hosted rigs** (`file: *.zip`) — packed in this repository and downloaded
-  directly by the app.
-* **Linked rigs** (`url: ...`) — open the author's official download page in
-  your browser. These are never re-hosted; you always get them from the
-  author's own source.
+* **Hosted rigs** (`file: *.zip`) — packed in this repository (attached to
+  every GitHub release) and downloaded directly by the app.
+* **Direct rigs** (`direct: ...`, plus `url: ...` as fallback) — downloaded
+  directly by the app from the author's own server (Google Drive), with an
+  "Open download page" button as fallback. The app never re-hosts these;
+  you always get them from the author's own source.
+* **Linked rigs** (`url: ...` only) — hosts like MediaFire don't allow
+  direct downloads, so these open the author's official download page in
+  your browser. These are never re-hosted either; you always get them from
+  the author's own source.
+
+## Direct community rigs
+
+| Rig | Author | Source |
+| --- | --- | --- |
+| WinnyThailandFX Character Model V3 (Beta 2 Hotfix 1) | WinnythailandFX | [Mine-imator forums topic](https://www.mineimatorforums.com/index.php?/topic/89929-wcm-winnythailandfxs-character-model-v3-beta-2-hotfix-1/) (author's Google Drive) |
+| WinnyThailandFX Character Model V2.3 | WinnythailandFX | same topic as above (author's Google Drive) |
+| Winny's Simple Easy Facial Rig V2 | WinnythailandFX | [Mine-imator forums topic](https://www.mineimatorforums.com/index.php?/topic/96231-winnys-simple-easy-facial-rig-v2-tutorial-include/) (author's Google Drive) |
 
 ## Linked community rigs
 
 | Rig | Author | Source |
 | --- | --- | --- |
-| WinnyThailandFX Character Model V3 (Beta 2 Hotfix 1) | WinnythailandFX | [Mine-imator forums topic](https://www.mineimatorforums.com/index.php?/topic/89929-wcm-winnythailandfxs-character-model-v3-beta-2-hotfix-1/) |
-| WinnyThailandFX Character Model V2.3 | WinnythailandFX | same topic as above |
-| Winny's Simple Easy Facial Rig V2 | WinnythailandFX | [Mine-imator forums topic](https://www.mineimatorforums.com/index.php?/topic/96231-winnys-simple-easy-facial-rig-v2-tutorial-include/) |
 | IK Rig | bWater's Studio | [YouTube release video](https://www.youtube.com/watch?v=p0OtRd8meJc) |
 | Mine-Imator Rig Pack #1 | Roy Anims | [Mine-imator forums topic](https://www.mineimatorforums.com/index.php?/topic/78596-mine-imator-rig-pack/) |
 

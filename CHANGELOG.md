@@ -4,6 +4,38 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.0.8 (2026-09-28)
+
+### New features
+
+* **Direct rig downloads with progress.** The rig center no longer just
+  opens a web page for community rigs: WinnyThailandFX's Character Model
+  V3 and V2.3 and the Simple Easy Facial Rig V2 now download straight
+  into the app from the author's Google Drive, with a live progress bar,
+  percentage and downloaded size. Rigs hosted on MediaFire (bWater's IK
+  Rig, Roy Anims' pack) can't be fetched directly and keep a clearly
+  labeled "Open download page" button. Every downloaded pack is verified
+  to be a real zip - if a server sends a page instead, the app says so
+  and offers the author's page instead
+* **Rig center redesign.** The download center is now a two-pane
+  browser: a searchable list on the left (source tags, live per-row
+  progress) and a details pane on the right with the description, the
+  rig's source, a proper Download button and the save location. Click a
+  row to select it, click again (or press Download) to save it where you
+  want. The rig library itself now downloads from this project's GitHub
+  releases instead of a source branch
+
+### Fixes
+
+* The rig center search field and its label overlapped the rig list,
+  and the refresh button sat on top of the popup's close button
+* A failed rig download blanked the whole catalog with an "offline"
+  error - failures now show next to the rig and the list stays usable
+* Download progress no longer overflows when the server doesn't report
+  a file size; it shows the downloaded amount and a pulsing bar instead
+* Reopening the rig center while a download runs keeps showing its
+  progress instead of resetting it
+
 ## Reforged 1.0.7 (2026-09-24)
 
 ### Upgraded assets

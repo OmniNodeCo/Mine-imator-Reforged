@@ -415,6 +415,12 @@ jobs:
           FORK_VERSION: ${{ needs.plan.outputs.fork_version }}
           BUNDLE: ${{ needs.plan.outputs.bundle }}
 
+      - name: Stage rig library (in-app rig center downloads)
+        run: |
+          mkdir -p dist/rigs
+          cp Rigs/index.json Rigs/*.zip dist/rigs/
+          ls -la dist/rigs
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -427,3 +433,4 @@ jobs:
             dist/*/*.zip
             dist/*/versions.midata
             dist/*/[0-9]*.midata
+            dist/*/index.json

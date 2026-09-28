@@ -51,17 +51,23 @@ function app_startup_interface_popups()
 	}
 	
 	// Downloadable rigs center
-	popup_rigcenter = new_popup("rigcenter", popup_rigcenter_draw, 640, 480, true, true, false, true)
+	popup_rigcenter = new_popup("rigcenter", popup_rigcenter_draw, 760, 480, true, true, false, true)
 	with (popup_rigcenter)
 	{
 		tbx_search = new_textbox(true, 0, "")
 		list = undefined
 		filtered = []
 		scroll = 0
+		selected = undefined
 		downloading = ""
 		downloading_path = ""
 		downloading_name = ""
-		progress = 0
+		downloaded_bytes = 0
+		total_bytes = 0
+		error_message = ""
+		error_name = ""
+		saved_name = ""
+		saved_path = ""
 		fail_message = ""
 		loading = false
 	}

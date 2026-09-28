@@ -20,10 +20,10 @@ function macros()
 	
 	// Versions
 	#macro mineimator_version			"2.0.2"							// Base Mine-imator version
-	#macro mineimator_version_sub		"Reforged 1.0.7"		// Mod name and version (e.g. "Community Build 1.0.0")
+	#macro mineimator_version_sub		"Reforged 1.0.8"		// Mod name and version (e.g. "Community Build 1.0.0")
 	#macro mineimator_version_extra		""								// Additional suffix (e.g. "Alpha 1" or "Pre-Release 2")
 	#macro mineimator_version_full		(mineimator_version + ((mineimator_version_sub != "") ? " " + mineimator_version_sub : "") + ((mineimator_version_extra != "") ? " (" + mineimator_version_extra + ")" : ""))
-	#macro mineimator_version_date		"2026.09.24"
+	#macro mineimator_version_date		"2026.09.28"
 	#macro minecraft_version			"26.3"
 	#macro gm_runtime					GM_runtime_version
 	
@@ -113,7 +113,7 @@ function macros()
 	// Rig center catalog (index.json + rig zips in this repo, Rigs/ folder).
 	// Points at the Reforged branch so new rigs can be added without an app
 	// update; repoint (e.g. to master) when the folder is synced elsewhere.
-	#macro link_rigs					"https://github.com/OmniNodeCo/Mine-imator-Reforged/raw/arena/01a07263-mine-imator-reforged/Rigs/"
+	#macro link_rigs					"https://github.com/OmniNodeCo/Mine-imator-Reforged/releases/latest/download/"
 	#macro link_donate					"https://www.mineimator.com/donate"
 	#macro show_modelbench_popup		!dev_mode && true
 	#macro http_ok						200

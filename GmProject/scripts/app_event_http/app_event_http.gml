@@ -211,7 +211,29 @@ function app_event_http()
 				popup_rigcenter.list = decodedmap[?"rigs"]
 				popup_rigcenter.loading = false
 				popup_rigcenter.fail_message = ""
-				log("Rig center: loaded", ds_list_size(popup_rigcenter.list), "rigs")
+				
+				// Keep the selection if the rig is still in the new list,
+				// otherwise select the first entry
+				var selvalid, rigcount, rigi, rigmap;
+				selvalid = false
+				rigcount = ds_list_size(popup_rigcenter.list)
+				if (ds_map_valid(popup_rigcenter.selected))
+				{
+					for (rigi = 0; rigi < rigcount; rigi++)
+					{
+						rigmap = popup_rigcenter.list[|rigi]
+						if (ds_map_valid(rigmap) && rigmap[?"name"] = popup_rigcenter.selected[?"name"])
+						{
+							popup_rigcenter.selected = rigmap
+							selvalid = true
+							break
+						}
+					}
+				}
+				if (!selvalid && rigcount > 0)
+					popup_rigcenter.selected = popup_rigcenter.list[|0]
+				
+				log("Rig center: loaded", rigcount, "rigs")
 			}
 			else
 			{
@@ -230,21 +252,54 @@ function app_event_http()
 	else if (async_load[?"id"] = http_rigs_file)
 	{
 		if (async_load[?"status"] = 1)
-			popup_rigcenter.progress = (async_load[?"sizeDownloaded"] / max(1, async_load[?"contentLength"]))
+		{
+			popup_rigcenter.downloaded_bytes = async_load[?"sizeDownloaded"]
+			popup_rigcenter.total_bytes = async_load[?"contentLength"]
+		}
 		else
 		{
 			http_rigs_file = null
 			
+			// The download must be an actual zip: servers like Google Drive
+			// can answer with an HTML page instead of the file
+			var valid, sentfile;
+			valid = false
+			sentfile = false
+			
 			if (async_load[?"status"] = 0 && async_load[?"http_status"] = http_ok && file_exists_lib(popup_rigcenter.downloading_path))
 			{
-				popup_rigcenter.progress = 1
+				sentfile = true
+				
+				var buffer;
+				buffer = buffer_load_lib(popup_rigcenter.downloading_path)
+				if (buffer >= 0)
+				{
+					if (buffer_get_size(buffer) >= 2)
+						valid = (buffer_peek(buffer, 0, buffer_u8) = 80 && buffer_peek(buffer, 1, buffer_u8) = 75)
+					buffer_delete(buffer)
+				}
+			}
+			
+			if (valid)
+			{
+				popup_rigcenter.saved_name = popup_rigcenter.downloading_name
+				popup_rigcenter.saved_path = popup_rigcenter.downloading_path
+				popup_rigcenter.error_message = ""
 				log("Rig center: saved", popup_rigcenter.downloading_path)
-				toast_new(e_toast.INFO, text_get("rigcenterdone", popup_rigcenter.downloading_name))
+				toast_new(e_toast.POSITIVE, text_get("rigcenterdone", popup_rigcenter.downloading_name))
 				popup_rigcenter.downloading = ""
 			}
 			else
 			{
-				popup_rigcenter.fail_message = text_get("rigcenteroffline")
+				// Remove the invalid file (e.g. the HTML page a server sent
+				// instead of the rig pack)
+				if (sentfile)
+					file_delete_lib(popup_rigcenter.downloading_path)
+				
+				popup_rigcenter.error_name = popup_rigcenter.downloading_name
+				popup_rigcenter.error_message = (sentfile ? text_get("rigcenternotzip") : text_get("rigcenterfailed", popup_rigcenter.downloading_name))
+				log("Rig center: download failed", popup_rigcenter.downloading_path)
+				toast_new(e_toast.NEGATIVE, text_get("rigcenterfailedtoast", popup_rigcenter.downloading_name))
 				popup_rigcenter.downloading = ""
 			}
 		}
