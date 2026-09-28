@@ -12,7 +12,7 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 
 - **Direct downloads with progress:** community rigs download straight into the app now. WinnyThailandFX's Character Model V3 and V2.3 and his Simple Easy Facial Rig V2 download directly from his Google Drive with a live progress bar, percentage and file size - no browser, no clicking through a download page. Rigs hosted on MediaFire (bWater's IK Rig, Roy Anims' pack) can't be fetched that way; they keep a clearly labeled "Open download page" button. Downloaded packs are verified to be real rig zips, and if a server sends a page instead of the file the app tells you and points you to the author's page.
 - **Rig center redesign:** a two-pane download center - searchable list on the left with source tags and live per-rig progress, details on the right with the description, the rig's source, a Download button and the save location. Click a rig to select it, click it again (or hit Download) and choose where to save; the pack is a normal .zip with a .miobject inside that imports via File > Import. The rig library now downloads from the project's own GitHub releases.
-- Fixed a stack of rig center issues: the search field overlapping the list, the refresh button sitting on the close button, a failed download blanking the whole catalog, progress overflowing when the server doesn't report a file size, and reopening the window resetting a running download's progress.
+- Fixed a stack of rig center issues: the search field overlapping the list, the refresh button sitting on the close button, the details pane and buttons rendering past the popup's bottom edge (which made text disappear), multi-line descriptions garbled by 2-4px line spacing, a failed download blanking the whole catalog, progress overflowing when the server doesn't report a file size, and reopening the window resetting a running download's progress.
 - Version bumped to Reforged 1.0.8.
 
 **Known limitations**
@@ -33,6 +33,9 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 
 [b]Fixes[/b]
 - Rig center: the search field overlapped the list and the refresh button sat on the close button
+- The details pane, download buttons and the "And N more..." note rendered past the popup's bottom edge (the popup framework's height value overcounts on fixed-size popups), which also made their text disappear - the layout is now anchored to the popup's real bottom edge
+- Wrapped text (rig descriptions, error messages) drew its lines only 2-4 pixels apart, garbling multi-line text; line spacing now matches the font height
+- Long rig names no longer run under the author label in the list
 - A failed rig download no longer blanks the whole catalog with an "offline" error - failures show next to the rig and the list stays usable
 - Download progress no longer overflows when the server doesn't report a file size (shows downloaded amount + pulsing bar)
 - Reopening the rig center during a download keeps the progress instead of resetting it

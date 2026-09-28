@@ -26,10 +26,14 @@ function popup_rigcenter_draw()
 	tab_next()
 	
 	// ---- Layout ----
-	var listx, listy, listh;
+	// The panes are anchored to the popup's bottom edge (content_y +
+	// content_height), NOT to dh: on fixed-height popups dh overcounts by
+	// the caption height and elements would end up below the popup
+	var listx, listy, listbottom, listh;
 	listx = dx + pad
 	listy = dy + pad + headerh
-	listh = dh - headerh - pad * 2
+	listbottom = content_y + content_height - pad
+	listh = listbottom - listy
 	
 	var detx, dety, detw, deth;
 	detx = listx + listw + pad
@@ -116,9 +120,13 @@ function popup_rigcenter_draw()
 			if (selected)
 				draw_box(rowx, rowy, 3, rowh - 4, false, c_accent, 1)
 			
-			// Name + author
+			// Name + author (the name is limited to leave room for the
+			// right-aligned author label)
+			draw_set_font(font_caption)
+			var authorwid;
+			authorwid = string_width(rig[?"author"])
 			draw_set_font(font_label)
-			draw_label(string_limit(rig[?"name"], listw - 24), rowx + 12, rowy + 12, fa_left, fa_bottom, selected ? c_text_main : c_text_secondary, 1, font_label)
+			draw_label(string_limit(rig[?"name"], listw - 24 - authorwid - 8), rowx + 12, rowy + 12, fa_left, fa_bottom, selected ? c_text_main : c_text_secondary, 1, font_label)
 			draw_label(rig[?"author"], rowx + listw - 12, rowy + 12, fa_right, fa_bottom, c_text_tertiary, a_text_tertiary, font_caption)
 			
 			// Status line: download progress, or the source of the rig
@@ -180,10 +188,11 @@ function popup_rigcenter_draw_details(rig, detx, dety, detw, deth)
 	var pad;
 	pad = 16
 	
-	// Name, author, description
-	draw_label(rig[?"name"], detx + pad, dety + 14, fa_left, fa_top, c_text_main, 1, font_heading, 2, detw - pad * 2)
-	draw_label(text_get("rigcenterby", rig[?"author"]), detx + pad, dety + 44, fa_left, fa_top, c_text_tertiary, a_text_tertiary, font_caption)
-	draw_label(rig[?"description"], detx + pad, dety + 62, fa_left, fa_top, c_text_secondary, a_text_secondary, font_body_big, 4, detw - pad * 2)
+	// Name, author, description (separation = line advance: roughly the
+	// font's line height, or wrapped lines overlap)
+	draw_label(rig[?"name"], detx + pad, dety + 14, fa_left, fa_top, c_text_main, 1, font_heading, 14, detw - pad * 2)
+	draw_label(text_get("rigcenterby", rig[?"author"]), detx + pad, dety + 48, fa_left, fa_top, c_text_tertiary, a_text_tertiary, font_caption)
+	draw_label(rig[?"description"], detx + pad, dety + 64, fa_left, fa_top, c_text_secondary, a_text_secondary, font_body_big, 16, detw - pad * 2)
 	
 	// Source of the rig
 	var source;
@@ -192,7 +201,7 @@ function popup_rigcenter_draw_details(rig, detx, dety, detw, deth)
 		source = text_get("rigcentersourcepage")
 	else if (!is_undefined(rig[?"direct"]))
 		source = text_get("rigcentersourcedirect")
-	draw_label(source, detx + pad, dety + 122, fa_left, fa_top, c_text_tertiary, a_text_tertiary, font_caption, 3, detw - pad * 2)
+	draw_label(source, detx + pad, dety + 126, fa_left, fa_top, c_text_tertiary, a_text_tertiary, font_caption, 12, detw - pad * 2)
 	
 	// Bottom area: status (progress / error / saved) + buttons
 	var filename, buttony;
@@ -227,9 +236,9 @@ function popup_rigcenter_draw_details(rig, detx, dety, detw, deth)
 		}
 	}
 	else if (popup.error_message != "" && popup.error_name = rig[?"name"])
-		draw_label(popup.error_message, detx + pad, buttony - 46, fa_left, fa_bottom, c_error, 1, font_caption, 3, detw - pad * 2)
+		draw_label(popup.error_message, detx + pad, buttony - 46, fa_left, fa_bottom, c_error, 1, font_caption, 12, detw - pad * 2)
 	else if (popup.saved_name = rig[?"name"])
-		draw_label(text_get("rigcentersavedto", popup.saved_path), detx + pad, buttony - 10, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_caption, 3, detw - pad * 2)
+		draw_label(text_get("rigcentersavedto", popup.saved_path), detx + pad, buttony - 10, fa_left, fa_bottom, c_text_tertiary, a_text_tertiary, font_caption, 12, detw - pad * 2)
 	
 	// Buttons
 	if (popup_rigcenter_ispage(rig))
