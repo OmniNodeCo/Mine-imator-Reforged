@@ -249,8 +249,10 @@ function list_init_context_menu(name)
 			{
 				list_item_add(text_get("toolbarfileimport"), undefined, text_control_name(keybinds[e_keybind.IMPORT_ASSET].keybind), null, icons.ASSET_IMPORT, null, action_toolbar_import_asset, true)
 				list_item_add(text_get("toolbarfileworldimport"), undefined, "", null, icons.SCENERY, null, world_import_begin, false)
-				list_item_add(text_get("toolbarfiledownloadrigs"), undefined, "", null, icons.DOWNLOAD, null, popup_rigcenter_show, false)
-				list_item_add(text_get("toolbarfileinstallshaders"), undefined, "", null, icons.STAR, null, action_install_shaders, false)
+			list_item_add(text_get("toolbarfiledownloadrigs"), undefined, "", null, icons.DOWNLOAD, null, popup_rigcenter_show, false)
+			list_item_add(text_get("toolbarfileinstallshaders"), undefined, "", null, icons.STAR, null, action_install_shaders, false)
+			list_item_add(text_get("toolbarfileinstalladdon"), undefined, "", null, icons.LIBRARY_SMALL, null, action_install_addon, false)
+			list_item_add(text_get("toolbarfileaddons"), undefined, "", null, icons.LIBRARY, null, popup_addons_show, false)
 			}
 			
 			break
@@ -289,9 +291,20 @@ function list_init_context_menu(name)
 			
 			list_item_add(text_get("toolbaredithide"), true, text_control_name(keybinds[e_keybind.TIMELINE_HIDE].keybind), null, icons.HIDDEN, null, action_tl_hide_select, true)
 			list_item_last.disabled = (tl_edit = null)
-			
+
 			list_item_add(text_get("toolbareditshowhidden"), false, text_control_name(keybinds[e_keybind.TIMELINE_SHOW_HIDDEN].keybind), null, icons.VISIBLE, null, action_tl_hide_select)
 			list_item_last.disabled = (tl_edit = null)
+
+			// Physics: bake motion into the selected timeline objects
+			var physicsselected;
+			physicsselected = 0
+			with (obj_timeline)
+			{
+				if (selected)
+					physicsselected++
+			}
+			list_item_add(text_get("toolbareditphysics"), undefined, "", null, icons.MAGNET, null, popup_physics_show, true)
+			list_item_last.disabled = (physicsselected = 0)
 			
 			list_item_add(text_get("toolbareditpreferences"), settings, "", null, icons.SETTINGS, null, settings.show ? tab_close : tab_show, true)
 			list_item_last.toggled = settings.show

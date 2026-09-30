@@ -72,6 +72,43 @@ function app_startup_interface_popups()
 		loading = false
 	}
 	
+	// Timeline physics
+	popup_physics = new_popup("physics", popup_physics_draw, 420, null, true)
+	with (popup_physics)
+	{
+		mode = 0
+		tbx_gravity = new_textbox_decimals()
+		tbx_gravity.text = "0.5"
+		tbx_bounce = new_textbox_decimals()
+		tbx_bounce.text = "0.5"
+		tbx_floor = new_textbox_decimals()
+		tbx_floor.text = "0"
+		tbx_vx = new_textbox_decimals()
+		tbx_vx.text = "4"
+		tbx_vy = new_textbox_decimals()
+		tbx_vy.text = "6"
+		tbx_vz = new_textbox_decimals()
+		tbx_vz.text = "0"
+		tbx_amplitude = new_textbox_decimals()
+		tbx_amplitude.text = "45"
+		tbx_period = new_textbox_decimals()
+		tbx_period.text = "24"
+		tbx_damping = new_textbox_decimals()
+		tbx_damping.text = "0.04"
+		tbx_frames = new_textbox_decimals()
+		tbx_frames.text = "30"
+		tbx_step = new_textbox_decimals()
+		tbx_step.text = "1"
+	}
+	
+	// Addons browser
+	popup_addons = new_popup("addons", popup_addons_draw, 640, 420, true, true, false, true)
+	with (popup_addons)
+	{
+		scroll = 0
+		selected = undefined
+	}
+	
 	// Import image
 	popup_importimage = new_popup("importimage", popup_importimage_draw, 477, null, true) //236
 	with (popup_importimage)

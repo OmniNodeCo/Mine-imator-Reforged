@@ -4,6 +4,39 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.1 (2026-09-30)
+
+### New features
+
+* **Timeline physics.** **Edit > Physics...** bakes physics motion into every
+  selected timeline object as keyframes, starting at the current frame: drop
+  an object with gravity and bounciness until it settles on a floor, throw
+  it with an initial velocity, swing it like a damped pendulum, or let it
+  settle onto a target with a spring. Duration and keyframe spacing are
+  configurable, every parameter accepts expressions, and the whole bake is
+  a single undoable step - the keyframes it created are removed on undo and
+  restored on redo, ready to hand-tune afterwards
+* **Addons.** **File > Install addon...** installs an addon - a zip with an
+  `addon.json` manifest and optional `shaders/`, `particles/` and `rigs/`
+  folders. Shader packs land in the camera's **Select shader...** menu,
+  particle presets in the workbench, and rigs stay in the addon's folder
+  with an **Import rigs into project** button. The new **File > Addons...**
+  browser lists installed addons with their contents and uninstall;
+  re-installing an addon with the same name replaces it. The format is
+  documented in `Data/Addons/README.md` and an example addon
+  (`frosty-night.miaddon`, a cold moonlit camera grade) ships with the app
+
+### Fixes
+
+* **Asset packages: missing textures in generated Minecraft packages.** The
+  asset pipeline only overlaid the authored rigs from its template, so
+  release packages lacked 117 textures the manifest references: every cape
+  and the camera tripod, the authored shelf/bed block textures, and two
+  map-item textures renamed upstream. Template assets are now carried over
+  whenever the target version's jar doesn't contain them, and the new
+  `Tools/texture-tester` verifies every texture of a package in the browser
+  (with a mirror check and download for genuinely missing files)
+
 ## Reforged 1.1.0 (2026-09-30)
 
 ### New features
