@@ -13,6 +13,22 @@ In the app: **File > Install shaders...** and pick a `.mishader` (or
 the camera's **Select shader...** menu (select a camera in the frame editor).
 Five packs ship with the app; drop more files into this folder to add them.
 
+## Minecraft shaderpacks (Iris / OptiFine format)
+
+**File > Install shaders...** also accepts real Minecraft shaderpack zips -
+the packs you use with Iris or OptiFine in Minecraft (BSL, Complementary,
+SEUS, Sildur's Vibrant, Chocapic, Photon, ...). The zip must contain the
+`shaders` folder at its root (or one folder deep, like OptiFine accepts).
+
+Mine-imator cannot run a pack's GLSL programs - they are written for
+Minecraft's rendering pipeline. Instead the import reads the pack and
+creates a `.mishader` preset that approximates its signature look with
+Mine-imator's own camera effects: known pack families get a hand-tuned look
+(soft and cinematic for BSL, clean and vibrant for Complementary, loud
+colors for Sildur's Vibrant, and so on), unknown packs get a generic
+Minecraft shader look. The generated preset is a normal pack - tweak it,
+or copy it as a starting point for your own.
+
 ## Format
 
 ```json

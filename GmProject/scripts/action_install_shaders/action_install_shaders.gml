@@ -1,7 +1,8 @@
 /// action_install_shaders()
 /// @desc "Install shaders" (File menu and the camera's shader menu): pick a
-/// shader pack file (.mishader / .json), validate it, copy it into the
-/// Shaders directory and refresh the shader pack list.
+/// shader pack file (.mishader / .json) or a Minecraft shaderpack zip
+/// (Iris/OptiFine format), validate it, copy it into the Shaders directory
+/// and refresh the shader pack list.
 
 function action_install_shaders()
 {
@@ -10,7 +11,25 @@ function action_install_shaders()
 	if (path = "")
 		return 0
 	
-	// Validate before installing
+	// Minecraft shaderpack zip (Iris/OptiFine): convert into a preset
+	if (filename_ext(path) = ".zip")
+	{
+		var packname;
+		packname = shader_pack_import_zip(path)
+		
+		if (packname = "")
+		{
+			log("Shaders: not a Minecraft shaderpack", path)
+			toast_new(e_toast.NEGATIVE, text_get("shaderpackinvalid"))
+			return 0
+		}
+		
+		shader_packs_load(true)
+		toast_new(e_toast.POSITIVE, text_get("shaderpackinstalled", packname))
+		return 1
+	}
+	
+	// Reforged shader pack: validate before installing
 	var spec;
 	spec = json_load(path)
 	if (!ds_map_valid(spec) || !ds_map_valid(spec[?"values"]))

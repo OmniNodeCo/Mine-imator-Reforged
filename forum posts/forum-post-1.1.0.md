@@ -11,6 +11,7 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 **What's new**
 
 - **Shader packs:** File > Install shaders... imports a shader pack (a small .mishader file) into the app, and every camera gains a "Select shader..." menu in the frame editor. Pick a pack and the camera's entire effect stack is set in one click - tonemapper, exposure, bloom, lens dirt, depth of field, color correction, film grain, vignette, chromatic aberration and distortion. Applying a pack first resets every effect to its defaults, then applies the pack's values, as a single undoable step - so switching shaders never stacks settings, and Ctrl+Z takes it right back. Five packs ship in the box: Cinematic, Vintage Film, VHS Tape, Dreamy Glow and Bright & Punchy.
+- **Minecraft shaderpack import (Iris/OptiFine):** File > Install shaders... accepts real Minecraft shaderpack zips too - BSL, Complementary, SEUS, Sildur's Vibrant, Chocapic, Photon, and any other pack in the format Iris and OptiFine use. A pack's GLSL can't run inside Mine-imator (it's written for Minecraft's rendering pipeline), so the app reads the pack and builds a preset that approximates its signature look with Mine-imator's own camera effects - hand-tuned per famous pack family, with a generic Minecraft shader look for everything else. The result is a normal, fully editable preset.
 - **Make your own:** a pack is a plain JSON document listing camera effect values - the format is documented in Data/Shaders/README.md, so packs are easy to write, share and install. Drop a .mishader file into the Shaders folder and it shows up in the menu.
 - Version bumped to Reforged 1.1.0.
 
@@ -29,6 +30,7 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 [spoiler="Version 1.1.0 (2026-09-30)"]
 [b]New features[/b]
 - Shader packs: File > Install shaders... imports a .mishader pack (small JSON document) into the app's Shaders folder; every camera gets a "Select shader..." menu in the frame editor. Applying a pack resets all effect values to defaults, then applies the pack (tonemapper, exposure, bloom, lens dirt, depth of field, color correction, film grain, vignette, chromatic aberration, distortion) as one undoable step. Five packs ship (Cinematic, Vintage Film, VHS Tape, Dreamy Glow, Bright & Punchy); the format is documented in Data/Shaders/README.md
+- Minecraft shaderpack import (Iris/OptiFine): real shaderpack zips (BSL, Complementary, SEUS, Sildur's Vibrant, Chocapic, Photon...) can be installed too; the GLSL cannot run in Mine-imator, so the app generates a hand-tuned look-alike preset per known pack family (generic Minecraft shader look for unknown packs)
 
 [b]Versioning[/b]
 - Version bumped to Reforged 1.1.0 (full in-app version 2.0.2 Reforged 1.1.0)

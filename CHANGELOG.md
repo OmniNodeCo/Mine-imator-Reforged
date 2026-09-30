@@ -19,6 +19,16 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   app (Cinematic, Vintage Film, VHS Tape, Dreamy Glow, Bright & Punchy),
   and the `Data/Shaders/README.md` documents the format so anyone can make
   their own
+* **Minecraft shaderpack import (Iris/OptiFine).** File > Install
+  shaders... now also accepts real Minecraft shaderpack zips - BSL,
+  Complementary, SEUS, Sildur's Vibrant, Chocapic, Photon and any other
+  pack in the Iris/OptiFine format (the zip needs its `shaders` folder at
+  the root). Mine-imator cannot execute the packs' GLSL - it is written
+  for Minecraft's rendering pipeline - so the import reads the pack and
+  generates a Reforged preset that approximates its signature look with
+  the camera's own effects: known pack families are hand-tuned, unknown
+  packs get a generic Minecraft shader look. The generated preset is a
+  normal `.mishader` you can keep tweaking
 
 ## Reforged 1.0.9 (2026-09-28)
 
