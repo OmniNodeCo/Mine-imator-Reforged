@@ -7,7 +7,11 @@ For each requested Minecraft Java version this tool:
   2. Downloads the client jar (SHA1-verified) into a local cache.
   3. Extracts ``assets/minecraft/**`` (+ ``pack.png``) and overlays the
      Mine-imator-authored character/special-block rigs from the template
-     package, producing ``<version>.zip``.
+     package. Any other template asset the jar does not contain (authored
+     textures such as the ``entity/mineimator`` capes, and textures renamed
+     or dropped upstream but still referenced by the manifest) is carried
+     over from the template; jar files always win for paths they have.
+     Producing ``<version>.zip``.
   4. Clones the template ``<template>.midata`` spec, stamps the new version,
      and regenerates the mechanical texture lists (block/item/model/particle
      textures, animated textures) by scanning the new jar. Authored sections
@@ -69,11 +73,19 @@ DEFAULT_TEMPLATE = "26.3-snapshot-9"
 DEFAULT_CACHE = os.path.join(
     os.path.expanduser("~"), ".cache", "mine-imator-reforged", "mc-assets")
 
-# Authored (non-vanilla) roots overlaid from the template package.
+# Authored (non-vanilla) roots overlaid from the template package. Files under
+# these roots ALWAYS win over the vanilla jar payload (rig updates).
 AUTHORED_ROOTS = (
     "assets/minecraft/models/character/",
     "assets/minecraft/models/special_block/",
 )
+# Every other template asset is carried over as a fallback when (and only
+# when) the target version's jar does not provide that path itself: the
+# Mine-imator-authored textures (entity/mineimator capes + camera tripod,
+# *_shelf_*/straw_bed/*_mi block textures) and textures Mojang renamed or
+# dropped after the template version (still referenced by inherited manifest
+# sections). Jar files always win for paths the jar has, so vanilla texture
+# updates are picked up normally.
 
 # The four animated textures the loader looks up by name for water/lava.
 REQUIRED_ANIMATED = (
@@ -449,6 +461,10 @@ def build_package(vid, release_time, jar_path, template, out_dir, force):
     # .zip: vanilla payload + authored rigs overlay + pack.png.
     files = {n: scan["payload"][n] for n in scan["payload"]
              if not n.startswith(AUTHORED_ROOTS)}  # Overlay always wins.
+    # Template-only assets the jar lacks: authored textures + textures dropped
+    # or renamed upstream (the inherited manifest still references them).
+    filled = {n: data for n, data in template["extras"].items() if n not in files}
+    files.update(filled)
     files.update(template["authored"])
     pack = scan["pack_png"] if scan["pack_png"] is not None \
         else template["pack_png"]
@@ -480,14 +496,17 @@ def build_package(vid, release_time, jar_path, template, out_dir, force):
     spec["version"] = vid
     stats = {"version": vid, "zip_files": 0, "appended": {}, "missing": {}}
 
+    tex_files = template_texture_files(scan, template)
+
     def regen(key, scanned):
         before = list(spec.get(key, []))
         spec[key] = merge_list(before, scanned)
         added = len(spec[key]) - len(before)
-        # Report template entries whose PNG vanished (loader falls back).
+        # Report template entries whose PNG is in neither this jar nor the
+        # carried-over template assets (loader falls back for those).
         missing = [t for t in before
                    if " " not in t and t not in scanned
-                   and "textures/%s.png" % t not in template_texture_files(scan)]
+                   and "textures/%s.png" % t not in tex_files]
         stats["appended"][key] = added
         stats["missing"][key] = len(missing)
         if missing:
@@ -517,10 +536,13 @@ def build_package(vid, release_time, jar_path, template, out_dir, force):
     stats["zip_bytes"] = os.path.getsize(zip_path)
     stats["midata_bytes"] = os.path.getsize(midata_path)
     stats["overlaid"] = overlaid
+    stats["filled"] = len(filled)
     stats["skipped"] = False
-    log("%s: wrote %s (%d files, +%d block +%d animated +%d item "
+    log("%s: wrote %s (%d files, %d overlaid rigs, %d carried-over "
+        "template-only assets, +%d block +%d animated +%d item "
         "+%d model +%d particle textures)"
         % (vid, os.path.basename(zip_path), stats["zip_files"],
+           overlaid, len(filled),
            stats["appended"]["block_textures"],
            stats["appended"]["block_textures_animated"],
            stats["appended"]["item_textures"],
@@ -529,10 +551,16 @@ def build_package(vid, release_time, jar_path, template, out_dir, force):
     return stats
 
 
-def template_texture_files(scan):
-    # All texture PNG paths present in this jar payload.
-    return {"textures/%s.png" % t for t in
-            scan["block"] | scan["item"] | scan["entity"] | scan["particle"]}
+def template_texture_files(scan, template=None):
+    # All texture PNG paths present in this jar payload, plus template-only
+    # assets carried over by build_package's fill-missing overlay.
+    files = {"textures/%s.png" % t for t in
+             scan["block"] | scan["item"] | scan["entity"] | scan["particle"]}
+    if template:
+        files |= {n[len("assets/minecraft/"):] for n in template["extras"]
+                  if n.startswith("assets/minecraft/textures/")
+                  and n.endswith(".png")}
+    return files
 
 
 def load_template(template_id, template_dir):
@@ -544,6 +572,7 @@ def load_template(template_id, template_dir):
     with open(midata_path, "r", encoding="utf-8") as f:
         spec = json.load(f)
     authored = {}
+    extras = {}
     pack_png = None
     with zipfile.ZipFile(zip_path) as z:
         for name in z.namelist():
@@ -551,13 +580,18 @@ def load_template(template_id, template_dir):
                 continue
             if name.startswith(AUTHORED_ROOTS):
                 authored[name] = z.read(name)
+            elif name.startswith("assets/minecraft/"):
+                # Template-only fallback for paths the target jar lacks.
+                extras[name] = z.read(name)
         if "pack.png" in z.namelist():
             pack_png = z.read("pack.png")
-    log("Template %s: midata format %s, %d authored rig files"
-        % (template_id, spec.get("format"), len(authored)))
+    log("Template %s: midata format %s, %d authored rig files, "
+        "%d template asset files"
+        % (template_id, spec.get("format"), len(authored), len(extras)))
     if not authored:
         raise SystemExit("error: no authored rigs found in %s" % zip_path)
-    return {"spec": spec, "authored": authored, "pack_png": pack_png,
+    return {"spec": spec, "authored": authored, "extras": extras,
+            "pack_png": pack_png,
             "format": spec.get("format"), "id": template_id}
 
 
@@ -797,6 +831,81 @@ def run_self_test(args):
             check("zip file set identical", fo == fn)
             check("zip file contents identical",
                   fo == fn and all(zo.read(n) == zn.read(n) for n in fo))
+
+        # 3. Vanilla-jar simulation: strip the template-authored files from
+        # the pseudo jar (rigs, capes, an authored block texture) plus one
+        # "renamed upstream" texture, and modify one vanilla texture - the
+        # generated package must still ship every one of them (overlay +
+        # fill-missing), while the modified vanilla file keeps the jar bytes.
+        authored_tex = sorted(
+            n for n in template["extras"]
+            if n.startswith("assets/minecraft/textures/entity/mineimator/"))
+        shelf_tex = sorted(
+            n for n in template["extras"]
+            if n.startswith("assets/minecraft/textures/block/")
+            and "_shelf_" in n)
+        if not (authored_tex and shelf_tex):
+            check("template has authored textures to strip",
+                  False, "mineimator/block texture sets empty")
+        else:
+            strip = (set(template["authored"]) | set(authored_tex)
+                     | set(shelf_tex[:1]))
+            # A texture the "new vanilla jar" no longer ships (renamed).
+            renamed = "assets/minecraft/textures/item/jungle_temple_map.png"
+            strip.add(renamed)
+            stone = "assets/minecraft/textures/block/stone.png"
+            modified = b"\x89PNG-modified-vanilla"
+            fake2 = os.path.join(tmp, "fake-vanilla.jar")
+            with zipfile.ZipFile(
+                    os.path.join(args.template_dir,
+                                 args.template + ".zip")) as zsrc, \
+                    zipfile.ZipFile(fake2, "w", zipfile.ZIP_DEFLATED) as zout:
+                for info in zsrc.infolist():
+                    if info.filename.endswith("/"):
+                        continue
+                    if info.filename in strip:
+                        continue
+                    data = zsrc.read(info.filename)
+                    if info.filename == stone:
+                        data = modified
+                    zout.writestr(info.filename, data)
+            out2 = os.path.join(tmp, "out2")
+            os.makedirs(out2)
+            stats2 = build_package("9.9.8", "2026-09-04T12:00:00+00:00",
+                                   fake2, template, out2, True)
+            check("vanilla-jar build reports carried-over assets",
+                  stats2.get("filled", -1) == len(strip & set(template["extras"])),
+                  "filled=%s extras-stripped=%d"
+                  % (stats2.get("filled"), len(strip & set(template["extras"]))))
+            with zipfile.ZipFile(os.path.join(out2, "9.9.8.zip")) as z2, \
+                    zipfile.ZipFile(
+                        os.path.join(args.template_dir,
+                                     args.template + ".zip")) as zt:
+                have = set(z2.namelist())
+                restored = [n for n in strip if n in have]
+                check("stripped authored + dropped textures restored",
+                      len(restored) == len(strip),
+                      "missing: %s" % sorted(strip - set(restored))[:4])
+                check("restored copies match the template",
+                      all(z2.read(n) == zt.read(n) for n in restored))
+                check("jar version wins for paths the jar has",
+                      stone in have and z2.read(stone) == modified)
+
+            # Every mechanical manifest texture ref must resolve in the zip.
+            with zipfile.ZipFile(os.path.join(out2, "9.9.8.zip")) as z2:
+                files2 = {n for n in z2.namelist() if not n.endswith("/")}
+            spec2 = json.load(open(os.path.join(out2, "9.9.8.midata"),
+                                   encoding="utf-8"))
+            refs = set()
+            for key in ("block_textures", "item_textures",
+                        "model_textures", "particle_textures"):
+                refs.update(t.split(" ")[0] for t in spec2.get(key, [])
+                            if t.strip())
+            unresolved = sorted(
+                r for r in refs
+                if "assets/minecraft/textures/%s.png" % r not in files2)
+            check("all mechanical texture refs resolve in built zip",
+                  not unresolved, "unresolved: %s" % unresolved[:5])
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

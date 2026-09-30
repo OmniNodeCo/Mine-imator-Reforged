@@ -40,7 +40,7 @@ automatically — every `*.midata` there becomes selectable in Settings):
 
 | File | Purpose |
 |---|---|
-| `<version>.zip` | Vanilla `assets/minecraft/**` + `pack.png` from the client jar, overlaid with the Mine-imator-authored character/special-block rigs from the template package |
+| `<version>.zip` | Vanilla `assets/minecraft/**` + `pack.png` from the client jar, overlaid with the Mine-imator-authored character/special-block rigs from the template package, plus every other template asset the jar doesn't contain (authored textures such as the `entity/mineimator` capes and `*_shelf_*` block textures, and textures renamed or dropped upstream that the manifest still references). Jar files always win for paths they have. |
 | `<version>.midata` | Asset spec: template clone with the new version + regenerated texture lists (see below) |
 | `versions.midata` | Update-feed index in the app's `{"versions": [...]}` format |
 | `assets-index.json` | SHA-256 checksums + provenance (client SHA-1, release times) |
@@ -70,6 +70,16 @@ This means new-version textures render correctly, while brand-new blocks/mobs
 stay unavailable until authored data exists for them — the loaders skip unknown
 entries gracefully (verified: missing textures fall back to placeholders,
 unknown world blocks map to null). Coverage stats print per version.
+
+The overlay is two-layered: `models/character/` and `models/special_block/`
+rigs from the template **always** override the jar, and every other template
+asset is carried over **only when the target jar lacks that path** — so vanilla
+texture updates are picked up normally, while Mine-imator-authored textures
+(capes, camera tripod, shelf/bed block textures) and textures Mojang renamed or
+removed after the template version stay available to the inherited manifest.
+`Tools/texture-tester/` renders every texture of a package in the browser and
+can pull genuinely missing files from the
+[minecraft-assets mirror](https://github.com/InventivetalentDev/minecraft-assets).
 
 Downloads are cached under `~/.cache/mine-imator-reforged/mc-assets` (override
 with `--cache`), jars are SHA-1 verified against the Mojang manifest, and zips
