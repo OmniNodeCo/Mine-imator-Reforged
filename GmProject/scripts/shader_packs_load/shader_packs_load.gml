@@ -113,10 +113,21 @@ function shader_packs_load()
 		}
 		
 		name = filename_new_ext(filename_name(files[i]), "")
+		if (!is_undefined(spec[?"name"]))
+			name = spec[?"name"]
+		
+		var author, description;
+		author = spec[?"author"]
+		if (is_undefined(author))
+			author = ""
+		description = spec[?"description"]
+		if (is_undefined(description))
+			description = ""
+		
 		pack = ds_map_create()
-		pack[?"name"] = (is_undefined(spec[?"name"]) ? name : spec[?"name"])
-		pack[?"author"] = (is_undefined(spec[?"author"]) ? "" : spec[?"author"])
-		pack[?"description"] = (is_undefined(spec[?"description"]) ? "" : spec[?"description"])
+		pack[?"name"] = name
+		pack[?"author"] = author
+		pack[?"description"] = description
 		pack[?"file"] = files[i]
 		pack[?"values"] = spec[?"values"]
 		ds_list_add(shader_pack_list, pack)
