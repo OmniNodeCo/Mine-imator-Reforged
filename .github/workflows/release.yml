@@ -16,9 +16,11 @@
 #     add a CHANGELOG.md entry, push, and wait for a green "Build check" -
 #     then push tag `reforged-v<version>`
 #     (e.g. `git tag reforged-v1.1.0 && git push origin reforged-v1.1.0`).
-#     The newest green build is used even if the tag races the build (a
-#     warning is printed when it was built from another commit); to redo a
-#     release after green builds, run this workflow manually instead.
+#     The release FAILS if the newest green build was compiled from a different
+#     commit than the release (it would ship stale binaries - e.g. a release
+#     named 1.1.0 whose app still says 1.0.9). Wait for the Build check on the
+#     release commit to go green and run this workflow again; manual runs can
+#     set `allow_mismatch` to force it anyway.
 #   * Or run this workflow manually (Actions -> Release -> Run workflow),
 #     optionally overriding the tag, MC range, platforms, or build run id.
 #
@@ -51,6 +53,11 @@ on:
         description: "Build check run id to release (default: newest green run)"
         required: false
         default: ""
+      allow_mismatch:
+        description: "Allow bundling binaries built from a different commit than this release (stale-version risk)"
+        required: false
+        type: boolean
+        default: false
       publish:
         description: "Publish the GitHub Release (else artifacts only)"
         required: false
@@ -102,6 +109,7 @@ jobs:
           INPUT_NO_LATEST: ${{ inputs.no_latest }}
           INPUT_PLATFORMS: ${{ inputs.platforms }}
           INPUT_BUILD_RUN: ${{ inputs.build_run_id }}
+          INPUT_ALLOW_MISMATCH: ${{ inputs.allow_mismatch }}
           INPUT_PUBLISH: ${{ inputs.publish }}
           INPUT_PRERELEASE: ${{ inputs.prerelease }}
         run: |
@@ -185,9 +193,17 @@ jobs:
           print("Build run: %s (commit %s, ref %s)"
                 % (run.get("html_url"), run.get("head_sha"), run.get("head_branch")))
           if run.get("head_sha") != sha:
-              print("::warning::Build run %d was built from commit %s, but this release is for %s. "
-                    "Binaries may not match the release source - pass build_run_id to pin an exact run."
-                    % (run_id, run.get("head_sha"), sha))
+              mismatch = ("build run %d was built from commit %s, but this release is for %s - "
+                          "bundling it would ship binaries that do not match the release source "
+                          "(the in-app version would come from the old commit, e.g. a 1.1.0 "
+                          "release whose app still says 1.0.9)"
+                          % (run_id, run.get("head_sha"), sha))
+              if inp("INPUT_ALLOW_MISMATCH").lower() == "true":
+                  print("::warning::Commit mismatch allowed (allow_mismatch): " + mismatch)
+              else:
+                  sys.exit("error: " + mismatch +
+                           ". Run 'Build check' on the release commit and wait for green builds,"
+                           " then run this workflow again - or set 'allow_mismatch' to force it.")
 
           arts = api("/repos/%s/actions/runs/%d/artifacts?per_page=100" % (repo, run_id))
           arts = arts.get("artifacts", [])
