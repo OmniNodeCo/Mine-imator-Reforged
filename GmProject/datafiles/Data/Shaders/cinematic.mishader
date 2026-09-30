@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "Cinematic",
+  "author": "Mine-imator Reforged",
+  "description": "Film-like look: ACES tonemapping, soft bloom, gentle vignette and a touch of lens chromatic aberration.",
+  "values": {
+    "light_management": true,
+    "tonemapper": 2,
+    "exposure": 1.05,
+    "gamma": 2.2,
+    "bloom": true,
+    "bloom_threshold": 0.8,
+    "bloom_intensity": 0.55,
+    "bloom_radius": 1.4,
+    "vignette": true,
+    "vignette_strength": 1.2,
+    "vignette_softness": 0.5,
+    "ca": true
+  }
+}

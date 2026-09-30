@@ -78,6 +78,11 @@ function tab_frame_editor_camera()
 		}
 	}
 	
+	// Shaders (installable packs of camera effect presets)
+	tab_control_menu()
+	draw_button_menu("frameeditorcamerashaders", e_menu.LIST, dx, dy, dw, 24, null, text_get("shaderselect"), action_tl_frame_cam_shaders)
+	tab_next()
+	
 	// Light management
 	tab_control_switch()
 	draw_button_collapse("light_management_cam", collapse_map[?"light_management_cam"], action_tl_frame_cam_light_management, tl_edit.value[e_value.CAM_LIGHT_MANAGEMENT], "frameeditorcameralightmanagement")

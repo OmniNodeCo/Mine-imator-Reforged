@@ -1410,6 +1410,25 @@ function list_init(name)
 			break
 		}
 		
+		case "frameeditorcamerashaders":
+		{
+			menu_add_item(-1, text_get("shadernone"))
+			
+			var pack;
+			for (var i = 0; i < ds_list_size(shader_pack_list); i++)
+			{
+				pack = shader_pack_list[|i]
+				menu_add_item(i, pack[?"name"])
+			}
+			
+			if (ds_list_size(shader_pack_list) > 0)
+				menu_add_item(-2, text_get("shaderinstall"))
+			else
+				menu_add_item(-2, text_get("shaderinstallempty"))
+			
+			break
+		}
+		
 		case "rendertonemapper":
 		case "frameeditorcameratonemapper":
 		{

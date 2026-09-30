@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "name": "Dreamy Glow",
+  "author": "Mine-imator Reforged",
+  "description": "Soft glowing look: wide low-threshold bloom and boosted vibrance.",
+  "values": {
+    "light_management": true,
+    "tonemapper": 2,
+    "exposure": 1.05,
+    "bloom": true,
+    "bloom_threshold": 0.6,
+    "bloom_intensity": 0.9,
+    "bloom_radius": 2.2,
+    "color_correction": true,
+    "vibrance": 0.3
+  }
+}

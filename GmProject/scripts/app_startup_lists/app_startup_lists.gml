@@ -534,6 +534,9 @@ function app_startup_lists()
 		icons.PATH_POINT
 	)
 	
+	// Shader packs for the camera shader menu
+	shader_packs_load()
+	
 	render_pass_list = ds_list_create()
 	ds_list_add(render_pass_list,
 		"combined",

@@ -1,0 +1,21 @@
+{
+  "format": 1,
+  "name": "VHS Tape",
+  "author": "Mine-imator Reforged",
+  "description": "Retro videotape: strong chromatic aberration, desaturated colors, coarse grain.",
+  "values": {
+    "light_management": true,
+    "tonemapper": 0,
+    "color_correction": true,
+    "saturation": 0.7,
+    "color_burn": "#CFE3FF",
+    "ca": true,
+    "ca_blur_amount": 0.12,
+    "ca_red_offset": 0.3,
+    "ca_green_offset": 0.12,
+    "ca_blue_offset": 0.2,
+    "grain": true,
+    "grain_strength": 0.25,
+    "grain_size": 2
+  }
+}

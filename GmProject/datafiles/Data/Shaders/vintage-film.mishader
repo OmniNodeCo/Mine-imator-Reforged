@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "name": "Vintage Film",
+  "author": "Mine-imator Reforged",
+  "description": "Old film stock: warm tint, faded colors, visible grain and a heavy vignette.",
+  "values": {
+    "light_management": true,
+    "tonemapper": 1,
+    "color_correction": true,
+    "color_burn": "#FFE7C4",
+    "saturation": 0.85,
+    "contrast": -0.03,
+    "grain": true,
+    "grain_strength": 0.18,
+    "grain_saturation": 0.05,
+    "vignette": true,
+    "vignette_strength": 1.4,
+    "vignette_softness": 0.6
+  }
+}

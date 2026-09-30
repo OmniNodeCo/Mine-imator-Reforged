@@ -1,21 +1,22 @@
-**Mine-imator Reforged 1.0.9**
+**Mine-imator Reforged 1.1.0**
 
 based on Mine-imator 2.0.2 (Continuation Build 1.0.15 Alpha 1)
 
-A quick follow-up to 1.0.8: fixes for the rig center's layout - text that went missing and elements that sat past the popup's edge.
+Shaders come to Mine-imator: installable shader packs that give your camera a whole look in one click.
 
 **Download:** [Github Release](https://github.com/OmniNodeCo/Mine-imator-Reforged/releases)
 
 Available for Windows x64, Linux x64, and macOS x86_64.
 
-**What's fixed**
+**What's new**
 
-- **Missing text at the bottom of the rig center:** the details pane, the download buttons and the "And N more..." note rendered past the popup's bottom edge, and the app culls anything outside the popup - so they were invisible. The layout is now anchored to the popup's real bottom edge.
-- Multi-line text (rig descriptions, error messages) drew its lines only 2-4 pixels apart, garbling it; line spacing now matches the font height.
-- Long rig names no longer run under the author label in the list.
+- **Shader packs:** File > Install shaders... imports a shader pack (a small .mishader file) into the app, and every camera gains a "Select shader..." menu in the frame editor. Pick a pack and the camera's entire effect stack is set in one click - tonemapper, exposure, bloom, lens dirt, depth of field, color correction, film grain, vignette, chromatic aberration and distortion. Applying a pack first resets every effect to its defaults, then applies the pack's values, as a single undoable step - so switching shaders never stacks settings, and Ctrl+Z takes it right back. Five packs ship in the box: Cinematic, Vintage Film, VHS Tape, Dreamy Glow and Bright & Punchy.
+- **Make your own:** a pack is a plain JSON document listing camera effect values - the format is documented in Data/Shaders/README.md, so packs are easy to write, share and install. Drop a .mishader file into the Shaders folder and it shows up in the menu.
+- Version bumped to Reforged 1.1.0.
 
 **Known limitations**
 
+- Shader packs set the camera's effect values for the current frame (like editing them by hand); if your camera uses keyframed effects, apply the pack at each keyframe you want it on.
 - The TV's audio plays in the editor; rendered video exports don't include the TV's audio track yet (only timeline audio tracks are mixed into exports).
 - Videos are referenced by file path - if the file is moved or deleted, the TV shows its normal screen again.
 - Videos with an aspect ratio other than the TV screen's are stretched to fit.
@@ -24,6 +25,14 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 - The underlying Continuation Build base is alpha quality - expect the occasional rough edge.
 
 [spoiler="Show hidden contents — full changelog"]
+
+[spoiler="Version 1.1.0 (2026-09-30)"]
+[b]New features[/b]
+- Shader packs: File > Install shaders... imports a .mishader pack (small JSON document) into the app's Shaders folder; every camera gets a "Select shader..." menu in the frame editor. Applying a pack resets all effect values to defaults, then applies the pack (tonemapper, exposure, bloom, lens dirt, depth of field, color correction, film grain, vignette, chromatic aberration, distortion) as one undoable step. Five packs ship (Cinematic, Vintage Film, VHS Tape, Dreamy Glow, Bright & Punchy); the format is documented in Data/Shaders/README.md
+
+[b]Versioning[/b]
+- Version bumped to Reforged 1.1.0 (full in-app version 2.0.2 Reforged 1.1.0)
+[/spoiler]
 
 [spoiler="Version 1.0.9 (2026-09-28)"]
 [b]Fixes[/b]

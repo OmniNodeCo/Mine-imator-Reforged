@@ -4,6 +4,22 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.0 (2026-09-30)
+
+### New features
+
+* **Shader packs.** Installable shader presets for the camera: **File >
+  Install shaders...** imports a `.mishader` pack (a small JSON document)
+  into the app's `Shaders` folder, and every selected camera gains a
+  **Select shader...** menu in the frame editor. Applying a pack resets all
+  effect values to their defaults and then applies the pack - tonemapper,
+  exposure, bloom, lens dirt, depth of field, color correction, film grain,
+  vignette, chromatic aberration and distortion - as a single undoable
+  step, exactly like editing the values by hand. Five packs ship with the
+  app (Cinematic, Vintage Film, VHS Tape, Dreamy Glow, Bright & Punchy),
+  and the `Data/Shaders/README.md` documents the format so anyone can make
+  their own
+
 ## Reforged 1.0.9 (2026-09-28)
 
 ### Fixes

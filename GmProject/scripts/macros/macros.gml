@@ -20,10 +20,10 @@ function macros()
 	
 	// Versions
 	#macro mineimator_version			"2.0.2"							// Base Mine-imator version
-	#macro mineimator_version_sub		"Reforged 1.0.9"		// Mod name and version (e.g. "Community Build 1.0.0")
+	#macro mineimator_version_sub		"Reforged 1.1.0"		// Mod name and version (e.g. "Community Build 1.0.0")
 	#macro mineimator_version_extra		""								// Additional suffix (e.g. "Alpha 1" or "Pre-Release 2")
 	#macro mineimator_version_full		(mineimator_version + ((mineimator_version_sub != "") ? " " + mineimator_version_sub : "") + ((mineimator_version_extra != "") ? " (" + mineimator_version_extra + ")" : ""))
-	#macro mineimator_version_date		"2026.09.28"
+	#macro mineimator_version_date		"2026.09.30"
 	#macro minecraft_version			"26.3"
 	#macro gm_runtime					GM_runtime_version
 	
@@ -40,6 +40,7 @@ function macros()
 	#macro particles_directory			working_directory + "Particles/"
 	#macro rigs_directory				working_directory + "Rigs/"
 	#macro fonts_directory				data_directory + "Fonts/"
+	#macro shaders_directory			data_directory + "Shaders/"
 	#macro languages_directory			data_directory + "Languages/"
 	#macro minecraft_directory			data_directory + "Minecraft/"
 	#macro render_directory				data_directory + "Render/"

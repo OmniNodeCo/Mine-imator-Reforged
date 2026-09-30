@@ -1,0 +1,18 @@
+{
+  "format": 1,
+  "name": "Bright & Punchy",
+  "author": "Mine-imator Reforged",
+  "description": "Vivid, high-contrast look with crisp colors and a hint of bloom.",
+  "values": {
+    "light_management": true,
+    "tonemapper": 2,
+    "exposure": 1.15,
+    "color_correction": true,
+    "contrast": 0.1,
+    "saturation": 1.15,
+    "vibrance": 0.2,
+    "bloom": true,
+    "bloom_threshold": 0.85,
+    "bloom_intensity": 0.45
+  }
+}
