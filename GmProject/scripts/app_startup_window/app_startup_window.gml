@@ -18,8 +18,8 @@ function app_startup_window()
 	http_download_assets_zip = null
 	http_alert_news = null
 	http_downloadskin = null
-	http_rigs_index = null
-	http_rigs_file = null
+	http_content_index = null
+	http_content_file = null
 	
 	// Video screen players (see video_slots)
 	video_slot_used = array()

@@ -20,7 +20,7 @@ function macros()
 	
 	// Versions
 	#macro mineimator_version			"2.0.2"							// Base Mine-imator version
-	#macro mineimator_version_sub		"Reforged 1.1.2"		// Mod name and version (e.g. "Community Build 1.0.0")
+	#macro mineimator_version_sub		"Reforged 1.1.3"		// Mod name and version (e.g. "Community Build 1.0.0")
 	#macro mineimator_version_extra		""								// Additional suffix (e.g. "Alpha 1" or "Pre-Release 2")
 	#macro mineimator_version_full		(mineimator_version + ((mineimator_version_sub != "") ? " " + mineimator_version_sub : "") + ((mineimator_version_extra != "") ? " (" + mineimator_version_extra + ")" : ""))
 	#macro mineimator_version_date		"2026.10.01"
@@ -116,6 +116,9 @@ function macros()
 	// Points at the Reforged branch so new rigs can be added without an app
 	// update; repoint (e.g. to master) when the folder is synced elsewhere.
 	#macro link_rigs					"https://github.com/OmniNodeCo/Mine-imator-Reforged/releases/latest/download/"
+	// Content center catalogs + files (same flat release layout as the rigs;
+	// Tools/content-server mirrors it for local development)
+	#macro link_content				link_rigs
 	#macro link_donate					"https://www.mineimator.com/donate"
 	#macro show_modelbench_popup		!dev_mode && true
 	#macro http_ok						200

@@ -50,16 +50,21 @@ function app_startup_interface_popups()
 		tbx_username = new_textbox(true, 0, "")
 	}
 	
-	// Downloadable rigs center
-	popup_rigcenter = new_popup("rigcenter", popup_rigcenter_draw, 760, 480, true, true, false, true)
-	with (popup_rigcenter)
+	// Content center (rigs, shader packs, addons, particles)
+	popup_contentcenter = new_popup("content", popup_contentcenter_draw, 780, 480, true, true, false, true)
+	popup_contentcenter.badge_icon = icons.BETA
+	with (popup_contentcenter)
 	{
 		tbx_search = new_textbox(true, 0, "")
-		list = undefined
+		menu = 0
+		lists = array(undefined, undefined, undefined, undefined)
+		loading = array(false, false, false, false)
+		fail = array("", "", "", "")
 		filtered = []
 		scroll = 0
 		selected = undefined
 		downloading = ""
+		downloading_menu = -1
 		downloading_path = ""
 		downloading_name = ""
 		downloaded_bytes = 0
@@ -68,8 +73,6 @@ function app_startup_interface_popups()
 		error_name = ""
 		saved_name = ""
 		saved_path = ""
-		fail_message = ""
-		loading = false
 	}
 	
 	// Timeline physics

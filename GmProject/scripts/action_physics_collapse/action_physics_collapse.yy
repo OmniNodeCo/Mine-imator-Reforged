@@ -1,11 +1,11 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "popup_rigcenter_draw",
+  "name": "action_physics_collapse",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {
-    "name": "Rig center",
-    "path": "folders/Scripts/App/Interface/Popups/Rig center.yy",
+    "name": "Physics",
+    "path": "folders/Scripts/App/Actions/Physics.yy",
   },
 }

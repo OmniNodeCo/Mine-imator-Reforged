@@ -198,110 +198,182 @@ function app_event_http()
 		}
 	}
 	
-	// Rig library index
-	else if (async_load[?"id"] = http_rigs_index)
+	// Content center catalog
+	else if (async_load[?"id"] = http_content_index)
 	{
-		http_rigs_index = null
+		http_content_index = null
+		
+		var cmenu;
+		cmenu = popup_contentcenter.fetch_menu
 		
 		if (async_load[?"status"] = 0 && async_load[?"http_status"] = http_ok)
 		{
 			var decodedmap = json_decode(async_load[?"result"]);
-			if (ds_map_valid(decodedmap) && ds_list_valid(decodedmap[?"rigs"]))
+			var items;
+			items = undefined
+			if (ds_map_valid(decodedmap))
 			{
-				popup_rigcenter.list = decodedmap[?"rigs"]
-				popup_rigcenter.loading = false
-				popup_rigcenter.fail_message = ""
+				if (ds_list_valid(decodedmap[?"items"]))
+					items = decodedmap[?"items"]
+				else if (ds_list_valid(decodedmap[?"rigs"]))
+					items = decodedmap[?"rigs"]
+			}
+			
+			if (!is_undefined(items))
+			{
+				popup_contentcenter.lists[cmenu] = items
+				popup_contentcenter.loading[cmenu] = false
+				popup_contentcenter.fail[cmenu] = ""
 				
-				// Keep the selection if the rig is still in the new list,
+				// Keep the selection if the item is still in the new list,
 				// otherwise select the first entry
-				var selvalid, rigcount, rigi, rigmap;
+				var selvalid, itemcount, itemi, entry;
 				selvalid = false
-				rigcount = ds_list_size(popup_rigcenter.list)
-				if (ds_map_valid(popup_rigcenter.selected))
+				itemcount = ds_list_size(items)
+				if (ds_map_valid(popup_contentcenter.selected))
 				{
-					for (rigi = 0; rigi < rigcount; rigi++)
+					for (itemi = 0; itemi < itemcount; itemi++)
 					{
-						rigmap = popup_rigcenter.list[|rigi]
-						if (ds_map_valid(rigmap) && rigmap[?"name"] = popup_rigcenter.selected[?"name"])
+						entry = items[|itemi]
+						if (ds_map_valid(entry) && entry[?"name"] = popup_contentcenter.selected[?"name"])
 						{
-							popup_rigcenter.selected = rigmap
+							popup_contentcenter.selected = entry
 							selvalid = true
 							break
 						}
 					}
 				}
-				if (!selvalid && rigcount > 0)
-					popup_rigcenter.selected = popup_rigcenter.list[|0]
-				
-				log("Rig center: loaded", rigcount, "rigs")
+				if (!selvalid && itemcount > 0)
+					popup_contentcenter.selected = items[|0]
+					
+				log("Content center: loaded", itemcount, "items")
 			}
 			else
 			{
-				popup_rigcenter.loading = false
-				popup_rigcenter.fail_message = text_get("rigcenteroffline")
+				popup_contentcenter.loading[cmenu] = false
+				popup_contentcenter.fail[cmenu] = text_get("contentoffline")
 			}
 		}
 		else
 		{
-			popup_rigcenter.loading = false
-			popup_rigcenter.fail_message = text_get("rigcenteroffline")
+			popup_contentcenter.loading[cmenu] = false
+			popup_contentcenter.fail[cmenu] = text_get("contentoffline")
 		}
 	}
 	
-	// Rig download
-	else if (async_load[?"id"] = http_rigs_file)
+	// Content center download
+	else if (async_load[?"id"] = http_content_file)
 	{
 		if (async_load[?"status"] = 1)
 		{
-			popup_rigcenter.downloaded_bytes = async_load[?"sizeDownloaded"]
-			popup_rigcenter.total_bytes = async_load[?"contentLength"]
+			popup_contentcenter.downloaded_bytes = async_load[?"sizeDownloaded"]
+			popup_contentcenter.total_bytes = async_load[?"contentLength"]
 		}
 		else
 		{
-			http_rigs_file = null
+			http_content_file = null
 			
-			// The download must be an actual zip: servers like Google Drive
-			// can answer with an HTML page instead of the file
-			var valid, sentfile;
-			valid = false
-			sentfile = false
+			var dmenu, dpath, dname, dok;
+			dmenu = popup_contentcenter.downloading_menu
+			dpath = popup_contentcenter.downloading_path
+			dname = popup_contentcenter.downloading_name
+			dok = (async_load[?"status"] = 0 && async_load[?"http_status"] = http_ok && file_exists_lib(dpath))
 			
-			if (async_load[?"status"] = 0 && async_load[?"http_status"] = http_ok && file_exists_lib(popup_rigcenter.downloading_path))
+			if (dmenu = 0)
 			{
-				sentfile = true
+				// Rigs: the download must be an actual zip - servers like
+				// Google Drive can answer with an HTML page instead
+				var valid, sentfile;
+				valid = false
+				sentfile = false
 				
-				var buffer;
-				buffer = buffer_load_lib(popup_rigcenter.downloading_path)
-				if (buffer >= 0)
+				if (dok)
 				{
-					if (buffer_get_size(buffer) >= 2)
-						valid = (buffer_peek(buffer, 0, buffer_u8) = 80 && buffer_peek(buffer, 1, buffer_u8) = 75)
-					buffer_delete(buffer)
+					sentfile = true
+					
+					var buffer;
+					buffer = buffer_load_lib(dpath)
+					if (buffer >= 0)
+					{
+						if (buffer_get_size(buffer) >= 2)
+							valid = (buffer_peek(buffer, 0, buffer_u8) = 80 && buffer_peek(buffer, 1, buffer_u8) = 75)
+						buffer_delete(buffer)
+					}
+				}
+					
+				if (valid)
+				{
+					popup_contentcenter.saved_name = dname
+					popup_contentcenter.saved_path = dpath
+					popup_contentcenter.error_message = ""
+					log("Content center: saved", dpath)
+					toast_new(e_toast.POSITIVE, text_get("contentdonerig", dname))
+				}
+				else
+				{
+					// Remove the invalid file (e.g. the HTML page a server sent
+					// instead of the file)
+					if (sentfile)
+						file_delete_lib(dpath)
+							
+					popup_contentcenter.error_name = dname
+					popup_contentcenter.error_message = (sentfile ? text_get("contentnotzip") : text_get("contentfailed", dname))
+					log("Content center: download failed", dpath)
+					toast_new(e_toast.NEGATIVE, text_get("contentfailedtoast", dname))
 				}
 			}
-			
-			if (valid)
+			else if (dmenu = 1)
 			{
-				popup_rigcenter.saved_name = popup_rigcenter.downloading_name
-				popup_rigcenter.saved_path = popup_rigcenter.downloading_path
-				popup_rigcenter.error_message = ""
-				log("Rig center: saved", popup_rigcenter.downloading_path)
-				toast_new(e_toast.POSITIVE, text_get("rigcenterdone", popup_rigcenter.downloading_name))
-				popup_rigcenter.downloading = ""
+				// Shader pack: installed into the Shaders folder
+				if (dok)
+				{
+					shader_packs_load(true)
+					popup_contentcenter.saved_name = dname
+					popup_contentcenter.saved_path = dpath
+					toast_new(e_toast.POSITIVE, text_get("contentdoneshader", dname))
+				}
+				else
+				{
+					file_delete_lib(dpath)
+					toast_new(e_toast.NEGATIVE, text_get("contentfailedtoast", dname))
+				}
+			}
+			else if (dmenu = 2)
+			{
+					// Addon: installed from the temporary download file
+				var addonname;
+				addonname = ""
+				if (dok)
+					addonname = addon_install(dpath)
+					
+				if (addonname != "")
+				{
+					popup_contentcenter.saved_name = dname
+					popup_contentcenter.saved_path = addons_directory
+					toast_new(e_toast.POSITIVE, text_get("contentdoneaddon", addonname))
+				}
+				else
+					toast_new(e_toast.NEGATIVE, text_get("contentfailedtoast", dname))
+					
+				file_delete_lib(dpath)
 			}
 			else
 			{
-				// Remove the invalid file (e.g. the HTML page a server sent
-				// instead of the rig pack)
-				if (sentfile)
-					file_delete_lib(popup_rigcenter.downloading_path)
-				
-				popup_rigcenter.error_name = popup_rigcenter.downloading_name
-				popup_rigcenter.error_message = (sentfile ? text_get("rigcenternotzip") : text_get("rigcenterfailed", popup_rigcenter.downloading_name))
-				log("Rig center: download failed", popup_rigcenter.downloading_path)
-				toast_new(e_toast.NEGATIVE, text_get("rigcenterfailedtoast", popup_rigcenter.downloading_name))
-				popup_rigcenter.downloading = ""
+				// Particle preset: installed into the Particles folder
+				if (dok)
+				{
+					popup_contentcenter.saved_name = dname
+					popup_contentcenter.saved_path = dpath
+					toast_new(e_toast.POSITIVE, text_get("contentdoneparticle", dname))
+				}
+				else
+				{
+					file_delete_lib(dpath)
+					toast_new(e_toast.NEGATIVE, text_get("contentfailedtoast", dname))
+				}
 			}
+				
+			popup_contentcenter.downloading = ""
 		}
 	}
 }

@@ -1,5 +1,6 @@
 /// bench_click_rigs()
-/// @desc "Download rigs" entry in the workbench create panel: opens the rig center.
+/// @desc "Download rigs" entry in the workbench create panel: opens the
+/// content center's rigs menu.
 
 function bench_click_rigs()
 {
@@ -7,6 +8,6 @@ function bench_click_rigs()
 	bench_show_ani_type = "hide"
 	window_focus = ""
 	
-	// Open the rig center
-	popup_rigcenter_show()
+	// Open the content center on the rigs menu
+	popup_contentcenter_show(0)
 }

@@ -4,6 +4,41 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.3 (2026-10-01)
+
+### New features
+
+* **Real gravity (Z axis).** The physics baker now simulates along the
+  world's actual up axis: gravity pulls timeline objects down along Z
+  towards the ground plane, with sub-stepped simulation between
+  keyframes so fast falls and bounces land exactly where they should.
+  Fall/bounce, throw, pendulum and settle all bake true Z motion, and
+  the floor parameter is now **Floor Z** (leave it empty in scenery
+  collapse to use the scenery's own lowest block level)
+* **Scenery collapse.** The physics popup's new fifth mode drops every
+  block of the selected sceneries that is *in the air* onto the block
+  or floor below it - a block resting on the floor or on another block
+  keeps perfectly still and gets no keyframes at all. Import a world or
+  schematic, select it, bake: unsupported columns crumble with real
+  gravity and an exact landing frame, supported ones stand still
+* **Content center.** The rig center grew into a full content center
+  (**File > Content center...**, still BETA): one popup with four menus
+  - **Rigs**, **Shader packs**, **Addons** and **Particles** - each
+  served from flat catalogs on the content server. Rigs download to a
+  location of your choice; shader packs, addons and particle presets
+  install straight into the app in one click, with live download
+  progress, search across every menu, and direct-download or
+  open-the-author's-page handling per item. The Release workflow now
+  stages all four catalogs, and `Tools/content-server` mirrors the
+  whole layout as a temp dev server for local development
+
+### Changes
+
+* The old rig center popup and its server integration were removed -
+  the content center serves every menu including rigs (the workbench
+  "Download rigs" button and the File menu entry open it on the rigs
+  menu)
+
 ## Reforged 1.1.2 (2026-10-01)
 
 ### New features

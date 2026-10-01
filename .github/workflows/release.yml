@@ -431,10 +431,70 @@ jobs:
           FORK_VERSION: ${{ needs.plan.outputs.fork_version }}
           BUNDLE: ${{ needs.plan.outputs.bundle }}
 
-      - name: Stage rig library (in-app rig center downloads)
+      - name: Stage content library (in-app content center)
         run: |
           mkdir -p dist/rigs
           cp Rigs/index.json Rigs/*.zip dist/rigs/
+          # Content center menus: shader packs, addons, particle presets
+          # (+ their catalogs, same layout Tools/content-server serves)
+          cp GmProject/datafiles/Data/Shaders/*.mishader dist/rigs/
+          cp GmProject/datafiles/Data/Addons/*.miaddon dist/rigs/
+          cp GmProject/datafiles/Particles/*.miparticles dist/rigs/
+          python3 - <<'EOF'
+          import glob, json, os, zipfile
+
+          def shader_catalog():
+              items = []
+              for fn in sorted(glob.glob("GmProject/datafiles/Data/Shaders/*.mishader")):
+                  try:
+                      spec = json.load(open(fn, encoding="utf-8"))
+                  except (OSError, ValueError):
+                      continue
+                  if not isinstance(spec, dict) or "values" not in spec:
+                      continue
+                  items.append({"name": spec.get("name", os.path.basename(fn)),
+                                    "author": spec.get("author", "Mine-imator Reforged"),
+                                    "description": spec.get("description", ""),
+                                    "file": os.path.basename(fn)})
+              return items
+
+          def addon_catalog():
+              items = []
+              for fn in sorted(glob.glob("GmProject/datafiles/Data/Addons/*.miaddon")):
+                  try:
+                      with zipfile.ZipFile(fn) as z:
+                          names = z.namelist()
+                          root = "addon.json" if "addon.json" in names else None
+                          if root is None:
+                              base = os.path.basename(fn).rsplit(".", 1)[0]
+                              if base + "/addon.json" in names:
+                                  root = base + "/addon.json"
+                          if root is None:
+                              continue
+                          spec = json.loads(z.read(root).decode("utf-8"))
+                  except (OSError, ValueError, zipfile.BadZipFile):
+                      continue
+                  if not isinstance(spec, dict) or "name" not in spec:
+                      continue
+                  items.append({"name": spec["name"],
+                                    "author": spec.get("author", ""),
+                                    "description": spec.get("description", ""),
+                                    "version": spec.get("version", "1.0"),
+                                    "file": os.path.basename(fn)})
+              return items
+
+          def particle_catalog():
+              return [{"name": os.path.basename(f)[:-len(".miparticles")].replace("_", " "),
+                          "description": "", "file": os.path.basename(f)}
+                      for f in sorted(glob.glob("GmProject/datafiles/Particles/*.miparticles"))]
+
+          for name, items in (("shaders.json", shader_catalog()),
+                              ("addons.json", addon_catalog()),
+                              ("particles.json", particle_catalog())):
+              with open("dist/rigs/" + name, "w", encoding="utf-8") as f:
+                  json.dump({"items": items}, f, indent=2, ensure_ascii=True)
+              print(name, len(items), "items")
+          EOF
           ls -la dist/rigs
 
       - name: Create GitHub Release
@@ -450,3 +510,9 @@ jobs:
             dist/*/versions.midata
             dist/*/[0-9]*.midata
             dist/*/index.json
+            dist/*/shaders.json
+            dist/*/addons.json
+            dist/*/particles.json
+            dist/*/*.mishader
+            dist/*/*.miaddon
+            dist/*/*.miparticles

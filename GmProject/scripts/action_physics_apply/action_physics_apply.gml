@@ -1,7 +1,10 @@
 /// action_physics_apply()
 /// @desc Bakes the physics motion configured in the physics popup into every
-/// selected timeline object as keyframes, starting at the current frame:
-/// fall and bounce, throw, pendulum swing or settle. Fully undoable.
+/// selected timeline object as keyframes, starting at the current frame.
+/// Gravity acts along the world's up axis (Z, towards the ground plane):
+/// fall and bounce, throw, pendulum swing, settle - or scenery collapse,
+/// which drops every unsupported block of the selected sceneries onto the
+/// block or floor below it (supported blocks keep still). Fully undoable.
 
 function action_physics_apply()
 {
@@ -90,15 +93,23 @@ function action_physics_apply()
 	}
 	else
 	{
-		// Need at least one selected timeline object
-		var selcount;
+		// Selection check: any mode needs selected timelines, collapse
+		// specifically needs selected sceneries
+		var selcount, selcountany;
 		selcount = 0
+		selcountany = 0
 		with (obj_timeline)
 		{
 			if (selected)
-				selcount++
+			{
+				selcountany++
+				if (type = e_tl_type.SCENERY)
+					selcount++
+			}
 		}
-		if (selcount = 0)
+		if (selcountany = 0)
+			return false
+		if (popup_physics.mode = 4 && selcount = 0)
 			return false
 
 		var hobj;
@@ -117,110 +128,124 @@ function action_physics_apply()
 
 		// Parameters from the popup (textboxes accept expressions)
 		mode = popup_physics.mode
-		gravity = max(0, eval(popup_physics.tbx_gravity.text, 0.5))
+		gravity = max(0.01, eval(popup_physics.tbx_gravity.text, 0.5))
 		bounce = clamp(eval(popup_physics.tbx_bounce.text, 0.5), 0, 1)
 		floorv = eval(popup_physics.tbx_floor.text, 0)
 		velx = eval(popup_physics.tbx_vx.text, 4)
-		vely = eval(popup_physics.tbx_vy.text, 6)
-		velz = eval(popup_physics.tbx_vz.text, 0)
+		vely = eval(popup_physics.tbx_vy.text, 0)
+		velz = eval(popup_physics.tbx_vz.text, 6)
 		amplitude = eval(popup_physics.tbx_amplitude.text, 45)
 		period = max(1, eval(popup_physics.tbx_period.text, 24))
 		damping = max(0, eval(popup_physics.tbx_damping.text, 0.04))
 		frames = clamp(round(eval(popup_physics.tbx_frames.text, 30)), 1, 10000)
 		step = clamp(round(eval(popup_physics.tbx_step.text, 1)), 1, frames)
 
-		var marker;
+		var marker, floorauto;
 		marker = app.timeline_marker
+		floorauto = (popup_physics.tbx_floor.text = "")
 
-		// Simulate every selected object and record the baked values
-		with (obj_timeline)
+		if (mode = 4)
 		{
-			if (!selected)
-				continue
-
-			var y0, r0, px, py, pz, vy, f, s;
-			y0 = value[e_value.POS_Y]
-			r0 = value[e_value.ROT_Z]
-			px = value[e_value.POS_X]
-			py = y0
-			pz = value[e_value.POS_Z]
-			vy = vely
-
-			for (f = 0; f <= frames; f += step)
+			// ---- Scenery collapse: drop unsupported blocks ----
+			// Every block rests either on the block below it in its column
+			// or on the floor; supported blocks keep perfectly still, only
+			// floating blocks get fall keyframes.
+			action_physics_collapse(hobj, gravity, floorauto, floorv, frames, step, marker)
+		}
+		else
+		{
+			// ---- Per-object motions (fall, throw, pendulum, settle) ----
+			with (obj_timeline)
 			{
-				// Advance the simulation by one step
-				if (f > 0)
+				if (!selected)
+					continue
+
+				var z0, r0, px, py, pz, vx, vy, vz, f, s;
+				z0 = value[e_value.POS_Z]
+				r0 = value[e_value.ROT_X]
+				px = value[e_value.POS_X]
+				py = value[e_value.POS_Y]
+				pz = z0
+				vz = velz
+				vx = velx
+				vy = vely
+
+				for (f = 0; f <= frames; f += step)
 				{
-					for (s = 0; s < step; s++)
+					// Advance the simulation by one step
+					if (f > 0)
 					{
-						if (mode = 0)
+						for (s = 0; s < step; s++)
 						{
-							vy -= gravity
-							py += vy
-							if (py <= floorv)
+							if (mode = 0)
 							{
-								py = floorv
-								vy = -vy * bounce
-								if (abs(vy) < gravity)
-									vy = 0
+								vz -= gravity
+								pz += vz
+								if (pz <= floorv)
+								{
+									pz = floorv
+									vz = -vz * bounce
+									if (abs(vz) < gravity)
+										vz = 0
+								}
+							}
+							else if (mode = 1)
+							{
+								vz -= gravity
+								pz += vz
+								px += vx
+								py += vy
 							}
 						}
-						else if (mode = 1)
-						{
-							vy -= gravity
-							py += vy
-							px += velx
-							pz += velz
-						}
+					}
+
+					if (mode = 0)
+					{
+						hobj.row_tl[hobj.row_amount] = save_id
+						hobj.row_pos[hobj.row_amount] = marker + f
+						hobj.row_vi[hobj.row_amount] = e_value.POS_Z
+						hobj.row_val[hobj.row_amount] = pz
+						hobj.row_amount++
+					}
+					else if (mode = 1)
+					{
+						hobj.row_tl[hobj.row_amount] = save_id
+						hobj.row_pos[hobj.row_amount] = marker + f
+						hobj.row_vi[hobj.row_amount] = e_value.POS_X
+						hobj.row_val[hobj.row_amount] = px
+						hobj.row_amount++
+						hobj.row_tl[hobj.row_amount] = save_id
+						hobj.row_pos[hobj.row_amount] = marker + f
+						hobj.row_vi[hobj.row_amount] = e_value.POS_Y
+						hobj.row_val[hobj.row_amount] = py
+						hobj.row_amount++
+						hobj.row_tl[hobj.row_amount] = save_id
+						hobj.row_pos[hobj.row_amount] = marker + f
+						hobj.row_vi[hobj.row_amount] = e_value.POS_Z
+						hobj.row_val[hobj.row_amount] = pz
+						hobj.row_amount++
+					}
+					else if (mode = 2)
+					{
+						hobj.row_tl[hobj.row_amount] = save_id
+						hobj.row_pos[hobj.row_amount] = marker + f
+						hobj.row_vi[hobj.row_amount] = e_value.ROT_X
+						hobj.row_val[hobj.row_amount] = r0 + amplitude * cos(pi * 2 * f / period) * power(2.718281828459045, -damping * f)
+						hobj.row_amount++
+					}
+					else
+					{
+						hobj.row_tl[hobj.row_amount] = save_id
+						hobj.row_pos[hobj.row_amount] = marker + f
+						hobj.row_vi[hobj.row_amount] = e_value.POS_Z
+						hobj.row_val[hobj.row_amount] = floorv + (z0 - floorv) * cos(pi * 2 * f / period) * power(2.718281828459045, -damping * f)
+						hobj.row_amount++
 					}
 				}
 
-				if (mode = 0)
-				{
-					hobj.row_tl[hobj.row_amount] = save_id
-					hobj.row_pos[hobj.row_amount] = marker + f
-					hobj.row_vi[hobj.row_amount] = e_value.POS_Y
-					hobj.row_val[hobj.row_amount] = py
-					hobj.row_amount++
-				}
-				else if (mode = 1)
-				{
-					hobj.row_tl[hobj.row_amount] = save_id
-					hobj.row_pos[hobj.row_amount] = marker + f
-					hobj.row_vi[hobj.row_amount] = e_value.POS_X
-					hobj.row_val[hobj.row_amount] = px
-					hobj.row_amount++
-					hobj.row_tl[hobj.row_amount] = save_id
-					hobj.row_pos[hobj.row_amount] = marker + f
-					hobj.row_vi[hobj.row_amount] = e_value.POS_Y
-					hobj.row_val[hobj.row_amount] = py
-					hobj.row_amount++
-					hobj.row_tl[hobj.row_amount] = save_id
-					hobj.row_pos[hobj.row_amount] = marker + f
-					hobj.row_vi[hobj.row_amount] = e_value.POS_Z
-					hobj.row_val[hobj.row_amount] = pz
-					hobj.row_amount++
-				}
-				else if (mode = 2)
-				{
-					hobj.row_tl[hobj.row_amount] = save_id
-					hobj.row_pos[hobj.row_amount] = marker + f
-					hobj.row_vi[hobj.row_amount] = e_value.ROT_Z
-					hobj.row_val[hobj.row_amount] = r0 + amplitude * cos(pi * 2 * f / period) * power(2.718281828459045, -damping * f)
-					hobj.row_amount++
-				}
-				else
-				{
-					hobj.row_tl[hobj.row_amount] = save_id
-					hobj.row_pos[hobj.row_amount] = marker + f
-					hobj.row_vi[hobj.row_amount] = e_value.POS_Y
-					hobj.row_val[hobj.row_amount] = floorv + (y0 - floorv) * cos(pi * 2 * f / period) * power(2.718281828459045, -damping * f)
-					hobj.row_amount++
-				}
+				hobj.tl_ids[hobj.tl_amount] = save_id
+				hobj.tl_amount++
 			}
-
-			hobj.tl_ids[hobj.tl_amount] = save_id
-			hobj.tl_amount++
 		}
 
 		// Turn the recorded rows into keyframes
