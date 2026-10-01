@@ -130,6 +130,12 @@ function shader_packs_load()
 		pack[?"description"] = description
 		pack[?"file"] = files[i]
 		pack[?"values"] = spec[?"values"]
+		
+		// Packs still being tested (e.g. imported Minecraft shaderpack
+		// approximations) carry a beta badge in the camera shader menu
+		if (!is_undefined(spec[?"beta"]) && spec[?"beta"])
+			pack[?"beta"] = true
+		
 		ds_list_add(shader_pack_list, pack)
 	}
 	

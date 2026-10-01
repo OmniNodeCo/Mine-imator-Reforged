@@ -74,6 +74,7 @@ function app_startup_interface_popups()
 	
 	// Timeline physics
 	popup_physics = new_popup("physics", popup_physics_draw, 420, null, true)
+	popup_physics.badge_icon = icons.BETA
 	with (popup_physics)
 	{
 		mode = 0
@@ -103,6 +104,7 @@ function app_startup_interface_popups()
 	
 	// Addons browser
 	popup_addons = new_popup("addons", popup_addons_draw, 640, 420, true, true, false, true)
+	popup_addons.badge_icon = icons.BETA
 	with (popup_addons)
 	{
 		scroll = 0

@@ -25,6 +25,11 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   re-installing an addon with the same name replaces it. The format is
   documented in `Data/Addons/README.md` and an example addon
   (`frosty-night.miaddon`, a cold moonlit camera grade) ships with the app
+* **Beta badges.** Features that are still being tested - timeline physics,
+  addons and the Minecraft shaderpack import - are marked with a BETA badge
+  in the menus, on the Physics and Addons popups, and next to imported packs
+  in the camera's shader menu (shader pack authors can opt in with
+  `"beta": true` in their pack)
 
 ### Fixes
 

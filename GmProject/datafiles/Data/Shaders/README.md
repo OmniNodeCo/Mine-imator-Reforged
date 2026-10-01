@@ -48,7 +48,12 @@ or copy it as a starting point for your own.
 ```
 
 Colors are `"#RRGGBB"` strings; everything else is a number or boolean.
-Only the keys you set are applied (after the reset). Available keys:
+Only the keys you set are applied (after the reset).
+
+Optional top-level fields: `"beta": true` marks a pack as still being
+tested - it gets a BETA badge next to its name in the camera's
+**Select shader...** menu (presets imported from Minecraft shaderpacks set
+this automatically). Available keys:
 
 `light_management`, `tonemapper` (0 none, 1 Reinhard, 2 ACES), `exposure`,
 `gamma`, `dof`, `dof_depth`, `dof_range`, `dof_fade_size`, `dof_blur_size`,

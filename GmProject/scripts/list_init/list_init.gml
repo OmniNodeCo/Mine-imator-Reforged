@@ -1418,7 +1418,13 @@ function list_init(name)
 			for (var i = 0; i < ds_list_size(shader_pack_list); i++)
 			{
 				pack = shader_pack_list[|i]
-				menu_add_item(i, pack[?"name"])
+				
+				// Packs marked as beta (e.g. imported Minecraft shaderpack
+				// approximations) get a badge in the menu
+				if (!is_undefined(pack[?"beta"]) && pack[?"beta"])
+					menu_add_item(i, pack[?"name"], null, null, null, icons.BETA)
+				else
+					menu_add_item(i, pack[?"name"])
 			}
 			
 			if (ds_list_size(shader_pack_list) > 0)

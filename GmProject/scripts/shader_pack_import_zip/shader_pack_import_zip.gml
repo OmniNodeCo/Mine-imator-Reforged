@@ -45,6 +45,7 @@ function shader_pack_import_zip(path)
 	json_save_var("name", name)
 	json_save_var("author", text_get("shaderpackauthor"))
 	json_save_var("description", text_get("shaderpackdesc", name))
+	json_save_var_bool("beta", true)
 	json_save_object_start("values")
 	
 	var key;
