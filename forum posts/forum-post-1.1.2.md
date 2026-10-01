@@ -1,8 +1,8 @@
-**Mine-imator Reforged 1.1.1**
+**Mine-imator Reforged 1.1.2**
 
 based on Mine-imator 2.0.2 (Continuation Build 1.0.15 Alpha 1)
 
-Physics and addons: bake real motion into your animations and install content packs in one click.
+The new feature wave is now clearly marked: everything still being tested wears a BETA badge.
 
 **Download:** [Github Release](https://github.com/OmniNodeCo/Mine-imator-Reforged/releases)
 
@@ -10,15 +10,13 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 
 **What's new**
 
-- **Timeline physics:** Edit > Physics... bakes physics into every selected timeline object as keyframes, starting at the current frame. Four motions: Fall + bounce (gravity and bounciness until the object settles on a floor), Throw (initial velocity on all three axes), Pendulum swing (damped swing around the object's rotation origin), and Settle (spring onto a target height). You control duration and keyframe spacing, every field accepts expressions (try "0.5*2"), and the whole bake is one undoable step - undo removes exactly the keyframes it created, redo puts them back. The baked keyframes are ordinary keyframes: tweak them, ease them, keep them.
-- **Addons:** File > Install addon... installs a content pack - a zip with an addon.json manifest and optional shaders/, particles/ and rigs/ folders. Shader packs appear in the camera's "Select shader..." menu, particle presets in the workbench, and rigs stay in the addon's own folder with an "Import rigs into project" button. The new File > Addons... browser lists what's installed, shows each addon's contents, and uninstalls cleanly (it removes exactly the files it installed). Re-installing an addon with the same name replaces it. The format is a few lines of JSON - documented in Data/Addons/README.md - and an example addon (frosty-night.miaddon, a cold moonlit camera grade) ships in the box.
-- **Fix:** the downloadable Minecraft asset packages were missing 117 textures (all capes, the camera tripod, the shelf/bed block textures, two map items) - the asset pipeline now carries template textures over so every referenced texture resolves, and a new texture tester tool verifies packages in the browser.
-- Version bumped to Reforged 1.1.1.
+- **Beta badges:** the features that are still being tested - timeline physics, addons and the Minecraft shaderpack import - are marked with a BETA badge so you know what to expect: File > Install shaders..., File > Install addon... and File > Addons... in the File menu, Edit > Physics... in the Edit menu, the Physics and Addons popups (next to their titles), and every preset imported from a Minecraft shaderpack in the camera's "Select shader..." menu. Shader pack authors can badge their own packs with "beta": true in the .mishader file.
+- Version bumped to Reforged 1.1.2.
 
 **Known limitations**
 
+- Badges are informational - badged features work the same as before, they just haven't been through a long shakedown yet.
 - Physics bakes keyframes; it is not a live simulation - after baking, the motion only changes if you edit the keyframes or bake again.
-- Pendulum swing rotates around the object's own rotation origin; parent an object to a path point or another object to swing from a specific pivot.
 - Addons can only install content Mine-imator already understands (shader packs, particle presets, rigs) - they cannot add new code or run scripts.
 - Shader packs set the camera's effect values for the current frame (like editing them by hand); if your camera uses keyframed effects, apply the pack at each keyframe you want it on.
 - The TV's audio plays in the editor; rendered video exports don't include the TV's audio track yet (only timeline audio tracks are mixed into exports).
@@ -27,6 +25,14 @@ Available for Windows x64, Linux x64, and macOS x86_64.
 - The underlying Continuation Build base is alpha quality - expect the occasional rough edge.
 
 [spoiler="Show hidden contents — full changelog"]
+
+[spoiler="Version 1.1.2 (2026-10-01)"]
+[b]New features[/b]
+- Beta badges: features that are still being tested (timeline physics, addons, the Minecraft shaderpack import) are marked with a BETA badge - in the File and Edit menus, on the Physics and Addons popups, and next to imported packs in the camera's shader menu; shader pack authors can opt in with "beta": true in their .mishader
+
+[b]Versioning[/b]
+- Version bumped to Reforged 1.1.2 (full in-app version 2.0.2 Reforged 1.1.2)
+[/spoiler]
 
 [spoiler="Version 1.1.1 (2026-09-30)"]
 [b]New features[/b]
