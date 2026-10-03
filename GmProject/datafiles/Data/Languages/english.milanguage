@@ -654,9 +654,13 @@
 		"frames": "Duration (frames)",
 		"step": "Keyframe every (frames)",
 		"collapse": "Scenery collapse",
+		"ragdoll": "Ragdoll",
+		"inforig": "Bakes a ragdoll into %1 selected rig(s): body parts fall with gravity and flop on their joints, staggered by depth.",
+		"rignone": "No rig selected - import a rig (File > Import asset...) and select it",
 		"infoscenery": "Bakes gravity into %1 selected scenery/sceneries: blocks in the air fall, blocks on the floor or resting on other blocks keep still.",
 		"scenerynone": "No scenery selected - import a world or schematic and select it",
 		"floorauto": "Leave Floor Z empty to drop blocks onto the scenery's lowest block level.",
+		"floorautoragdoll": "Leave Floor Z empty to drop parts onto the rig's lowest point.",
 		"apply": "Bake physics",
 		"baked": "Baked physics into %1 timeline object(s)"
 	},
@@ -1077,7 +1081,17 @@
 		"previous": "Previous",
 		"stop": "Stop",
 		"play": "Play",
-		"numpadkey": "Num %1"
+		"numpadkey": "Num %1",
+		"leftcommand": "Command",
+		"leftsuper": "Super",
+		"rightcommand": "Command",
+		"rightsuper": "Super",
+		"playmedia": "Play media",
+		"nexttrack": "Next track",
+		"prevtrack": "Previous track",
+		"search": "Search",
+		"stopmedia": "Stop media",
+		"volumemute": "Mute"
 	},
 	"column/": {
 		"libname": "Name",
@@ -3273,7 +3287,9 @@
 		"modeltexnormal": "Normal map"
 	},
 	"templateeditor/": {
-		"bodypart": "Body part"
+		"bodypart": "Body part",
+		"block": "Block",
+		"model": "Model"
 	},
 	"particleeditor/": {
 		"count": "Particles",
@@ -3530,7 +3546,8 @@
 		"v": "V",
 		"hex": "Hex",
 		"rgb": "RGB",
-		"hsv": "HSV"
+		"hsv": "HSV",
+		"mode": "Mode"
 	},
 	"background": "ENVIRONMENT",
 	"background/": {
@@ -4233,6 +4250,11 @@
 			"alignment": "Alignment",
 			"halign": "Horizontal",
 			"valign": "Vertical",
+			"left": "Left",
+			"center": "Center",
+			"right": "Right",
+			"top": "Top",
+			"bottom": "Bottom",
 			"aa": "Font anti-aliasing",
 			"aatip": "Smooths sharp edges on fonts. (Not recommended for 3D text.)",
 			"outline": "Outline",
@@ -4302,7 +4324,12 @@
 			"valign": "Vertical",
 			"padding": "Padding",
 			"scale": "Scale",
-			"opacity": "Opacity"
+			"opacity": "Opacity",
+			"top": "Top",
+			"bottom": "Bottom",
+			"left": "Left",
+			"center": "Center",
+			"right": "Right"
 		},
 		"spawncameras": "Copy work camera into new cameras",
 		"unlimitedvalues": "Allow unlimited values",

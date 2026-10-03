@@ -94,10 +94,12 @@ function action_physics_apply()
 	else
 	{
 		// Selection check: any mode needs selected timelines, collapse
-		// specifically needs selected sceneries
-		var selcount, selcountany;
+		// specifically needs selected sceneries and ragdoll selected rigs
+		// (timelines with parts)
+		var selcount, selcountany, selrigs;
 		selcount = 0
 		selcountany = 0
+		selrigs = 0
 		with (obj_timeline)
 		{
 			if (selected)
@@ -105,11 +107,15 @@ function action_physics_apply()
 				selcountany++
 				if (type = e_tl_type.SCENERY)
 					selcount++
+				if (part_list != null)
+					selrigs++
 			}
 		}
 		if (selcountany = 0)
 			return false
 		if (popup_physics.mode = 4 && selcount = 0)
+			return false
+		if (popup_physics.mode = 5 && selrigs = 0)
 			return false
 
 		var hobj;
@@ -151,6 +157,14 @@ function action_physics_apply()
 			// or on the floor; supported blocks keep perfectly still, only
 			// floating blocks get fall keyframes.
 			action_physics_collapse(hobj, gravity, floorauto, floorv, frames, step, marker)
+		}
+		else if (mode = 5)
+		{
+			// ---- Ragdoll: rigs crumble part by part ----
+			// Every body part falls with gravity and flops around its joint
+			// like a damped pendulum, staggered by chain depth (root first,
+			// limbs whip after).
+			action_physics_ragdoll(hobj, gravity, floorauto, floorv, amplitude, period, damping, frames, step, marker)
 		}
 		else
 		{

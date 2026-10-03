@@ -2,17 +2,20 @@
 /// @desc Timeline physics popup: bakes a physics motion into the selected
 /// timeline objects as keyframes, starting at the current frame. Gravity
 /// pulls along the world's up axis (Z): fall + bounce, throw, pendulum
-/// swing, settle - or scenery collapse, which drops every block that is in
-/// the air while blocks resting on the floor or on other blocks keep still.
+/// swing, settle, scenery collapse (blocks in the air fall while supported
+/// blocks keep still) or ragdoll (rigs crumple part by part, every limb
+/// falling and flopping on its joint, staggered by depth).
 
 function popup_physics_draw()
 {
 	var halfw, selcount, selscenery;
 	halfw = (dw - 8) / 2
 
-	// Selected timeline objects (sceneries count separately for collapse)
+	// Selected timeline objects (sceneries count for collapse, timelines
+	// with parts count as rigs for ragdoll)
 	selcount = 0
 	selscenery = 0
+	selrigs = 0
 	with (obj_timeline)
 	{
 		if (selected)
@@ -20,6 +23,8 @@ function popup_physics_draw()
 			selcount++
 			if (type = e_tl_type.SCENERY)
 				selscenery++
+			if (part_list != null)
+				selrigs++
 		}
 	}
 
@@ -31,6 +36,13 @@ function popup_physics_draw()
 			draw_label(text_get("physicsinfoscenery", selscenery), dx, dy + 16, fa_left, fa_middle, c_text_secondary, 1, font_label)
 		else
 			draw_label(text_get("physicsscenerynone"), dx, dy + 16, fa_left, fa_middle, c_text_tertiary, a_text_tertiary, font_label)
+	}
+	else if (popup.mode = 5)
+	{
+		if (selrigs > 0)
+			draw_label(text_get("physicsinforig", selrigs), dx, dy + 16, fa_left, fa_middle, c_text_secondary, 1, font_label, 14, dw)
+		else
+			draw_label(text_get("physicsrignone"), dx, dy + 16, fa_left, fa_middle, c_text_tertiary, a_text_tertiary, font_label, 14, dw)
 	}
 	else if (selcount > 0)
 		draw_label(text_get("physicsinfo", selcount), dx, dy + 16, fa_left, fa_middle, c_text_secondary, 1, font_label)
@@ -46,6 +58,7 @@ function popup_physics_draw()
 	draw_radiobutton("physicspendulum", dx, dy + 46, 2, popup.mode = 2, popup_physics_set_mode)
 	draw_radiobutton("physicssettle", dx + halfw + 8, dy + 46, 3, popup.mode = 3, popup_physics_set_mode)
 	draw_radiobutton("physicscollapse", dx, dy + 70, 4, popup.mode = 4, popup_physics_set_mode)
+	draw_radiobutton("physicsragdoll", dx + halfw + 8, dy + 70, 5, popup.mode = 5, popup_physics_set_mode)
 	tab_next()
 
 	// Parameters, two fields per row
@@ -98,6 +111,11 @@ function popup_physics_draw()
 		draw_textfield("physicsdamping", dx, dy, halfw, 24, popup.tbx_damping, null, "", "top")
 		draw_textfield("physicsframes", dx + halfw + 8, dy, halfw, 24, popup.tbx_frames, null, "", "top")
 	}
+	else if (popup.mode = 5)
+	{
+		draw_textfield("physicsamplitude", dx, dy, halfw, 24, popup.tbx_amplitude, null, "", "top")
+		draw_textfield("physicsperiod", dx + halfw + 8, dy, halfw, 24, popup.tbx_period, null, "", "top")
+	}
 	else
 	{
 		draw_textfield("physicsframes", dx, dy, halfw, 24, popup.tbx_frames, null, "", "top")
@@ -111,6 +129,11 @@ function popup_physics_draw()
 		draw_textfield("physicsframes", dx, dy, halfw, 24, popup.tbx_frames, null, "", "top")
 		draw_textfield("physicsstep", dx + halfw + 8, dy, halfw, 24, popup.tbx_step, null, "", "top")
 	}
+	else if (popup.mode = 5)
+	{
+		draw_textfield("physicsdamping", dx, dy, halfw, 24, popup.tbx_damping, null, "", "top")
+		draw_textfield("physicsframes", dx + halfw + 8, dy, halfw, 24, popup.tbx_frames, null, "", "top")
+	}
 	else if (popup.mode != 4)
 	{
 		draw_textfield("physicsstep", dx, dy, halfw, 24, popup.tbx_step, null, "", "top")
@@ -122,9 +145,17 @@ function popup_physics_draw()
 	}
 	tab_next()
 
+	// Ragdoll: floor hint (auto floor = the rig's lowest part)
+	if (popup.mode = 5)
+	{
+		tab_control(18)
+		draw_label(text_get("physicsfloorautoragdoll"), dx, dy + 14, fa_left, fa_middle, c_text_tertiary, a_text_tertiary, font_caption, 12, dw)
+		tab_next()
+	}
+
 	// Bake
 	var canbake;
-	canbake = (popup.mode = 4 ? selscenery > 0 : selcount > 0)
+	canbake = (popup.mode = 4 ? selscenery > 0 : (popup.mode = 5 ? selrigs > 0 : selcount > 0))
 
 	tab_control_button_label()
 	if (draw_button_label("physicsapply", dx + dw, dy, null, null, e_button.PRIMARY, null, e_anchor.RIGHT, !canbake))

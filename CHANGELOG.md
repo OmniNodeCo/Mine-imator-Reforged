@@ -4,6 +4,45 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.5 (2026-10-03)
+
+### New features
+
+* **Ragdoll physics.** The physics popup's sixth mode crumples player and
+  character rigs part by part: every body part falls with gravity and
+  flops around its joint like a damped pendulum, staggered by chain
+  depth - the root drops first and the limbs whip after it, so a
+  selected rig collapses like a puppet instead of moving as one block.
+  Swing amplitude, period and damping are configurable, each part gets
+  its own swing phase, the fall lands on an exact frame, parts at floor
+  level only flop, and an empty Floor Z drops parts onto the rig's own
+  lowest point. Fully undoable like every other bake
+* **Popup checker dev server.** `Tools/popup-checker` audits every popup
+  of the app (19 today) and serves a live report in the browser
+  (`python3 Tools/popup-checker/server.py`, port 8391): language keys,
+  field initialization, script references, icons, caption keys, custom
+  popup headers and the fixed-height `dh` layout bug class - plus a
+  global pass over every literal language key used anywhere in the
+  sources. The report regenerates from the code on every refresh
+
+### Fixes (found by the popup checker audit)
+
+* **Content center + Addons popups showed no title or BETA badge.** Both
+  are custom popups, and the popup framework draws no caption for those
+  - their badge was set but never rendered. Both popups now render
+  their own header: icon, title and the BETA badge
+* **Frame editor transition dropdown showed fallback text for every
+  transition.** It looked up `"menu" + name` language keys that do not
+  exist; it now uses the `transition*` key family, with the ease
+  direction templates ("Quadratic (Ease in)" and friends)
+* **Template editor:** the Block and Model list captions had no
+  language keys (Body part existed alone)
+* **Watermark align, text align and color picker mode buttons:** toggle
+  button names without language keys
+* **Mac/Linux keybind list:** Command, Super, media and search key
+  names had no language keys - the keybind settings showed fallback
+  text for those keys on macOS and Linux
+
 ## Reforged 1.1.4 (2026-10-03)
 
 ### New features

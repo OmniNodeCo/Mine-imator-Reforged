@@ -10,9 +10,17 @@ function popup_addons_draw()
 	listw = 240
 	rowh = 46
 
-	// ---- Header: install button ----
+	// ---- Header: title (icon + text + BETA badge), install button, count ----
+	// Custom popup: the framework draws no caption, so the header renders
+	// the title itself (the caption key lives in the addon/ block)
 	tab_control(headerh)
-	if (draw_button_label("addoninstall", dx + pad, dy + pad - 4, null, icons.DOWNLOAD, e_button.SECONDARY, null, e_anchor.LEFT))
+	
+	draw_image(spr_icons, icons.LIBRARY, dx + pad, dy + pad + 14, 1, 1, c_accent, 1)
+	draw_label(text_get("addoncaption"), dx + pad + 28, dy + pad + 14, fa_left, fa_middle, c_accent, 1, font_heading)
+	draw_set_font(font_heading)
+	draw_image(spr_icons, icons.BETA, dx + pad + 28 + string_width(text_get("addoncaption")) + 12, dy + pad + 14, 1, 1, c_accent, 1)
+	
+	if (draw_button_label("addoninstall", dx + pad + 176, dy + pad + 2, null, icons.DOWNLOAD, e_button.SECONDARY, null, e_anchor.LEFT))
 		action_install_addon()
 
 	draw_label(text_get("addoncount", ds_list_size(addon_list)), dx + dw - pad, dy + pad + 14, fa_right, fa_middle, c_text_tertiary, a_text_tertiary, font_caption)

@@ -9,10 +9,21 @@ function popup_contentcenter_draw()
 	listw = 270
 	rowh = 46
 	
-	// ---- Header: search field + refresh button ----
-	// (refresh sits left of the popup's close button)
+	// ---- Header: title + search field + refresh button ----
+	// Custom popup: the framework draws no caption, so the header renders
+	// the title (icon + text + BETA badge) itself; the refresh button sits
+	// left of the popup's close button
 	tab_control_textfield()
-	draw_textfield("contentsearch", dx + pad, dy + pad, dw - 88, 24, popup.tbx_search, null, text_get("contentsearch"), "none")
+	
+	var titlew;
+	titlew = 200
+	
+	draw_image(spr_icons, icons.DOWNLOAD, dx + pad, dy + pad + 12, 1, 1, c_accent, 1)
+	draw_label(text_get("contentcaption"), dx + pad + 28, dy + pad + 12, fa_left, fa_middle, c_accent, 1, font_heading)
+	draw_set_font(font_heading)
+	draw_image(spr_icons, icons.BETA, dx + pad + 28 + string_width(text_get("contentcaption")) + 12, dy + pad + 12, 1, 1, c_accent, 1)
+	
+	draw_textfield("contentsearch", dx + pad + titlew, dy + pad, dw - 88 - titlew, 24, popup.tbx_search, null, text_get("contentsearch"), "none")
 	
 	if (draw_button_icon("contentrefresh", dx + dw - 68, dy + pad, 24, 24, false, icons.RECENTS, null, http_content_index != null, "contentrefresh"))
 		contentcenter_fetch(popup.menu, true)

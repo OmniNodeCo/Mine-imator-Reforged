@@ -1496,8 +1496,32 @@ function list_init(name)
 		// Transitions
 		case "frameeditortransition":
 		{
+			// Display name: the transition key family (transitionlinear,
+			// transitioneasequad...), with the ease templates carrying the
+			// direction - "menu" + name keys do not exist
 			for (var i = 0; i < ds_list_size(transition_list_order); i++)
-				menu_add_item(transition_list_order[|i], text_get("menu" + transition_list_order[|i]))
+			{
+				var transname, transbase;
+				transname = transition_list_order[|i]
+				transbase = transname
+				
+				if (transbase != "linear" && transbase != "instant" && transbase != "bezier")
+				{
+					transbase = string_replace(transbase, "easeinout", "")
+					transbase = string_replace(transbase, "easein", "")
+					transbase = string_replace(transbase, "easeout", "")
+					transbase = "ease" + transbase
+					
+					if (string_contains(transname, "easeinout"))
+						menu_add_item(transname, text_get("transitioneaseinout", text_get("transition" + transbase)))
+					else if (string_contains(transname, "easein"))
+						menu_add_item(transname, text_get("transitioneasein", text_get("transition" + transbase)))
+					else
+						menu_add_item(transname, text_get("transitioneaseout", text_get("transition" + transbase)))
+				}
+				else
+					menu_add_item(transname, text_get("transition" + transbase))
+			}
 			
 			break
 		}
