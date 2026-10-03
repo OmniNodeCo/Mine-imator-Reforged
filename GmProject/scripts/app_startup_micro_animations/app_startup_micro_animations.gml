@@ -74,7 +74,7 @@ function micro_animation(name) constructor
 		
 		if (goal_ease != goal_value)
 		{
-			if (app.setting_reduced_motion)
+			if (app.setting_reduced_motion || performance_low_end())
 				goal_ease = goal_value
 			else
 			{
@@ -115,7 +115,7 @@ function value_animation() constructor
 		if (value_ani_linear = value)
 			return 0
 		
-		if (app.setting_reduced_motion)
+		if (app.setting_reduced_motion || performance_low_end())
 		{
 			value_ani_linear = value
 			value_ani_ease = value

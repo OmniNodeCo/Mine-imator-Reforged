@@ -32,7 +32,7 @@ function app_update_micro_animations()
 	
 	with (obj_view)
 	{
-		if (app.setting_reduced_motion)
+		if (app.setting_reduced_motion || performance_low_end())
 			toolbar_alpha = toolbar_alpha_goal
 		else
 			toolbar_alpha += (toolbar_alpha_goal - toolbar_alpha) / max(1, 4 / delta)

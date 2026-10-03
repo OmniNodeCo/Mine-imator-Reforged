@@ -126,4 +126,43 @@ function tab_settings_program()
 	tab_control_switch()
 	draw_switch("settingssceneryremoveedges", dx, dy, setting_scenery_remove_edges, action_setting_scenery_remove_edges)
 	tab_next()
+	
+	// Performance
+	tab_control_switch()
+	draw_button_collapse("performance", collapse_map[?"performance"], action_performance_low_end, performance_low_end(), "settingsperformance")
+	tab_next()
+	
+	if (collapse_map[?"performance"])
+	{
+		tab_collapse_start()
+		
+		// Performance mode
+		tab_control(46)
+		draw_label(text_get("settingsperformancemode"), dx, dy - 3, fa_left, fa_top, c_text_secondary, 1, font_label)
+		draw_radiobutton("settingsperformanceauto", dx, dy + 22, -1, setting_performance_mode = -1, action_performance_mode)
+		draw_radiobutton("settingsperformancenormal", dx + dw / 3, dy + 22, 0, setting_performance_mode = 0, action_performance_mode)
+		draw_radiobutton("settingsperformancelowend", dx + dw / 3 * 2, dy + 22, 1, setting_performance_mode = 1, action_performance_mode)
+		tab_next()
+		
+		// Last test result
+		tab_control(20)
+		if (setting_performance_detected = -1)
+			draw_label(text_get("settingsperformancenotested"), dx, dy + 16, fa_left, fa_middle, c_text_tertiary, a_text_tertiary, font_label, 14, dw)
+		else
+			draw_label(text_get("settingsperformancelast", string(setting_performance_score), text_get(setting_performance_detected = 1 ? "settingsperformancelastlow" : "settingsperformancelastnormal")), dx, dy + 16, fa_left, fa_middle, c_text_secondary, 1, font_label, 14, dw)
+		tab_next()
+		
+		// FPS overlay
+		tab_control_switch()
+		draw_switch("settingsperformanceshowfps", dx, dy, setting_show_fps, action_performance_showfps)
+		tab_next()
+		
+		// Run the performance test
+		tab_control_button_label()
+		if (draw_button_label("settingsperformancetest", dx + dw, dy, null, icons.ROCKETSHIP, e_button.PRIMARY, null, e_anchor.RIGHT, perf_test_state = 1))
+			action_performance_test()
+		tab_next()
+		
+		tab_collapse_end()
+	}
 }

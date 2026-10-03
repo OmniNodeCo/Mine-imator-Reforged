@@ -140,16 +140,24 @@ function popup_draw()
 		dw -= 24
 		dh -= 12
 		
-		// Caption
-		var captext;
+		// Caption (with an optional icon in front of the text)
+		var captext, capx;
 		captext = text_get(popup.name + "caption")
-		draw_label(captext, dx, dy + 12, fa_left, fa_middle, c_accent, 1, font_heading)
+		capx = dx
+		
+		if (popup.caption_icon != null && popup.caption_icon != -1)
+		{
+			draw_image(spr_icons, popup.caption_icon, dx, dy + 12, 1, 1, c_accent, 1)
+			capx = dx + 28
+		}
+		
+		draw_label(captext, capx, dy + 12, fa_left, fa_middle, c_accent, 1, font_heading)
 		
 		// Badge (e.g. BETA for features still being tested)
 		if (popup.badge_icon != null && popup.badge_icon != -1)
 		{
 			draw_set_font(font_heading)
-			draw_image(spr_icons, popup.badge_icon, dx + string_width(captext) + 20, dy + 12, 1, 1, c_accent, 1)
+			draw_image(spr_icons, popup.badge_icon, capx + string_width(captext) + 20, dy + 12, 1, 1, c_accent, 1)
 		}
 		
 		closex = dx + dw - 24

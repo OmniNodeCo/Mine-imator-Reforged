@@ -87,6 +87,10 @@ function settings_load()
 			setting_watermark_scale = value_get_real(programmap[?"watermark_scale"], setting_watermark_scale)
 			setting_watermark_opacity = value_get_real(programmap[?"watermark_opacity"], setting_watermark_opacity)
 			
+			setting_performance_mode = value_get_real(programmap[?"performance_mode"], setting_performance_mode)
+			setting_performance_detected = value_get_real(programmap[?"performance_detected"], setting_performance_detected)
+			setting_performance_score = value_get_real(programmap[?"performance_score"], setting_performance_score)
+			
 			if (setting_watermark_fn != "")
 				setting_watermark_image = texture_create(setting_watermark_fn)
 		}
@@ -132,6 +136,7 @@ function settings_load()
 			setting_camera_lock_mouse = value_get_real(interfacemap[?"camera_lock_mouse"], setting_camera_lock_mouse)
 			window_mouse_set_permission(setting_camera_lock_mouse)
 			setting_place_new = value_get_real(interfacemap[?"place_new"], setting_place_new)
+			setting_show_fps = value_get_real(interfacemap[?"show_fps"], setting_show_fps)
 			setting_interface_scale_auto = value_get_real(interfacemap[?"scale_auto"], setting_interface_scale_auto)
 			if (setting_interface_scale_auto)
 				setting_interface_scale = interface_scale_default_get()

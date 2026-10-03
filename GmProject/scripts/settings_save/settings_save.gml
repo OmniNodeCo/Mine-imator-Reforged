@@ -73,6 +73,10 @@ function settings_save()
 		json_save_var("watermark_scale", setting_watermark_scale)
 		json_save_var("watermark_opacity", setting_watermark_opacity)
 		
+		json_save_var("performance_mode", setting_performance_mode)
+		json_save_var("performance_detected", setting_performance_detected)
+		json_save_var("performance_score", setting_performance_score)
+		
 	json_save_object_done()
 	
 	json_save_object_start("interface")
@@ -100,6 +104,7 @@ function settings_save()
 		json_save_var_bool("place_new", setting_place_new)
 		json_save_var("scale", setting_interface_scale)
 		json_save_var_bool("scale_auto", setting_interface_scale_auto)
+		json_save_var_bool("show_fps", setting_show_fps)
 		
 		json_save_var("panel_left_bottom_size", panel_map[?"left_secondary"].size)
 		json_save_var("panel_right_bottom_size", panel_map[?"right_secondary"].size)

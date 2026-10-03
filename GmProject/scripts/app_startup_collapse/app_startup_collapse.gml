@@ -10,6 +10,7 @@ function app_startup_collapse()
 	
 	collapse_register("backup")
 	collapse_register("watermark")
+	collapse_register("performance")
 	
 	collapse_register("file")
 	collapse_register("edit")

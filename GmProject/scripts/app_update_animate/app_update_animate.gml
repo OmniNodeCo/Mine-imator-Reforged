@@ -246,7 +246,7 @@ function app_update_animate()
 	if (window_state = "export_movie")
 		app_update_cameras(exportmovie_high_quality, true)
 	else if (!isrendermode || (isrendermode && render_samples = -1))
-		app_update_cameras(isrendermode, false)
+		app_update_cameras(isrendermode && !performance_low_end(), false)
 	
 	// Update current marker
 	timeline_marker_current = null

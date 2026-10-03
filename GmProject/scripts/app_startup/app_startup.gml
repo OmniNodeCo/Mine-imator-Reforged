@@ -26,6 +26,7 @@ function app_startup()
 	
 	app_startup_lists()
 	app_startup_collapse()
+	app_startup_performance()
 	app_startup_micro_animations()
 	app_startup_window()
 	app_startup_themes()

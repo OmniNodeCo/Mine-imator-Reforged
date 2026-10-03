@@ -8,4 +8,7 @@ function app_event_draw()
 	draw_set_color(c_text_main)
 	
 	window_draw()
+	
+	// Performance checker: frame-time stats, stress test + FPS overlay
+	perf_update()
 }

@@ -19,7 +19,7 @@ function app_update_toasts()
 	{
 		if (remove)
 		{
-			if (app.setting_reduced_motion)
+			if (app.setting_reduced_motion || performance_low_end())
 				remove_alpha = 0
 			else
 				remove_alpha -= (.1 * delta)

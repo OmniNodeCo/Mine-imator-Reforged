@@ -148,7 +148,18 @@ function settings_startup()
 	setting_reduced_motion = false
 	setting_wind_enable = true
 	
+	// Performance (Settings > Program > Performance)
+	// mode: -1 auto-detect, 0 normal, 1 low-end PC
+	setting_performance_mode = -1
+	setting_performance_detected = -1
+	setting_performance_score = -1
+	setting_show_fps = false
+	
 	settings_load()
 	languages_load()
 	interface_update_instant()
+	
+	// Performance mode never configured and never tested: the checker runs
+	// its detection once, automatically, when the interface is up
+	perf_autodetect_pending = (setting_performance_mode = -1 && setting_performance_detected = -1)
 }

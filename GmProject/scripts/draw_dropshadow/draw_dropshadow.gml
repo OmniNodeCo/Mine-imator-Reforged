@@ -8,6 +8,10 @@
 
 function draw_dropshadow(xx, yy, width, height, color, alpha)
 {
+	// Low-end mode: skip the shadow quads entirely
+	if (performance_low_end())
+		return 0
+	
 	alpha = alpha * draw_get_alpha() * .75
 	
 	var slicesize, offset, drawx, drawy;

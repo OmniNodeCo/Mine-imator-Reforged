@@ -4,6 +4,39 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.4 (2026-10-03)
+
+### New features
+
+* **Performance checker.** A live performance monitor now runs under the
+  interface: every frame time is recorded into a rolling two-second
+  window, and the new **Performance** popup (Settings > Program >
+  Performance > **Run performance test...**) shows live FPS, average and
+  worst frame time, a color-coded frame-time graph with the 60 FPS
+  budget line, and a stress test that measures the PC under real load
+  (blended overdraw + per-quad submission - the same costs heavy camera
+  effects have) and reports a score with a clear verdict
+* **Low-end PC mode, detected automatically.** On the very first start
+  the checker runs its test invisibly and picks the mode for you: a
+  capable PC keeps the full interface, a low-end PC gets low-end mode -
+  interface micro-animations, toast and panel animations off, popup and
+  panel shadows off, foliage wind off, and editor RENDER views using the
+  fast render path (full-quality rendering still applies to every
+  export). The result is remembered, reported with a toast, and can be
+  overridden anytime: **Settings > Program > Performance** has the mode
+  (Auto-detect / Normal / Low-end PC), a quick low-end switch, the last
+  test result, and the test button
+* **FPS counter.** Settings > Program > Performance can pin a small FPS
+  counter to the top-right corner of the window; it turns red when the
+  framerate drops below 45
+
+### Changes
+
+* **GUI polish:** popups now show an icon next to their caption -
+  Physics a beaker, the Content center a download arrow, Addons a
+  library and the new Performance popup a rocket - with the BETA badge
+  still following the title
+
 ## Reforged 1.1.3 (2026-10-01)
 
 ### New features

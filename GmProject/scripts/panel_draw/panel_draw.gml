@@ -1,6 +1,6 @@
 function test_reduced_motion(a, b)
 {
-	if (app.setting_reduced_motion)
+	if (app.setting_reduced_motion || performance_low_end())
 		return a
 	return b
 }
