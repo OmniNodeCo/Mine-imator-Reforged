@@ -107,7 +107,9 @@ function action_physics_apply()
 				selcountany++
 				if (type = e_tl_type.SCENERY)
 					selcount++
-				if (part_list != null)
+				// Rigs for ragdoll: characters, mobs and model rigs
+				// (mob models are characters)
+				if (type = e_tl_type.CHARACTER || type = e_tl_type.MODEL)
 					selrigs++
 			}
 		}

@@ -9,24 +9,31 @@
 /// @arg frames
 /// @arg step
 /// @arg marker
-/// @desc Ragdoll pass for player/character rigs: every body part of the
-/// selected rigs falls with gravity and flops around its joint like a
-/// damped pendulum, staggered by chain depth - the root drops first and
-/// the limbs whip after it, so the rig crumples like a puppet instead of
-/// moving as one block. Parts at or below the floor level only flop.
+/// @desc Ragdoll pass for characters, mobs and model rigs: the rig falls
+/// to the floor as a whole (the root timeline's world position drops with
+/// gravity, exact landing frame) while every body part of its part tree
+/// flops around its joint like a damped pendulum, staggered by chain depth
+/// - the torso tips as it drops and the limbs whip after it, so the rig
+/// crumples like a puppet. Rotations are baked in each part's local space
+/// (that IS the joint rotation); positions of parts are left untouched.
 
 function action_physics_ragdoll(hobj, gravity, floorauto, floorv, amplitude, period, damping, frames, step, marker)
 {
 	with (obj_timeline)
 	{
-		if (!selected || part_list = null)
+		// Rigs only: characters, mobs (mob models are characters) and
+		// ModelBench/model rigs. Scenery has its own mode (collapse).
+		if (!selected || (type != e_tl_type.CHARACTER && type != e_tl_type.MODEL))
 			continue
 		
-		// ---- Collect the rig's parts with their chain depth (root = 0) ----
+		// ---- Collect the full body-part tree (nested subparts included) ----
+		// Parts are BODYPART timelines parented into tree_list; a flat
+		// part_list only ever holds the direct parts and misses everything
+		// nested (lower arms, hats, ...).
 		var parts, depths;
 		parts = ds_list_create()
 		depths = ds_list_create()
-		physics_ragdoll_collect(id, 0, parts, depths)
+		physics_ragdoll_collect_tree(id, 0, parts, depths)
 		
 		if (ds_list_size(parts) = 0)
 		{
@@ -35,98 +42,105 @@ function action_physics_ragdoll(hobj, gravity, floorauto, floorv, amplitude, per
 			continue
 		}
 		
-		// Auto floor: the rig's own lowest part level (leave Floor Z empty)
+		// Floor: an explicit Floor Z, or the world ground plane (Z = 0)
 		if (floorauto)
-		{
 			floorv = 0
-			for (var c = 0; c < ds_list_size(parts); c++)
+		
+		// ---- Root fall: the whole rig drops with gravity ----
+		var z0, rx0, ry0, drop, tland, rootphase, f;
+		z0 = value[e_value.POS_Z]
+		rx0 = value[e_value.ROT_X]
+		ry0 = value[e_value.ROT_Y]
+		
+		// The root tips over as it falls (same pendulum as the parts)
+		rootphase = 0
+		
+		drop = z0 - floorv
+		tland = clamp(ceil(sqrt(2 * max(0, drop) / gravity)), 1, frames)
+		
+		for (f = 0; f <= frames; f += step)
+		{
+			// Fall: parabolic drop with an exact rest afterwards
+			var z, rootswing, ff;
+			if (drop < 2)
+				z = z0
+			else if (f >= tland)
+				z = floorv
+			else
+				z = max(floorv, z0 - 0.5 * gravity * f * f)
+			
+			// Tip: damped swing that starts at rest (frame 0 = current
+			// rotation, no snap at the marker)
+			ff = f
+			rootswing = amplitude * .5 * (sin(pi * 2 * ff / period + rootphase) - sin(rootphase)) * power(2.718281828459045, -damping * ff)
+			
+			if (drop >= 2)
 			{
-				if (c = 0 || parts[|c].value[e_value.POS_Z] < floorv)
-					floorv = parts[|c].value[e_value.POS_Z]
+				hobj.row_tl[hobj.row_amount] = save_id
+				hobj.row_pos[hobj.row_amount] = marker + f
+				hobj.row_vi[hobj.row_amount] = e_value.POS_Z
+				hobj.row_val[hobj.row_amount] = z
+				hobj.row_amount++
 			}
+			hobj.row_tl[hobj.row_amount] = save_id
+			hobj.row_pos[hobj.row_amount] = marker + f
+			hobj.row_vi[hobj.row_amount] = e_value.ROT_X
+			hobj.row_val[hobj.row_amount] = rx0 + rootswing
+			hobj.row_amount++
+			hobj.row_tl[hobj.row_amount] = save_id
+			hobj.row_pos[hobj.row_amount] = marker + f
+			hobj.row_vi[hobj.row_amount] = e_value.ROT_Y
+			hobj.row_val[hobj.row_amount] = ry0 + rootswing * .6
+			hobj.row_amount++
 		}
 		
-		// ---- Bake per part: staggered fall + damped joint flop ----
+		// Exact landing keyframe when the step grid skips it
+		if (drop >= 2 && tland <= frames && (tland mod step) != 0)
+		{
+			hobj.row_tl[hobj.row_amount] = save_id
+			hobj.row_pos[hobj.row_amount] = marker + tland
+			hobj.row_vi[hobj.row_amount] = e_value.POS_Z
+			hobj.row_val[hobj.row_amount] = floorv
+			hobj.row_amount++
+		}
+		
+		hobj.tl_ids[hobj.tl_amount] = save_id
+		hobj.tl_amount++
+		
+		// ---- Joint flops: every body part swings around its joint ----
 		for (var c = 0; c < ds_list_size(parts); c++)
 		{
-			var part, depth;
+			var part, depth, prx0, pry0, phase, delay;
 			part = parts[|c]
 			depth = depths[|c]
 			
-			var z0, rx0, ry0, phase, delay, drop, tland;
-			z0 = part.value[e_value.POS_Z]
-			rx0 = part.value[e_value.ROT_X]
-			ry0 = part.value[e_value.ROT_Y]
+			prx0 = part.value[e_value.ROT_X]
+			pry0 = part.value[e_value.ROT_Y]
 			
 			// Per-part swing phase (golden-angle spread) and depth stagger:
 			// the deeper the limb, the later it starts moving
 			phase = (depth * 1.31 + c * 2.399) mod (pi * 2)
 			delay = depth * 2
 			
-			drop = z0 - floorv
-			tland = clamp(ceil(sqrt(2 * max(0, drop) / gravity)), 1, frames)
-			
-			var f;
 			for (f = 0; f <= frames; f += step)
 			{
-				var ff, z, swing;
-				ff = max(0, f - delay)
-				
-				// Fall: parabolic drop with an exact rest afterwards
-				if (drop < 2)
-					z = z0
-				else if (ff >= tland)
-					z = floorv
-				else
-					z = max(floorv, z0 - 0.5 * gravity * ff * ff)
+				var pff, swing;
+				pff = max(0, f - delay)
 				
 				// Flop: damped swing around the joint that starts at rest
 				// (the phase offset is subtracted so frame 0 is exactly the
 				// current rotation - no snap at the marker)
-				swing = amplitude * (sin(pi * 2 * ff / period + phase) - sin(phase)) * power(2.718281828459045, -damping * ff)
+				swing = amplitude * (sin(pi * 2 * pff / period + phase) - sin(phase)) * power(2.718281828459045, -damping * pff)
 				
 				hobj.row_tl[hobj.row_amount] = part.save_id
 				hobj.row_pos[hobj.row_amount] = marker + f
 				hobj.row_vi[hobj.row_amount] = e_value.ROT_X
-				hobj.row_val[hobj.row_amount] = rx0 + swing
+				hobj.row_val[hobj.row_amount] = prx0 + swing
 				hobj.row_amount++
 				hobj.row_tl[hobj.row_amount] = part.save_id
 				hobj.row_pos[hobj.row_amount] = marker + f
 				hobj.row_vi[hobj.row_amount] = e_value.ROT_Y
-				hobj.row_val[hobj.row_amount] = ry0 + swing * .6
-				hobj.row_amount++
-				
-				if (drop >= 2)
-				{
-					hobj.row_tl[hobj.row_amount] = part.save_id
-					hobj.row_pos[hobj.row_amount] = marker + f
-					hobj.row_vi[hobj.row_amount] = e_value.POS_Z
-					hobj.row_val[hobj.row_amount] = z
-					hobj.row_amount++
-				}
-			}
-			
-			// Exact landing keyframe when the step grid skips it
-			if (drop >= 2 && tland <= frames && (tland mod step) != 0)
-			{
-				var ff2, swing2;
-				ff2 = max(0, tland - delay)
-				swing2 = amplitude * (sin(pi * 2 * ff2 / period + phase) - sin(phase)) * power(2.718281828459045, -damping * ff2)
-				
-				hobj.row_tl[hobj.row_amount] = part.save_id
-				hobj.row_pos[hobj.row_amount] = marker + tland
-				hobj.row_vi[hobj.row_amount] = e_value.ROT_X
-				hobj.row_val[hobj.row_amount] = rx0 + swing2
-				hobj.row_amount++
-				hobj.row_tl[hobj.row_amount] = part.save_id
-				hobj.row_pos[hobj.row_amount] = marker + tland
-				hobj.row_vi[hobj.row_amount] = e_value.ROT_Y
-				hobj.row_val[hobj.row_amount] = ry0 + swing2 * .6
-				hobj.row_amount++
-				hobj.row_tl[hobj.row_amount] = part.save_id
-				hobj.row_pos[hobj.row_amount] = marker + tland
-				hobj.row_vi[hobj.row_amount] = e_value.POS_Z
-				hobj.row_val[hobj.row_amount] = floorv
+				hobj.row_val[hobj.row_amount] = pry0 + swing * .6
 				hobj.row_amount++
 			}
 			
@@ -139,26 +153,27 @@ function action_physics_ragdoll(hobj, gravity, floorauto, floorv, amplitude, per
 	}
 }
 
-/// physics_ragdoll_collect(parent, depth, parts, depths)
-/// @arg parent
+/// physics_ragdoll_collect_tree(timeline, depth, parts, depths)
+/// @arg timeline
 /// @arg depth
 /// @arg parts
 /// @arg depths
-/// @desc Recursively collects a rig's part timelines and their chain depth.
+/// @desc Recursively collects the timeline's body-part tree (BODYPART
+/// children, nested subparts included) with their chain depth.
 
-function physics_ragdoll_collect(parent, depth, parts, depths)
+function physics_ragdoll_collect_tree(tl, depth, parts, depths)
 {
-	var pl, i, part;
-	pl = parent.part_list
-	if (pl = null)
-		return 0
-	
-	for (i = 0; i < ds_list_size(pl); i++)
+	var i, child;
+	for (i = 0; i < ds_list_size(tl.tree_list); i++)
 	{
-		part = pl[|i]
-		ds_list_add(parts, part)
-		ds_list_add(depths, depth)
-		physics_ragdoll_collect(part, depth + 1, parts, depths)
+		child = tl.tree_list[|i]
+		
+		if (child.type = e_tl_type.BODYPART)
+		{
+			ds_list_add(parts, child)
+			ds_list_add(depths, depth)
+			physics_ragdoll_collect_tree(child, depth + 1, parts, depths)
+		}
 	}
 	
 	return ds_list_size(parts)

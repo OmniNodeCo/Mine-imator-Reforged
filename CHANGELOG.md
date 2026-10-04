@@ -4,6 +4,25 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.6 (2026-10-04)
+
+### Fixes
+
+* **Ragdoll now works on characters and mobs.** The 1.1.5 ragdoll read a
+  rig's flat part list - a scenery-style structure - so on characters
+  and mobs it only caught the direct body parts (missing every nested
+  subpart) and treated the parts' local positions as world heights,
+  making them sink through each other while the rig as a whole never
+  fell. Reworked: the rig itself (character, mob or model rig) now
+  drops to the floor with gravity and an exact landing frame, tipping
+  over as it falls, while the *full* body-part tree flops around its
+  joints like damped pendulums, staggered by chain depth - rotations
+  are baked in each part's local space (the joint rotation), part
+  positions stay untouched. Empty Floor Z drops the rig onto the world
+  ground (Z = 0); set it when the rig starts above higher ground.
+  Selecting a scenery no longer counts as a rig (use Scenery collapse
+  for sceneries)
+
 ## Reforged 1.1.5 (2026-10-03)
 
 ### New features

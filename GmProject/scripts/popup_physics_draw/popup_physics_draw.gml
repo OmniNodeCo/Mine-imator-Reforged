@@ -11,8 +11,8 @@ function popup_physics_draw()
 	var halfw, selcount, selscenery;
 	halfw = (dw - 8) / 2
 
-	// Selected timeline objects (sceneries count for collapse, timelines
-	// with parts count as rigs for ragdoll)
+	// Selected timeline objects (sceneries count for collapse, character/
+	// mob/model rigs count for ragdoll)
 	selcount = 0
 	selscenery = 0
 	selrigs = 0
@@ -23,7 +23,7 @@ function popup_physics_draw()
 			selcount++
 			if (type = e_tl_type.SCENERY)
 				selscenery++
-			if (part_list != null)
+			if (type = e_tl_type.CHARACTER || type = e_tl_type.MODEL)
 				selrigs++
 		}
 	}
