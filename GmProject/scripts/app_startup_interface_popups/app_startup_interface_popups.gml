@@ -111,6 +111,23 @@ function app_startup_interface_popups()
 	popup_performance = new_popup("performance", popup_performance_draw, 460, null, true)
 	popup_performance.caption_icon = icons.ROCKETSHIP
 	popup_performance.badge_icon = icons.BETA
+
+	// World generator
+	popup_worldgenerator = new_popup("worldgenerator", popup_worldgenerator_draw, 420, null, true)
+	popup_worldgenerator.caption_icon = icons.WORLD
+	popup_worldgenerator.badge_icon = icons.BETA
+	with (popup_worldgenerator)
+	{
+		tbx_seed = new_textbox(true, 0, "")
+		tbx_size = new_textbox_integer()
+		tbx_size.text = "64"
+		tbx_height = new_textbox_integer()
+		tbx_height.text = "48"
+		tbx_roughness = new_textbox_integer()
+		tbx_roughness.text = "50"
+		trees = true
+		water = true
+	}
 	
 	// Addons browser
 	popup_addons = new_popup("addons", popup_addons_draw, 640, 420, true, true, false, true)

@@ -51,7 +51,7 @@ function popup_physics_draw()
 	tab_next()
 
 	// Motion type
-	tab_control(98)
+	tab_control(122)
 	draw_label(text_get("physicsmode"), dx, dy - 3, fa_left, fa_top, c_text_secondary, 1, font_label)
 	draw_radiobutton("physicsfall", dx, dy + 22, 0, popup.mode = 0, popup_physics_set_mode)
 	draw_radiobutton("physicsthrow", dx + halfw + 8, dy + 22, 1, popup.mode = 1, popup_physics_set_mode)
@@ -59,6 +59,7 @@ function popup_physics_draw()
 	draw_radiobutton("physicssettle", dx + halfw + 8, dy + 46, 3, popup.mode = 3, popup_physics_set_mode)
 	draw_radiobutton("physicscollapse", dx, dy + 70, 4, popup.mode = 4, popup_physics_set_mode)
 	draw_radiobutton("physicsragdoll", dx + halfw + 8, dy + 70, 5, popup.mode = 5, popup_physics_set_mode)
+	draw_label(text_get("physicsdesc" + string(popup.mode)), dx, dy + 94, fa_left, fa_top, c_text_tertiary, a_text_tertiary, font_caption, 14, dw)
 	tab_next()
 
 	// Parameters, two fields per row

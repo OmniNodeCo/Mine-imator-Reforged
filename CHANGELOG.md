@@ -4,6 +4,45 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.7 (2026-10-08)
+
+### New features
+
+* **World generator.** File > Generate world... builds a random blocky
+  landscape - layered hills with grass, dirt and stone, sandy shores,
+  optional water and oak trees - and puts it straight onto the workbench
+  as a new scenery. Pick a size (8 - 96 blocks square), a height (up to
+  64) and a roughness; the same seed always produces the same world, and
+  an empty seed rolls a fresh one every time. The world is written as a
+  standard .schematic file in the project's `Generated worlds` folder
+  (so it can be re-imported, replaced and shared like any world import),
+  then loaded through the normal scenery pipeline. Blocks the current
+  texture pack does not know are swapped for similar ones, so the
+  generator works with any pack. Fully undoable: undo puts the previous
+  scenery back on the bench
+* **Physics popup: plain-language motion descriptions.** Every motion
+  type now shows a one-line description of what it does right under the
+  radio buttons, so the six modes are self-explanatory without trying
+  them one by one
+
+### Fixes
+
+* **Ctrl+Z after a physics bake could crash the build (and destroy the
+  wrong keyframes).** Undo used to search each timeline for the *first*
+  keyframe at the bake's position and destroy it - but adding a bake
+  keyframe at an occupied position shifts any existing keyframe one
+  frame later, so after a couple of bakes the "first match" was the
+  user's own keyframe: undo ate it and left the baked ones behind,
+  sometimes crashing outright. Physics undo/redo is now exact: the bake
+  records every keyframe it creates (by id) and every value it
+  overwrites inside keyframes you already had; undo removes exactly the
+  created keyframes and restores the overwritten values, redo rebuilds
+  the bake precisely - your own keyframes are never touched. Applies to
+  all six motions (fall, throw, pendulum, settle, scenery collapse,
+  ragdoll). Bakes onto existing keyframes no longer stack duplicate
+  keyframes next to them either: the values are written into the
+  keyframe you had, and restored on undo
+
 ## Reforged 1.1.6 (2026-10-04)
 
 ### Fixes

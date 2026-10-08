@@ -249,6 +249,7 @@ function list_init_context_menu(name)
 			{
 				list_item_add(text_get("toolbarfileimport"), undefined, text_control_name(keybinds[e_keybind.IMPORT_ASSET].keybind), null, icons.ASSET_IMPORT, null, action_toolbar_import_asset, true)
 				list_item_add(text_get("toolbarfileworldimport"), undefined, "", null, icons.SCENERY, null, world_import_begin, false)
+				list_item_add(text_get("toolbarfilegenerateworld"), undefined, "", null, icons.WORLD, icons.BETA, popup_worldgenerator_show, false)
 			list_item_add(text_get("toolbarfilecontentcenter"), undefined, "", null, icons.DOWNLOAD, icons.BETA, popup_contentcenter_show, false)
 			// The 1.1.x feature wave is still being tested - badge it
 			list_item_add(text_get("toolbarfileinstallshaders"), undefined, "", null, icons.STAR, icons.BETA, action_install_shaders, false)
