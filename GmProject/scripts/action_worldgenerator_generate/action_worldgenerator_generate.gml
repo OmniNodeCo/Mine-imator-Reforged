@@ -9,12 +9,13 @@
 
 function action_worldgenerator_generate()
 {
-	var size, height, rough, trees, water, seedstr, seed;
+	var size, height, rough, roughpct, trees, water, seedstr, seed;
 	
 	// Settings (textboxes accept expressions)
 	size = clamp(round(eval(popup_worldgenerator.tbx_size.text, 64)), 8, 96)
 	height = clamp(round(eval(popup_worldgenerator.tbx_height.text, 48)), 8, 64)
-	rough = clamp(eval(popup_worldgenerator.tbx_roughness.text, 50), 0, 100) / 100
+	roughpct = clamp(round(eval(popup_worldgenerator.tbx_roughness.text, 50)), 0, 100)
+	rough = roughpct / 100
 	trees = popup_worldgenerator.trees
 	water = popup_worldgenerator.water
 	seedstr = popup_worldgenerator.tbx_seed.text
@@ -174,7 +175,7 @@ function action_worldgenerator_generate()
 	var folder, fn, bf;
 	folder = project_folder + "/Generated worlds"
 	directory_create_lib(folder)
-	fn = folder + "/generated-world-" + string(seed) + "-" + string(size) + "x" + string(size) + "x" + string(height) + ".schematic"
+	fn = folder + "/generated-world-" + string(seed) + "-" + string(size) + "x" + string(size) + "x" + string(height) + "-r" + string(roughpct) + (trees ? "-trees" : "") + (water ? "-water" : "") + ".schematic"
 	
 	bf = buffer_create(total + 2048, buffer_grow, 1)
 	

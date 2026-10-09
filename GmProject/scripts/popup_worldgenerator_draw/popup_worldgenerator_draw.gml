@@ -6,8 +6,9 @@
 
 function popup_worldgenerator_draw()
 {
-	var halfw;
+	var halfw, thirdw;
 	halfw = (dw - 8) / 2
+	thirdw = (dw - 16) / 3
 
 	// What this does
 	tab_control(36)
@@ -19,9 +20,17 @@ function popup_worldgenerator_draw()
 	draw_textfield("worldgeneratorseed", dx, dy, dw, 24, popup.tbx_seed, null, "worldgeneratorseedtip", "top")
 	tab_next()
 
-	// Size and height
+	// Size presets (like the world import's selection sizes)
+	tab_control(46)
+	draw_label(text_get("worldgeneratorsize"), dx, dy - 3, fa_left, fa_top, c_text_secondary, 1, font_label)
+	draw_radiobutton("worldgeneratorsmall", dx, dy + 22, 32, popup.tbx_size.text = "32", popup_worldgenerator_set_size)
+	draw_radiobutton("worldgeneratormedium", dx + thirdw + 8, dy + 22, 64, popup.tbx_size.text = "64", popup_worldgenerator_set_size)
+	draw_radiobutton("worldgeneratorlarge", dx + (thirdw + 8) * 2, dy + 22, 96, popup.tbx_size.text = "96", popup_worldgenerator_set_size)
+	tab_next()
+
+	// Custom size and height
 	tab_control_textfield(true, 24)
-	draw_textfield("worldgeneratorsize", dx, dy, halfw, 24, popup.tbx_size, null, "", "top")
+	draw_textfield("worldgeneratorcustomsize", dx, dy, halfw, 24, popup.tbx_size, null, "", "top")
 	draw_textfield("worldgeneratorheight", dx + halfw + 8, dy, halfw, 24, popup.tbx_height, null, "", "top")
 	tab_next()
 
@@ -43,12 +52,11 @@ function popup_worldgenerator_draw()
 	draw_label(text_get("worldgeneratorhint"), dx, dy + 8, fa_left, fa_middle, c_text_tertiary, a_text_tertiary, font_caption, 12, dw)
 	tab_next()
 
-	// Generate
+	// Generate. On success the scenery load takes over the popup slot
+	// with the loading screen and closes itself when done - closing this
+	// popup after generating would cancel the load before it starts
 	tab_control_button_label()
 	if (draw_button_label("worldgeneratorgenerate", dx + dw, dy, null, null, e_button.PRIMARY, null, e_anchor.RIGHT, false))
-	{
-		if (action_worldgenerator_generate())
-			popup_close()
-	}
+		action_worldgenerator_generate()
 	tab_next()
 }

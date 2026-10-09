@@ -11,15 +11,17 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 * **World generator.** File > Generate world... builds a random blocky
   landscape - layered hills with grass, dirt and stone, sandy shores,
   optional water and oak trees - and puts it straight onto the workbench
-  as a new scenery. Pick a size (8 - 96 blocks square), a height (up to
-  64) and a roughness; the same seed always produces the same world, and
-  an empty seed rolls a fresh one every time. The world is written as a
-  standard .schematic file in the project's `Generated worlds` folder
-  (so it can be re-imported, replaced and shared like any world import),
-  then loaded through the normal scenery pipeline. Blocks the current
+  as a new scenery. Pick a size with the Small (32) / Medium (64) /
+  Large (96) presets - like the world import's selection sizes - or type
+  a custom size (8 - 96 blocks square), a height (up to 64) and a
+  roughness; the same seed always produces the same world, and an empty
+  seed rolls a fresh one every time. The world is written as a standard
+  .schematic file in the project's `Generated worlds` folder (so it can
+  be re-imported, replaced and shared like any world import), then
+  loaded through the normal scenery pipeline. Blocks the current
   texture pack does not know are swapped for similar ones, so the
   generator works with any pack. Fully undoable: undo puts the previous
-  scenery back on the bench
+  bench scenery back on the bench
 * **Physics popup: plain-language motion descriptions.** Every motion
   type now shows a one-line description of what it does right under the
   radio buttons, so the six modes are self-explanatory without trying
@@ -42,6 +44,15 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   ragdoll). Bakes onto existing keyframes no longer stack duplicate
   keyframes next to them either: the values are written into the
   keyframe you had, and restored on undo
+* **World generator: the generated world never loaded.** The Generate
+  button closed the generator popup right after starting the scenery
+  load - but the load runs through the loading-screen popup, and
+  closing it cancelled the load before a single block was read (the
+  resource sat in the load queue forever and the bench never changed).
+  The loading screen now takes over cleanly and closes itself when the
+  world is in. The generated file name now also includes the roughness,
+  trees and water settings, so different settings with the same seed
+  produce separate, clearly named files
 
 ## Reforged 1.1.6 (2026-10-04)
 
