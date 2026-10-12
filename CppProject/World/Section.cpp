@@ -87,26 +87,32 @@ namespace CppProject
 					// Parse SkyLight
 					if (nbt->HasKey("SkyLight"))
 					{
-						preview.hasLight = true;
 						const Heap<int8_t>& skyLightArray = nbt->ByteArray("SkyLight");
-						for (IntType i = 0; i < SECTION_SIZE3 / 2; i++)
+						if (skyLightArray.Size() >= SECTION_SIZE3 / 2) // Skip malformed arrays
 						{
-							IntType i2 = i << 1;
-							preview.states[i2].value = skyLightArray.Value(i) & 15;
-							preview.states[i2 + 1].value = (skyLightArray.Value(i) >> 4) & 15;
+							preview.hasLight = true;
+							for (IntType i = 0; i < SECTION_SIZE3 / 2; i++)
+							{
+								IntType i2 = i << 1;
+								preview.states[i2].value = skyLightArray.Value(i) & 15;
+								preview.states[i2 + 1].value = (skyLightArray.Value(i) >> 4) & 15;
+							}
 						}
 					}
 
 					// Parse BlockLight
 					if (nbt->HasKey("BlockLight"))
 					{
-						preview.hasLight = true;
 						const Heap<int8_t>& blockLightArray = nbt->ByteArray("BlockLight");
-						for (IntType i = 0; i < SECTION_SIZE3 / 2; i++)
+						if (blockLightArray.Size() >= SECTION_SIZE3 / 2) // Skip malformed arrays
 						{
-							IntType i2 = i << 1;
-							preview.states[i2].value += blockLightArray.Value(i) & 15;
-							preview.states[i2 + 1].value += (blockLightArray.Value(i) >> 4) & 15;
+							preview.hasLight = true;
+							for (IntType i = 0; i < SECTION_SIZE3 / 2; i++)
+							{
+								IntType i2 = i << 1;
+								preview.states[i2].value += blockLightArray.Value(i) & 15;
+								preview.states[i2 + 1].value += (blockLightArray.Value(i) >> 4) & 15;
+							}
 						}
 					}
 				}
@@ -148,6 +154,18 @@ namespace CppProject
 				const Heap<int8_t>& skyLightArray = nbt->ByteArray("SkyLight");
 				const Heap<int8_t>& blockLightArray = nbt->ByteArray("BlockLight");
 
+				// Validate array sizes before reading (malformed arrays used to
+				// read out of bounds and crash the importer)
+				IntType blocksNeeded = (format == Chunk::Format::PRE_JAVA_1_2) ? 16 * 128 * 16 : SECTION_SIZE3;
+				if (blocksArray.Size() < blocksNeeded)
+				{
+					WARNING("Invalid section: Blocks array too small (" + NumStr(blocksArray.Size()) + ")");
+					return false;
+				}
+				BoolType hasData = (dataArray.Size() * 2 >= blocksNeeded);
+				BoolType hasSkyLight = (skyLightArray.Size() * 2 >= blocksNeeded);
+				BoolType hasBlockLight = (blockLightArray.Size() * 2 >= blocksNeeded);
+
 				// "Add" holds the high bits of block ids 256+ (pre-1.13, e.g. modded
 				// blocks). Without it, ids like 3000 wrap to their low byte alone and
 				// import as seemingly random vanilla blocks.
@@ -168,7 +186,7 @@ namespace CppProject
 				{
 					preview.states.Alloc(SECTION_SIZE3);
 					preview.blockStyleIndices.Alloc(SECTION_SIZE3);
-					preview.hasLight = true;
+					preview.hasLight = (hasSkyLight || hasBlockLight);
 					if (chunk->legacyBiomes.Size())
 						preview.biomeIndices.Alloc(SECTION_SIZE3);
 					else
@@ -190,7 +208,7 @@ namespace CppProject
 						uint16_t legacyId = (uint8_t)blocksArray.Value(arrayIndex);
 						if (addArray) // High bits from "Add" array (ids 256+, modded)
 							legacyId |= (uint16_t)((uint8_t)addArray->Value(arrayIndex)) << 8;
-						uint8_t legacyData = dataArray.Value(arrayIndexHalf);
+						uint8_t legacyData = hasData ? dataArray.Value(arrayIndexHalf) : 0;
 
 					// Parse data
 					if (arrayIndex & 1) // Upper bits
@@ -220,8 +238,8 @@ namespace CppProject
 					else // Preview
 					{
 						// Parse light
-						uint8_t skyLight = skyLightArray.Value(arrayIndexHalf);
-						uint8_t blockLight = blockLightArray.Value(arrayIndexHalf);
+						uint8_t skyLight = hasSkyLight ? skyLightArray.Value(arrayIndexHalf) : 0;
+						uint8_t blockLight = hasBlockLight ? blockLightArray.Value(arrayIndexHalf) : 0;
 						if (arrayIndex & 1) // Upper bits
 						{
 							skyLight >>= 4;
@@ -354,6 +372,8 @@ namespace CppProject
 						parsePaletteEntry(entry->String(idName), entry);
 					else if (emptyNames && entry->HasKey(""))
 						parsePaletteEntry(entry->String(""), entry);
+					else // Unknown entry format: keep palette indices aligned with the world's palette
+						parsePaletteEntry("air");
 				}
 			}
 			// List of strings
@@ -367,6 +387,12 @@ namespace CppProject
 
 		if (nbt->HasKey(dataName)) // Has array
 		{
+			if (blockStylePalette.Size() == 0) // Data without a usable palette, leave as air
+			{
+				WARNING("Invalid section: Block array without palette entries");
+				return;
+			}
+
 			preview.blockStyleIndices.Alloc(SECTION_SIZE3);
 			ParsePaletteIndices(nbt->LongArray(dataName), preview.blockStyleIndices, blockStylePalette.Size(), format, 4);
 
@@ -428,6 +454,12 @@ namespace CppProject
 
 			if (biomesRoot->HasKey("data")) // Has array
 			{
+				if (biomePalette.Size() == 0) // Data without a usable palette, leave at 0
+				{
+					WARNING("Invalid section: Biome array without palette entries");
+					return;
+				}
+
 				preview.biomeIndices.Alloc(SECTION_SIZE3);
 				ParsePaletteIndices(biomesRoot->LongArray("data"), preview.biomeIndices, biomePalette.Size(), format);
 				for (IntType b = 0; b < SECTION_SIZE3; b++) // From palette index to biome id
@@ -544,6 +576,8 @@ namespace CppProject
 						parsePaletteEntry(entry->String(idName), entry);
 					else if (emptyNames && entry->HasKey(""))
 						parsePaletteEntry(entry->String(""), entry);
+					else // Unknown entry format: keep palette indices aligned with the world's palette
+						parsePaletteEntry("air");
 				}
 			}
 			// List of strings
@@ -560,6 +594,12 @@ namespace CppProject
 		{
 			if (builder.sizeTotal == SECTION_SIZE3) // Full section, read all indices
 			{
+				if (builder.palette.Size() == 0) // Data without a usable palette, leave as air
+				{
+					WARNING("Invalid section: Block array without palette entries");
+					return;
+				}
+
 				ParsePaletteIndices(nbt->LongArray(dataName), builder.paletteIndices, builder.palette.Size(), format, 4);
 
 				// Count timelines
@@ -570,6 +610,12 @@ namespace CppProject
 			}
 			else // Convert
 			{
+				if (builder.palette.Size() == 0) // Data without a usable palette, leave as air
+				{
+					WARNING("Invalid section: Block array without palette entries");
+					return;
+				}
+
 				Heap<uint16_t> indices;
 				indices.Alloc(SECTION_SIZE3);
 				ParsePaletteIndices(nbt->LongArray(dataName), indices, builder.palette.Size(), format, 4);
@@ -677,6 +723,12 @@ namespace CppProject
 
 	void Section::ParsePaletteIndices(const Heap<int64_t>& dataArray, Heap<uint16_t>& paletteIndices, IntType paletteSize, Chunk::Format format, IntType minBits)
 	{
+		if (paletteSize <= 0) // Nothing was parsed: leave indices at 0 (air)
+		{
+			WARNING("Invalid section: Palette is empty");
+			return;
+		}
+
 		IntType bitsPerBlock;
 		if (format >= Chunk::Format::JAVA_1_13)
 			bitsPerBlock = std::max(minBits, (IntType)std::ceil(std::log2f(paletteSize)));
@@ -696,10 +748,8 @@ namespace CppProject
 			if (bitsRem) // Read remaining bits from last long
 			{
 				IntType paletteIndex = ((curLong << bitsRem) | prevLong) & bitMask;
-			#if DEBUG_MODE
-				if (paletteIndex >= paletteSize)
-					FATAL("paletteIndex out of bounds");
-			#endif
+				if (paletteIndex >= paletteSize) // Corrupt or mismatched palette data, fall back to first entry
+					paletteIndex = 0;
 				if (blockIndex < SECTION_SIZE3)
 					paletteIndices[blockIndex++] = paletteIndex;
 				curLong >>= bitsPerBlock - bitsRem;
@@ -709,10 +759,8 @@ namespace CppProject
 			while (bitsLeft >= bitsPerBlock) // Read current long
 			{
 				IntType paletteIndex = curLong & bitMask;
-			#if DEBUG_MODE
-				if (paletteIndex >= paletteSize)
-					FATAL("paletteIndex out of bounds");
-			#endif
+				if (paletteIndex >= paletteSize) // Corrupt or mismatched palette data, fall back to first entry
+					paletteIndex = 0;
 				if (blockIndex < SECTION_SIZE3)
 					paletteIndices[blockIndex++] = paletteIndex;
 				curLong >>= bitsPerBlock;

@@ -99,6 +99,12 @@ namespace CppProject
 		// Read chunk offsets
 		QVector<IntType> offsets;
 		uint16_t maxChunks = 32 * 32;
+		if (data.size() < 4 * maxChunks) // Truncated region file (header incomplete)
+		{
+			WARNING("Invalid region file (too small): " + filename);
+			loadStatus = LOAD_ERROR;
+			return;
+		}
 		for (uint16_t i = 0; i < maxChunks; i++)
 		{
 			uint8_t b1, b2, b3;
@@ -121,12 +127,27 @@ namespace CppProject
 		for (IntType i = 0; i < numChunks; i++)
 		{
 			IntType offset = offsets[i];
+
+			// Validate the chunk header against the file size (corrupt or
+			// truncated region files used to read out of bounds and crash)
+			if (offset < 0 || offset + 5 > data.size())
+			{
+				WARNING("Invalid chunk in " + filename + " (offset " + NumStr(offset) + ")");
+				continue;
+			}
+
 			uint8_t b1, b2, b3, b4;
 			b1 = data.at(offset + 0);
 			b2 = data.at(offset + 1);
 			b3 = data.at(offset + 2);
 			b4 = data.at(offset + 3);
 			IntType length = (b1 << 24) | (b2 << 16) | (b3 << 8) | b4;
+
+			if (length < 1 || offset + 5 + length > data.size())
+			{
+				WARNING("Invalid chunk in " + filename + " (offset " + NumStr(offset) + ", length " + NumStr(length) + ")");
+				continue;
+			}
 
 			QByteArray chunkData;
 			if (!Gzip::Decompress(data.constData() + offset + 5, length - 1, chunkData))

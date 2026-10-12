@@ -4,6 +4,30 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.8 (2026-10-12)
+
+### Fixes
+
+* **Import from world crashed instantly on opening a world.** The world
+  importer read chunk and section data without any bounds checking in
+  release builds: a palette entry it could not parse was silently
+  skipped (shrinking the palette while the world's block indices kept
+  referring to the full one), decoded block-palette indices, light
+  arrays, legacy biome arrays and raw region-file chunk headers were all
+  read unchecked - any of these reading past its buffer crashed the
+  whole app the moment a region file loaded. All of them are now
+  validated or safely clamped: unreadable palette entries keep the
+  palette aligned (imported as air), out-of-range palette indices fall
+  back to the first entry, short or empty light/biome/Blocks arrays are
+  skipped, chunks whose offset or length points outside the region file
+  are skipped with a log warning, truncated region files are rejected
+  up front, and Gzip decompression refuses empty/invalid sizes. A
+  corrupt or slightly unusual world now logs warnings and imports what
+  it can instead of taking the app down
+* Note: the `[WARNING] Variant: ToInt() invalid type String` lines in
+  the log at startup are pre-existing (present since 1.1.1) and harmless
+  - they are logged noise from settings loading, not a fault
+
 ## Reforged 1.1.7 (2026-10-08)
 
 ### New features

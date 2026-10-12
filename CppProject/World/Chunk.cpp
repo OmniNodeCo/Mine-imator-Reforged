@@ -78,12 +78,16 @@ namespace CppProject
 			if (chunkRoot->HasKey("Biomes"))
 			{
 				const Heap<int8_t>& biomesArray = chunkRoot->ByteArray("Biomes");
-				const Map& legacyIdsMap = DsMap(global::legacy_biomes_ids_map);
 
-				legacyBiomes.Alloc(SECTION_SIZE * SECTION_SIZE);
-				for (IntType x = 0; x < SECTION_SIZE; x++)
-				for (IntType z = 0; z < SECTION_SIZE; z++)
-					legacyBiomes[z * SECTION_SIZE + x] = Preview::mcBiomeIdIndexMap[legacyIdsMap.Value(biomesArray.Value(z * SECTION_SIZE + x))];
+				if (biomesArray.Size() >= SECTION_SIZE * SECTION_SIZE) // Skip malformed arrays
+				{
+					const Map& legacyIdsMap = DsMap(global::legacy_biomes_ids_map);
+
+					legacyBiomes.Alloc(SECTION_SIZE * SECTION_SIZE);
+					for (IntType x = 0; x < SECTION_SIZE; x++)
+						for (IntType z = 0; z < SECTION_SIZE; z++)
+							legacyBiomes[z * SECTION_SIZE + x] = Preview::mcBiomeIdIndexMap[legacyIdsMap.Value(biomesArray.Value(z * SECTION_SIZE + x))];
+				}
 			}
 			
 			// Parse existing sections

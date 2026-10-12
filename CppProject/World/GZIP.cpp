@@ -64,6 +64,9 @@ namespace CppProject
 
 	BoolType Gzip::Decompress(const char* src, IntType size, QByteArray& dst)
 	{
+		if (size <= 0) // Nothing to decompress (corrupt chunk header)
+			return false;
+
 		dst.resize(size);
 
 		z_stream strm;
