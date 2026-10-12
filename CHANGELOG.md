@@ -32,13 +32,17 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   walk-cycle generator (originally created by Discord user eysnaafo -
   the file was truncated mid-script and has been completed) and a new
   run-cycle generator built on the same core (high knee drive, flight
-  phase, pumped arms, stronger lean and bounce). Sliders for everything,
-  a live side-view preview, and the ideal forward speed to move the
-  character at. Also fixed a subtle bug inherited from the original:
-  head and arms used to get their own vertical bob even though the
-  default Steve/Alex rigs attach them to the body (making them bob twice
-  as much as the legs) - they now ride the body, with a Flat rig option
-  for custom rigs that keep every part under the root
+  phase, pumping elbows that open on the back swing and close on the
+  forward swing, stronger lean and bounce). Both got a UI pass:
+  presets (Default / Stroll / Brisk walk and Default / Jog / Sprint),
+  sliders paired with editable number fields grouped into sections, a
+  scrub bar under the preview, click-or-Space to pause, and the run
+  page gets its own amber accent. Also fixed a subtle bug inherited
+  from the original: head and arms used to get their own vertical bob
+  even though the default Steve/Alex rigs attach them to the body
+  (making them bob twice as much as the legs) - they now ride the
+  body, with a Flat rig option for custom rigs that keep every part
+  under the root
 
 ### Fixes
 

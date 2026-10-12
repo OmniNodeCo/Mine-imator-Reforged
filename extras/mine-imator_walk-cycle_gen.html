@@ -14,16 +14,26 @@ h1{margin:0;font-size:28px;letter-spacing:-.02em}header p{margin:4px 0 0;color:v
 @media(max-width:860px){.layout{grid-template-columns:1fr}}
 .card{padding:18px;border:1px solid var(--line);border-radius:20px;background:var(--card)}
 .card h2{margin:0 0 12px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
-canvas{width:100%;display:block;border-radius:14px;background:#000}
+canvas{width:100%;display:block;border-radius:14px;background:#000;cursor:pointer}
 .bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
 button{font:inherit;font-weight:700;color:var(--tx);background:#ffffff14;border:1px solid var(--line);border-radius:10px;padding:9px 14px;cursor:pointer}button:hover{background:#ffffff26}
 button.main{background:#fff;color:#000;border-color:#fff}
-.ctl{display:grid;grid-template-columns:1fr 64px;gap:2px 10px;align-items:center;margin-bottom:9px}
-.ctl label{font-size:13px}.ctl output{font:600 13px ui-monospace,monospace;text-align:right;color:var(--ok)}
-.ctl input{grid-column:1/3;width:100%;accent-color:#fff}
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.presets button{padding:6px 12px;font-size:13px}
+.presets button.on{background:#fff;color:#000;border-color:#fff}
+.sechead{margin:14px 0 8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#ffffff66}
+.ctl{display:grid;grid-template-columns:1fr 76px;gap:2px 10px;align-items:center;margin-bottom:9px}
+.ctl label{font-size:13px}
+.ctl input[type=number]{grid-column:2;width:100%;font:600 13px ui-monospace,monospace;text-align:right;color:var(--ok);background:#ffffff0a;border:1px solid var(--line);border-radius:8px;padding:4px 6px;-moz-appearance:textfield}
+.ctl input[type=number]::-webkit-outer-spin-button,.ctl input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.ctl input[type=number]:focus{outline:1px solid var(--ok)}
+.ctl input[type=range]{grid-column:1/3;width:100%;accent-color:var(--ok)}
+#scrub{width:100%;accent-color:var(--ok);margin-top:12px}
 .chk{display:block;font-size:14px;margin:7px 0}.chk input{margin-right:8px;transform:scale(1.15)}
+.box{border:1px dashed var(--line);border-radius:12px;padding:10px 12px 4px;margin-top:14px}
 .hint{font-size:12.5px;color:var(--mu);margin:8px 0 0}
 .stat{font-size:14px;color:var(--mu)}.stat b{color:var(--tx)}
+.stat input{transform:translateY(1px)}
 textarea{width:100%;height:150px;margin-top:10px;background:#000;color:#bfe;border:1px solid var(--line);border-radius:10px;padding:10px;font:12px/1.5 ui-monospace,Consolas,monospace;resize:vertical}
 ol{margin:6px 0 0 18px;padding:0;color:var(--mu);font-size:14px}ol b{color:var(--tx)}
 code{font:12px ui-monospace,Consolas,monospace;background:#ffffff14;border-radius:4px;padding:1px 5px}
@@ -44,25 +54,29 @@ code{font:12px ui-monospace,Consolas,monospace;background:#ffffff14;border-radiu
 <section class="card">
 <h2>Preview (side view, facing right)</h2>
 <canvas id="cv" width="760" height="460"></canvas>
+<input type="range" id="scrub" min="0" max="1000" value="0" title="Scrub the cycle (drag to pause and inspect)">
 <div class="bar">
 <button id="pp">⏸ Pause</button>
 <label class="stat"><input type="checkbox" id="slow"> Slow motion</label>
 <span class="stat" id="stats"></span>
 </div>
-<p class="hint">The ground moves at the ideal speed. If the feet slide along the ground, the speed at which you move your character in Mine-imator does not quite match — use the recommended speed shown below.</p>
+<p class="hint">Click the preview or press <b>Space</b> to pause, drag the slider to scrub. The ground moves at the ideal speed — if the feet slide, the speed you move the character with in Mine-imator does not match. Use the recommended speed below.</p>
 </section>
 
 <section class="card">
 <h2>Settings</h2>
+<div class="presets" id="presets"></div>
 <div id="ctls"></div>
-<h2 style="margin-top:16px">If it looks wrong in Mine-imator</h2>
+<div class="box">
+<h2 style="margin-top:2px">If it looks wrong in Mine-imator</h2>
 <label class="chk"><input type="checkbox" id="flatRig">Flat rig (head and arms attached to the root, not the body)</label>
 <p class="hint">The default Steve and Alex characters attach the head and arms to the <b>body</b> part, so they inherit its movement — this tool bobs only the body and legs for them. Only enable this if your custom rig keeps every part directly under the character root.</p>
 <label class="chk"><input type="checkbox" id="flipSwing">Reverse leg and arm swing</label>
 <label class="chk"><input type="checkbox" id="flipKnee">Reverse knee bending</label>
 <label class="chk"><input type="checkbox" id="flipElbow">Reverse elbow bending</label>
 <p class="hint">The rotation directions in Mine-imator cannot be tested from here. If the legs swing backward first or the knees bend the wrong way, tick the matching option and download again.</p>
-<div class="bar">
+</div>
+<div class="bar" style="margin-top:14px">
 <button class="main" id="dl">⬇ Download .miframes</button>
 <button id="cp">Copy JSON</button>
 </div>
@@ -141,24 +155,60 @@ const Walk=(()=>{
 
 <script>
 const $=id=>document.getElementById(id),P=Object.assign({},Walk.DEF);
-const CTRL=[['cycleFrames','Full cycle duration','frames',20,60,1],['swing','Step length (leg swing)','%',0,160,1],['knee','Knee bend','%',0,160,1],['arm','Arm swing','%',0,160,1],['elbow','Elbow bend','%',0,200,1],['bob','Vertical bounce (foot contact)','%',0,150,1],['lean','Forward torso lean','°',-8,12,.5],['yaw','Torso rotation','°',-10,10,.5],['roll','Hip tilt','°',-5,5,.5],['cycles','Number of full cycles','',1,12,1],['step','Keyframe interval','frames',1,4,1],['tempo','Mine-imator speed','FPS',12,60,1]];
-CTRL.forEach(([k,l,u,mn,mx,st])=>{const d=document.createElement('div');d.className='ctl';d.innerHTML=`<label>${l}</label><output id="o_${k}"></output><input type="range" id="r_${k}" min="${mn}" max="${mx}" step="${st}">`;$('ctls').appendChild(d);
- const r=$('r_'+k),o=$('o_'+k);r.value=P[k];const upd=()=>{P[k]=+r.value;o.textContent=P[k]+(u?' '+u:'');refresh()};r.oninput=upd;o.textContent=P[k]+(u?' '+u:'')});
+const CTRL=[
+ ['cycleFrames','Full cycle duration','frames',20,60,1,'Timing & export'],
+ ['cycles','Number of full cycles','',1,12,1,'Timing & export'],
+ ['step','Keyframe interval','frames',1,4,1,'Timing & export'],
+ ['tempo','Mine-imator speed','FPS',12,60,1,'Timing & export'],
+ ['swing','Step length (leg swing)','%',0,160,1,'Legs & stride'],
+ ['knee','Knee bend','%',0,160,1,'Legs & stride'],
+ ['bob','Vertical bounce (foot contact)','%',0,150,1,'Legs & stride'],
+ ['arm','Arm swing','%',0,160,1,'Arms'],
+ ['elbow','Elbow bend','%',0,200,1,'Arms'],
+ ['lean','Forward torso lean','°',-8,12,.5,'Upper body'],
+ ['yaw','Torso rotation','°',-10,10,.5,'Upper body'],
+ ['roll','Hip tilt','°',-5,5,.5,'Upper body']];
+const PRESETS={
+ 'Default':{},
+ 'Stroll':{cycleFrames:40,swing:80,knee:85,arm:75,elbow:55,bob:75,lean:1,yaw:2,roll:1},
+ 'Brisk walk':{cycleFrames:26,swing:120,knee:115,arm:125,elbow:100,bob:110,lean:4,yaw:4,roll:1.5}};
+const BASE=()=>{const d=Object.assign({},Walk.DEF);['flipSwing','flipKnee','flipElbow','flatRig'].forEach(k=>delete d[k]);return d};
+const INS={};
+let lastSec='';
+CTRL.forEach(([k,l,u,mn,mx,st,sec])=>{
+ if(sec!==lastSec){lastSec=sec;const h=document.createElement('div');h.className='sechead';h.textContent=sec;$('ctls').appendChild(h)}
+ const d=document.createElement('div');d.className='ctl';
+ d.innerHTML=`<label>${l}${u?` (${u})`:''}</label><input type="number" id="n_${k}" min="${mn}" max="${mx}" step="${st}"><input type="range" id="r_${k}" min="${mn}" max="${mx}" step="${st}">`;
+ $('ctls').appendChild(d);
+ const rg=$('r_'+k),nm=$('n_'+k);INS[k]={rg,nm};rg.value=nm.value=P[k];
+ const set=v=>{v=Math.max(mn,Math.min(mx,Math.round((+v||0)/st)*st));P[k]=v;rg.value=v;nm.value=v;refresh()};
+ rg.oninput=()=>set(rg.value);nm.onchange=()=>set(nm.value)});
+function syncAll(){for(const k in INS){INS[k].rg.value=P[k];INS[k].nm.value=P[k]}}
+Object.keys(PRESETS).forEach((name,i)=>{const b=document.createElement('button');b.textContent=name;if(!i)b.classList.add('on');
+ b.onclick=()=>{Object.assign(P,BASE(),PRESETS[name]);syncAll();refresh();[...$('presets').children].forEach(x=>x.classList.toggle('on',x===b))};
+ $('presets').appendChild(b)});
 ['flatRig','flipSwing','flipKnee','flipElbow'].forEach(k=>$(k).onchange=()=>{P[k]=$(k).checked;refresh()});
 let txt='';
 function refresh(){txt=Walk.generate(P);$('out').value=txt;const v=Walk.speed(P);
- $('stats').innerHTML=`Ideal walking speed: <b>${v.toFixed(1)}</b> units/sec (≈ ${(v/16).toFixed(2)} blocks/sec) · ${txt.split('\n').filter(l=>l.includes('part_name')).length} keyframes`}
+ $('stats').innerHTML=`Ideal speed: <b>${v.toFixed(1)}</b> u/s (≈ ${(v/16).toFixed(2)} blocks/s) · ${txt.split('\n').filter(l=>l.includes('part_name')).length} keys`}
 $('dl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download='walkcycle_realistic.miframes';document.body.appendChild(a);a.click();a.remove()};
 $('cp').onclick=()=>navigator.clipboard.writeText(txt).then(()=>{$('cp').textContent='Copied ✓';setTimeout(()=>$('cp').textContent='Copy JSON',1500)});
 /* Preview */
 const cv=$('cv'),c=cv.getContext('2d');let play=true,t=0,last=performance.now();
-$('pp').onclick=()=>{play=!play;$('pp').textContent=play?'⏸ Pause':'▶ Resume'};
+const toggle=()=>{play=!play;$('pp').textContent=play?'⏸ Pause':'▶ Play'};
+$('pp').onclick=toggle;cv.addEventListener('click',toggle);
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!/INPUT|TEXTAREA|BUTTON/.test(e.target.tagName)){e.preventDefault();toggle()}});
+const scrub=$('scrub');let scrubbing=false;
+scrub.onpointerdown=()=>{scrubbing=true;if(play)toggle()};
+scrub.onpointerup=scrub.onpointercancel=()=>{scrubbing=false};
+scrub.oninput=()=>{t=scrub.value/1000*P.cycleFrames/P.tempo};
 function limb(x,y,len,ang,w,col){const ex=x+len*Math.sin(ang*Math.PI/180),ey=y+len*Math.cos(ang*Math.PI/180);c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';c.beginPath();c.moveTo(x,y);c.lineTo(ex,ey);c.stroke();return[ex,ey]}
 function draw(now){const dt=(now-last)/1000;last=now;if(play)t+=dt*($('slow').checked?.25:1);
- const ph=(t*P.tempo/P.cycleFrames)%1,s=Walk.pose(P,ph),U=17,gy=380,cx=380,hy=gy-s.H*U,W=cv.width,Hh=cv.height;
+ const ph=((t*P.tempo/P.cycleFrames)%1+1)%1;if(!scrubbing)scrub.value=Math.round(ph*1000);
+ const s=Walk.pose(P,ph),U=17,gy=380,cx=380,hy=gy-s.H*U,W=cv.width,Hh=cv.height;
  c.clearRect(0,0,W,Hh);const g=c.createLinearGradient(0,0,0,Hh);g.addColorStop(0,'#15151a');g.addColorStop(1,'#07070a');c.fillStyle=g;c.fillRect(0,0,W,Hh);
  c.fillStyle='#ffffff10';c.fillRect(0,gy,W,Hh-gy);c.fillStyle='#ffffff55';c.fillRect(0,gy,W,2);
- const v=Walk.speed(P)*U,off=(t*v)%60;c.fillStyle='#ffffff40';for(let x=-off;x<W;x+=60)c.fillRect(x,gy+10,34,3);for(let x=-off*1.0+30;x<W;x+=60)c.fillRect(x,gy+28,14,3);
+ const v=Walk.speed(P)*U,off=(t*v)%60;c.fillStyle='#ffffff40';for(let x=-off;x<W;x+=60)c.fillRect(x,gy+10,34,3);for(let x=-off+30;x<W;x+=60)c.fillRect(x,gy+28,14,3);
  // Shadow
  c.fillStyle='#00000066';c.beginPath();c.ellipse(cx,gy+3,70,8,0,0,7);c.fill();
  const far='#7d8696',near='#e8ecf4',torso='#aab3c4';
