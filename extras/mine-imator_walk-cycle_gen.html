@@ -26,6 +26,7 @@ button.main{background:#fff;color:#000;border-color:#fff}
 .stat{font-size:14px;color:var(--mu)}.stat b{color:var(--tx)}
 textarea{width:100%;height:150px;margin-top:10px;background:#000;color:#bfe;border:1px solid var(--line);border-radius:10px;padding:10px;font:12px/1.5 ui-monospace,Consolas,monospace;resize:vertical}
 ol{margin:6px 0 0 18px;padding:0;color:var(--mu);font-size:14px}ol b{color:var(--tx)}
+code{font:12px ui-monospace,Consolas,monospace;background:#ffffff14;border-radius:4px;padding:1px 5px}
 
 .site-footer{margin-top:18px;padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--card);text-align:center;color:var(--mu);font-size:13px}
 .site-footer strong{color:var(--tx);font-weight:700}
@@ -36,7 +37,7 @@ ol{margin:6px 0 0 18px;padding:0;color:var(--mu);font-size:14px}ol b{color:var(-
 <main>
 <header>
 <h1>Mine-imator Walk-Cycle Generator</h1>
-<p>Generate a realistic walking cycle as a <b>.miframes</b> file, featuring leg swings, knee bends, opposing arm movements, up-and-down motion with foot contact, and subtle torso rotation.</p>
+<p>Generate a realistic walking cycle as a <b>.miframes</b> file, featuring leg swings, knee bends, opposing arm movements, up-and-down motion with foot contact, and subtle torso rotation. Looking for a run instead? Use <b>mine-imator_run-cycle_gen.html</b> in this folder.</p>
 </header>
 
 <div class="layout">
@@ -48,17 +49,19 @@ ol{margin:6px 0 0 18px;padding:0;color:var(--mu);font-size:14px}ol b{color:var(-
 <label class="stat"><input type="checkbox" id="slow"> Slow motion</label>
 <span class="stat" id="stats"></span>
 </div>
-<p class="hint">The ground moves at the ideal speed. If the feet slide along the ground, the speed at which you move your character in Mine-imator may not match. Use the recommended speed shown below.</p>
+<p class="hint">The ground moves at the ideal speed. If the feet slide along the ground, the speed at which you move your character in Mine-imator does not quite match — use the recommended speed shown below.</p>
 </section>
 
 <section class="card">
 <h2>Settings</h2>
 <div id="ctls"></div>
 <h2 style="margin-top:16px">If it looks wrong in Mine-imator</h2>
+<label class="chk"><input type="checkbox" id="flatRig">Flat rig (head and arms attached to the root, not the body)</label>
+<p class="hint">The default Steve and Alex characters attach the head and arms to the <b>body</b> part, so they inherit its movement — this tool bobs only the body and legs for them. Only enable this if your custom rig keeps every part directly under the character root.</p>
 <label class="chk"><input type="checkbox" id="flipSwing">Reverse leg and arm swing</label>
 <label class="chk"><input type="checkbox" id="flipKnee">Reverse knee bending</label>
 <label class="chk"><input type="checkbox" id="flipElbow">Reverse elbow bending</label>
-<p class="hint">I cannot test the rotation directions in Mine-imator from here. If the legs swing backward first or the knees bend forward incorrectly, select the appropriate option and download the file again.</p>
+<p class="hint">The rotation directions in Mine-imator cannot be tested from here. If the legs swing backward first or the knees bend the wrong way, tick the matching option and download again.</p>
 <div class="bar">
 <button class="main" id="dl">⬇ Download .miframes</button>
 <button id="cp">Copy JSON</button>
@@ -71,7 +74,7 @@ ol{margin:6px 0 0 18px;padding:0;color:var(--mu);font-size:14px}ol b{color:var(-
 <ol>
 <li>Download the file.</li>
 <li>Select your <b>character in the timeline</b> in Mine-imator, not an individual body part.</li>
-<li>Import the file as <b>keyframes</b> (.miframes). Body parts are matched by name: <code>head, body, left_arm, right_arm, left_leg, right_leg</code>. These names are intended to work with Steve and Alex skins.</li>
+<li>Import the file as <b>keyframes</b> (.miframes). Body parts are matched by name: <code>head, body, left_arm, right_arm, left_leg, right_leg</code> — that covers Steve and Alex skins and rigs built like them.</li>
 <li>To move forward, move the character itself at the recommended speed. The animation runs in place so it does not overwrite your character's position.</li>
 </ol>
 <textarea id="out" readonly spellcheck="false"></textarea>
@@ -79,9 +82,8 @@ ol{margin:6px 0 0 18px;padding:0;color:var(--mu);font-size:14px}ol b{color:var(-
 </main>
 
 <footer class="site-footer">
-  <small>Credits: <strong class="credit-name">eysnaafo</strong> from Discord.</small>
+  <small>Walk-cycle generator originally created by <strong class="credit-name">eysnaafo</strong> (Discord). Completed, corrected and maintained by the Mine-imator Reforged project.</small>
 </footer>
-
 
 <script id="core">
 const Walk=(()=>{
@@ -94,9 +96,9 @@ const Walk=(()=>{
  let mean=0;for(let i=0;i<128;i++)mean+=HIP(i/128);mean/=128;
  const L1=6,L2=6,R=Math.PI/180;
  const foot=(a,k)=>({x:L1*Math.sin(a*R)+L2*Math.sin((a-k)*R),d:L1*Math.cos(a*R)+L2*Math.cos((a-k)*R)});
- const DEF={cycleFrames:32,swing:100,knee:100,arm:100,elbow:100,bob:100,lean:2,yaw:3,roll:1,cycles:4,step:2,tempo:30,flipSwing:false,flipKnee:false,flipElbow:false};
+ const DEF={cycleFrames:32,swing:100,knee:100,arm:100,elbow:100,bob:100,lean:2,yaw:3,roll:1,cycles:4,step:2,tempo:30,flipSwing:false,flipKnee:false,flipElbow:false,flatRig:false};
  const ss=(a,b,x)=>{const u=Math.max(0,Math.min(1,(x-a)/(b-a)));return u*u*(3-2*u)};
- // Stance phase (about 8–50%): foot moves backward at a constant rate to reduce sliding.
+ // Stance phase (about 8–50 %): the foot travels backward at a constant rate, so it does not slide.
  const stanceX=(sw,kn)=>[foot(HIP(.08)*sw,Math.max(0,KNEE(.08)*kn)).x,foot(HIP(.5)*sw,Math.max(0,KNEE(.5)*kn)).x];
  function legAngle(ph,sw,kn){ph=((ph%1)+1)%1;const tbl=HIP(ph)*sw,w=ss(0,.08,ph)*(1-ss(.5,.62,ph));if(w<=0)return tbl;
   const[xs,xe]=stanceX(sw,kn),xt=xs+(xe-xs)*Math.max(0,Math.min(1,(ph-.08)/.42)),k=Math.max(0,KNEE(ph)*kn);
@@ -112,23 +114,26 @@ const Walk=(()=>{
  function speed(p){const[xs,xe]=stanceX(p.swing/100,p.knee/100);return-(xe-xs)/.42*p.tempo/p.cycleFrames}
  const r=v=>Math.round(v*1000)/1000;
  function generate(p){
-  const F=p.cycleFrames,N=Math.round(F*p.cycles),sR=p.flipSwing?1:-1,sK=p.flipKnee?-1:1,sE=p.flipElbow?-1:1,keys=[];
+  const F=p.cycleFrames,N=Math.round(F*p.cycles),sR=p.flipSwing?1:-1,sK=p.flipKnee?-1:1,sE=p.flipElbow?1:-1,keys=[];
+  // Flat rigs keep every part directly under the character root, so the head
+  // and arms need their own bob. Default (Steve/Alex) rigs attach them to the
+  // body instead: they inherit the body's movement and must NOT get their own
+  // POS_Z, or they bob twice as much as the legs.
+  const heir=!p.flatRig;
   const pos=[];for(let i=0;i<N;i+=p.step)pos.push(i);pos.push(N);
   for(const i of pos){const s=pose(p,(i/F)%1),z=r(s.z),add=(part,v)=>keys.push({position:i,part_name:part,values:v});
+   // Arm swing is relative to the body: compensate the body lean so the arms
+   // keep their intended world angle (the head stays level the same way).
+   const armR=r(sR*(s.aR+(heir?s.lean:0))),armL=r(sR*(s.aL+(heir?s.lean:0)));
    add('left_leg',{ROT_X:r(sR*s.hipL),BEND_ANGLE_X:r(sK*s.kL),POS_Z:z});
    add('right_leg',{ROT_X:r(sR*s.hipR),BEND_ANGLE_X:r(sK*s.kR),POS_Z:z});
-   add('left_arm',{ROT_X:r(sR*s.aL),BEND_ANGLE_X:r(sE*s.eL),POS_Z:z});
-   add('right_arm',{ROT_X:r(sR*s.aR),BEND_ANGLE_X:r(sE*s.eR),POS_Z:z});
+   add('left_arm',{ROT_X:armL,BEND_ANGLE_X:r(sE*s.eL),...(p.flatRig?{POS_Z:z}:{})});
+   add('right_arm',{ROT_X:armR,BEND_ANGLE_X:r(sE*s.eR),...(p.flatRig?{POS_Z:z}:{})});
    add('body',{ROT_X:r(-sR*s.lean),ROT_Y:r(s.roll),ROT_Z:r(s.yaw),POS_Z:z});
-   add('head',{ROT_Z:r(-.6*s.yaw),POS_Z:z})}
-  const head=`{
-  "format": 34,
-  "created_in": "2.0.0",
-  "is_model": true,
-  "tempo": ${p.tempo},
-  "length": ${N+1},
-  "keyframes": [
-`;
+   const headVals={ROT_Z:r(-.6*s.yaw)};
+   if(heir)headVals.ROT_X=r(sR*s.lean);else headVals.POS_Z=z;
+   add('head',headVals)}
+  const head=`{\n  "format": 35,\n  "created_in": "2.0.2",\n  "is_model": true,\n  "tempo": ${p.tempo},\n  "length": ${N+1},\n  "keyframes": [\n`;
   const body=keys.map(k=>'    '+JSON.stringify(k)).join(',\n');
   return head+body+'\n  ],\n  "templates": [],\n  "timelines": [],\n  "resources": []\n}\n'}
  return{DEF,pose,generate,speed,foot,L1,L2}})();
@@ -139,7 +144,7 @@ const $=id=>document.getElementById(id),P=Object.assign({},Walk.DEF);
 const CTRL=[['cycleFrames','Full cycle duration','frames',20,60,1],['swing','Step length (leg swing)','%',0,160,1],['knee','Knee bend','%',0,160,1],['arm','Arm swing','%',0,160,1],['elbow','Elbow bend','%',0,200,1],['bob','Vertical bounce (foot contact)','%',0,150,1],['lean','Forward torso lean','°',-8,12,.5],['yaw','Torso rotation','°',-10,10,.5],['roll','Hip tilt','°',-5,5,.5],['cycles','Number of full cycles','',1,12,1],['step','Keyframe interval','frames',1,4,1],['tempo','Mine-imator speed','FPS',12,60,1]];
 CTRL.forEach(([k,l,u,mn,mx,st])=>{const d=document.createElement('div');d.className='ctl';d.innerHTML=`<label>${l}</label><output id="o_${k}"></output><input type="range" id="r_${k}" min="${mn}" max="${mx}" step="${st}">`;$('ctls').appendChild(d);
  const r=$('r_'+k),o=$('o_'+k);r.value=P[k];const upd=()=>{P[k]=+r.value;o.textContent=P[k]+(u?' '+u:'');refresh()};r.oninput=upd;o.textContent=P[k]+(u?' '+u:'')});
-['flipSwing','flipKnee','flipElbow'].forEach(k=>$(k).onchange=()=>{P[k]=$(k).checked;refresh()});
+['flatRig','flipSwing','flipKnee','flipElbow'].forEach(k=>$(k).onchange=()=>{P[k]=$(k).checked;refresh()});
 let txt='';
 function refresh(){txt=Walk.generate(P);$('out').value=txt;const v=Walk.speed(P);
  $('stats').innerHTML=`Ideal walking speed: <b>${v.toFixed(1)}</b> units/sec (≈ ${(v/16).toFixed(2)} blocks/sec) · ${txt.split('\n').filter(l=>l.includes('part_name')).length} keyframes`}
@@ -162,4 +167,9 @@ function draw(now){const dt=(now-last)/1000;last=now;if(play)t+=dt*($('slow').ch
  const lean=s.lean,sx=cx+Math.sin(lean*Math.PI/180)*12*U,sy=hy-Math.cos(lean*Math.PI/180)*12*U;
  legs(s.hipL,s.kL,far);arms(s.aL,s.eL,sx,sy,far);
  c.strokeStyle=torso;c.lineWidth=36;c.lineCap='round';c.beginPath();c.moveTo(cx,hy);c.lineTo(sx,sy);c.stroke();
- c.fillStyle='#cfd5e2';const hx=sx+Math.sin(lean*Math.PI/180)*4*U-4*U*0,hyy=sy-4*U;c.beginPath();c.rou
+ c.fillStyle='#cfd5e2';const hx=sx+Math.sin(lean*Math.PI/180)*4*U,hyy=sy-4*U;c.beginPath();c.roundRect(hx-4*U,hyy-4*U,8*U,8*U,8);c.fill();c.fillStyle='#222';c.fillRect(hx+1.5*U,hyy-1.2*U,10,10);
+ legs(s.hipR,s.kR,near);arms(s.aR,s.eR,sx,sy,near);
+ c.fillStyle='#ffffffb0';c.font='600 13px system-ui';c.fillText('Phase '+(ph*100|0)+' %  ·  Hip '+(s.H).toFixed(1)+' units',16,26);
+ requestAnimationFrame(draw)}
+refresh();requestAnimationFrame(draw);
+</script></body></html>

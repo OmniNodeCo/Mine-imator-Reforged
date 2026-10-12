@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mine-imator Run-Cycle Generator</title>
+<style>
+:root{--bg:#0b0b0d;--card:#ffffff0c;--line:#ffffff24;--tx:#f2f2f4;--mu:#ffffff99;--ok:#7cf5c8}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(900px 500px at 85% -10%,#ffffff12,transparent 60%),var(--bg);color:var(--tx);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:1060px;margin:0 auto;padding:32px 20px 70px}
+h1{margin:0;font-size:28px;letter-spacing:-.02em}header p{margin:4px 0 0;color:var(--mu)}
+.layout{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;margin-top:20px}
+@media(max-width:860px){.layout{grid-template-columns:1fr}}
+.card{padding:18px;border:1px solid var(--line);border-radius:20px;background:var(--card)}
+.card h2{margin:0 0 12px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mu)}
+canvas{width:100%;display:block;border-radius:14px;background:#000}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center}
+button{font:inherit;font-weight:700;color:var(--tx);background:#ffffff14;border:1px solid var(--line);border-radius:10px;padding:9px 14px;cursor:pointer}button:hover{background:#ffffff26}
+button.main{background:#fff;color:#000;border-color:#fff}
+.ctl{display:grid;grid-template-columns:1fr 64px;gap:2px 10px;align-items:center;margin-bottom:9px}
+.ctl label{font-size:13px}.ctl output{font:600 13px ui-monospace,monospace;text-align:right;color:var(--ok)}
+.ctl input{grid-column:1/3;width:100%;accent-color:#fff}
+.chk{display:block;font-size:14px;margin:7px 0}.chk input{margin-right:8px;transform:scale(1.15)}
+.hint{font-size:12.5px;color:var(--mu);margin:8px 0 0}
+.stat{font-size:14px;color:var(--mu)}.stat b{color:var(--tx)}
+textarea{width:100%;height:150px;margin-top:10px;background:#000;color:#bfe;border:1px solid var(--line);border-radius:10px;padding:10px;font:12px/1.5 ui-monospace,Consolas,monospace;resize:vertical}
+ol{margin:6px 0 0 18px;padding:0;color:var(--mu);font-size:14px}ol b{color:var(--tx)}
+code{font:12px ui-monospace,Consolas,monospace;background:#ffffff14;border-radius:4px;padding:1px 5px}
+
+.site-footer{margin-top:18px;padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--card);text-align:center;color:var(--mu);font-size:13px}
+.site-footer strong{color:var(--tx);font-weight:700}
+.site-footer .credit-name{color:var(--ok)}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Mine-imator Run-Cycle Generator</h1>
+<p>Generate a realistic running cycle as a <b>.miframes</b> file: high knee drive, a flight phase where both feet leave the ground, pumped arms with bent elbows, forward lean and a strong up-and-down bounce. For walking use <b>mine-imator_walk-cycle_gen.html</b> in this folder.</p>
+</header>
+
+<div class="layout">
+<section class="card">
+<h2>Preview (side view, facing right)</h2>
+<canvas id="cv" width="760" height="460"></canvas>
+<div class="bar">
+<button id="pp">⏸ Pause</button>
+<label class="stat"><input type="checkbox" id="slow"> Slow motion</label>
+<span class="stat" id="stats"></span>
+</div>
+<p class="hint">The ground moves at the ideal speed. If the feet slide along the ground while running, the speed at which you move your character in Mine-imator does not quite match — use the recommended speed shown below.</p>
+</section>
+
+<section class="card">
+<h2>Settings</h2>
+<div id="ctls"></div>
+<h2 style="margin-top:16px">If it looks wrong in Mine-imator</h2>
+<label class="chk"><input type="checkbox" id="flatRig">Flat rig (head and arms attached to the root, not the body)</label>
+<p class="hint">The default Steve and Alex characters attach the head and arms to the <b>body</b> part, so they inherit its movement — this tool bobs only the body and legs for them. Only enable this if your custom rig keeps every part directly under the character root.</p>
+<label class="chk"><input type="checkbox" id="flipSwing">Reverse leg and arm swing</label>
+<label class="chk"><input type="checkbox" id="flipKnee">Reverse knee bending</label>
+<label class="chk"><input type="checkbox" id="flipElbow">Reverse elbow bending</label>
+<p class="hint">The rotation directions in Mine-imator cannot be tested from here. If the legs swing backward first or the knees bend the wrong way, tick the matching option and download again.</p>
+<div class="bar">
+<button class="main" id="dl">⬇ Download .miframes</button>
+<button id="cp">Copy JSON</button>
+</div>
+</section>
+</div>
+
+<section class="card" style="margin-top:18px">
+<h2>How to import into your project</h2>
+<ol>
+<li>Download the file.</li>
+<li>Select your <b>character in the timeline</b> in Mine-imator, not an individual body part.</li>
+<li>Import the file as <b>keyframes</b> (.miframes). Body parts are matched by name: <code>head, body, left_arm, right_arm, left_leg, right_leg</code> — that covers Steve and Alex skins and rigs built like them.</li>
+<li>To run forward, move the character itself at the recommended speed. The animation runs in place so it does not overwrite your character's position.</li>
+</ol>
+<textarea id="out" readonly spellcheck="false"></textarea>
+</section>
+</main>
+
+<footer class="site-footer">
+  <small>Run-cycle generator based on the walk-cycle generator by <strong class="credit-name">eysnaafo</strong> (Discord). Built by the Mine-imator Reforged project.</small>
+</footer>
+
+<script id="core">
+const Run=(()=>{
+ const periodic=k=>{const n=k.length,X=i=>k[((i%n)+n)%n][0]+Math.floor(i/n),Y=i=>k[((i%n)+n)%n][1],m=i=>(Y(i+1)-Y(i-1))/(X(i+1)-X(i-1));
+  return ph=>{ph=((ph%1)+1)%1;let i=0;while(i<n-1&&k[i+1][0]<=ph)i++;const x0=X(i),x1=X(i+1),h=x1-x0,t=(ph-x0)/h,t2=t*t,t3=t2*t;
+   return(2*t3-3*t2+1)*Y(i)+(t3-2*t2+t)*h*m(i)+(-2*t3+3*t2)*Y(i+1)+(t3-t2)*h*m(i+1)}};
+ // Running biomechanics. Phase 0 = right foot strikes the ground.
+ // Each foot is in contact for roughly the first third of its cycle;
+ // the rest is swing, with two flight phases (no foot on the ground)
+ // right after each toe-off. Angles in degrees; positive hip = forward.
+ const HIP=periodic([[0,30],[.10,18],[.20,2],[.30,-15],[.35,-24],[.45,-12],[.55,20],[.65,52],[.78,55],[.88,42],[.94,34]]);
+ const KNEE=periodic([[0,25],[.08,38],[.18,28],[.28,18],[.35,28],[.45,75],[.55,105],[.68,80],[.80,38],[.92,26]]);
+ let mean=0;for(let i=0;i<128;i++)mean+=HIP(i/128);mean/=128;
+ const L1=6,L2=6,R=Math.PI/180;
+ const foot=(a,k)=>({x:L1*Math.sin(a*R)+L2*Math.sin((a-k)*R),d:L1*Math.cos(a*R)+L2*Math.cos((a-k)*R)});
+ const DEF={cycleFrames:18,swing:115,knee:130,arm:120,elbow:100,bob:100,air:100,lean:6,yaw:4,roll:1.5,cycles:4,step:2,tempo:30,flipSwing:false,flipKnee:false,flipElbow:false,flatRig:false};
+ const ss=(a,b,x)=>{const u=Math.max(0,Math.min(1,(x-a)/(b-a)));return u*u*(3-2*u)};
+ // Contact phase (about 2–33 %): the foot travels backward at a constant
+ // rate, so it does not slide while the body flies over it.
+ const stanceX=(sw,kn)=>[foot(HIP(.02)*sw,Math.max(0,KNEE(.02)*kn)).x,foot(HIP(.33)*sw,Math.max(0,KNEE(.33)*kn)).x];
+ function legAngle(ph,sw,kn){ph=((ph%1)+1)%1;const tbl=HIP(ph)*sw,w=ss(0,.03,ph)*(1-ss(.30,.35,ph));if(w<=0)return tbl;
+  const[xs,xe]=stanceX(sw,kn),xt=xs+(xe-xs)*Math.max(0,Math.min(1,(ph-.02)/.31)),k=Math.max(0,KNEE(ph)*kn);
+  let lo=-80,hi=80;for(let i=0;i<48;i++){const m=(lo+hi)/2;if(foot(m,k).x<xt)lo=m;else hi=m}
+  return tbl+w*((lo+hi)/2-tbl)}
+ // Flight phases: ballistic lift of the hip between toe-off and the next
+ // foot strike (both feet are off the ground).
+ const bump=(a,b,ph)=>{const u=(ph-a)/(b-a);return(u>0&&u<1)?Math.sin(Math.PI*u):0};
+ const air=(p,ph)=>1.6*(p.air/100)*(bump(.35,.5,ph)+bump(.85,1,ph));
+ function pose(p,ph){
+  const sw=p.swing/100,kn=p.knee/100,ar=.9*p.arm/100,el=p.elbow/100;
+  const hipR=legAngle(ph,sw,kn),hipL=legAngle(ph+.5,sw,kn),kR=Math.max(0,KNEE(ph)*kn),kL=Math.max(0,KNEE(ph+.5)*kn);
+  const H=Math.max(foot(hipR,kR).d,foot(hipL,kL).d)+air(p,ph);
+  const aR=(HIP(ph+.5)-mean)*ar,aL=(HIP(ph)-mean)*ar;
+  return{hipR,hipL,kR,kL,aR,aL,
+   eR:Math.min(110,Math.max(50,80+.25*aR))*el,eL:Math.min(110,Math.max(50,80+.25*aL))*el,
+   H,z:(H-12)*p.bob/100,
+   yaw:-p.yaw*Math.cos(2*Math.PI*ph),roll:p.roll*Math.sin(2*Math.PI*ph),lean:p.lean}}
+ function speed(p){const[xs,xe]=stanceX(p.swing/100,p.knee/100);return-(xe-xs)/.31*p.tempo/p.cycleFrames}
+ const r=v=>Math.round(v*1000)/1000;
+ function generate(p){
+  const F=p.cycleFrames,N=Math.round(F*p.cycles),sR=p.flipSwing?1:-1,sK=p.flipKnee?-1:1,sE=p.flipElbow?1:-1,keys=[];
+  // Flat rigs keep every part directly under the character root, so the head
+  // and arms need their own bob. Default (Steve/Alex) rigs attach them to the
+  // body instead: they inherit the body's movement and must NOT get their own
+  // POS_Z, or they bob twice as much as the legs.
+  const heir=!p.flatRig;
+  const pos=[];for(let i=0;i<N;i+=p.step)pos.push(i);pos.push(N);
+  for(const i of pos){const s=pose(p,(i/F)%1),z=r(s.z),add=(part,v)=>keys.push({position:i,part_name:part,values:v});
+   // Arm swing is relative to the body: compensate the body lean so the arms
+   // keep their intended world angle (the head stays level the same way).
+   const armR=r(sR*(s.aR+(heir?s.lean:0))),armL=r(sR*(s.aL+(heir?s.lean:0)));
+   add('left_leg',{ROT_X:r(sR*s.hipL),BEND_ANGLE_X:r(sK*s.kL),POS_Z:z});
+   add('right_leg',{ROT_X:r(sR*s.hipR),BEND_ANGLE_X:r(sK*s.kR),POS_Z:z});
+   add('left_arm',{ROT_X:armL,BEND_ANGLE_X:r(sE*s.eL),...(p.flatRig?{POS_Z:z}:{})});
+   add('right_arm',{ROT_X:armR,BEND_ANGLE_X:r(sE*s.eR),...(p.flatRig?{POS_Z:z}:{})});
+   add('body',{ROT_X:r(-sR*s.lean),ROT_Y:r(s.roll),ROT_Z:r(s.yaw),POS_Z:z});
+   const headVals={ROT_Z:r(-.6*s.yaw)};
+   if(heir)headVals.ROT_X=r(sR*s.lean);else headVals.POS_Z=z;
+   add('head',headVals)}
+  const head=`{\n  "format": 35,\n  "created_in": "2.0.2",\n  "is_model": true,\n  "tempo": ${p.tempo},\n  "length": ${N+1},\n  "keyframes": [\n`;
+  const body=keys.map(k=>'    '+JSON.stringify(k)).join(',\n');
+  return head+body+'\n  ],\n  "templates": [],\n  "timelines": [],\n  "resources": []\n}\n'}
+ return{DEF,pose,generate,speed,foot,air,L1,L2}})();
+</script>
+
+<script>
+const $=id=>document.getElementById(id),P=Object.assign({},Run.DEF);
+const CTRL=[['cycleFrames','Full cycle duration','frames',12,30,1],['swing','Stride length (leg swing)','%',0,160,1],['knee','Knee drive','%',0,200,1],['arm','Arm swing','%',0,160,1],['elbow','Elbow bend','%',0,150,1],['bob','Vertical bounce','%',0,150,1],['air','Flight height','%',0,200,1],['lean','Forward torso lean','°',0,18,.5],['yaw','Torso rotation','°',-10,10,.5],['roll','Hip tilt','°',-5,5,.5],['cycles','Number of full cycles','',1,12,1],['step','Keyframe interval','frames',1,4,1],['tempo','Mine-imator speed','FPS',12,60,1]];
+CTRL.forEach(([k,l,u,mn,mx,st])=>{const d=document.createElement('div');d.className='ctl';d.innerHTML=`<label>${l}</label><output id="o_${k}"></output><input type="range" id="r_${k}" min="${mn}" max="${mx}" step="${st}">`;$('ctls').appendChild(d);
+ const r=$('r_'+k),o=$('o_'+k);r.value=P[k];const upd=()=>{P[k]=+r.value;o.textContent=P[k]+(u?' '+u:'');refresh()};r.oninput=upd;o.textContent=P[k]+(u?' '+u:'')});
+['flatRig','flipSwing','flipKnee','flipElbow'].forEach(k=>$(k).onchange=()=>{P[k]=$(k).checked;refresh()});
+let txt='';
+function refresh(){txt=Run.generate(P);$('out').value=txt;const v=Run.speed(P);
+ $('stats').innerHTML=`Ideal running speed: <b>${v.toFixed(1)}</b> units/sec (≈ ${(v/16).toFixed(2)} blocks/sec) · ${txt.split('\n').filter(l=>l.includes('part_name')).length} keyframes`}
+$('dl').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download='runcycle_realistic.miframes';document.body.appendChild(a);a.click();a.remove()};
+$('cp').onclick=()=>navigator.clipboard.writeText(txt).then(()=>{$('cp').textContent='Copied ✓';setTimeout(()=>$('cp').textContent='Copy JSON',1500)});
+/* Preview */
+const cv=$('cv'),c=cv.getContext('2d');let play=true,t=0,last=performance.now();
+$('pp').onclick=()=>{play=!play;$('pp').textContent=play?'⏸ Pause':'▶ Resume'};
+function limb(x,y,len,ang,w,col){const ex=x+len*Math.sin(ang*Math.PI/180),ey=y+len*Math.cos(ang*Math.PI/180);c.strokeStyle=col;c.lineWidth=w;c.lineCap='round';c.beginPath();c.moveTo(x,y);c.lineTo(ex,ey);c.stroke();return[ex,ey]}
+function draw(now){const dt=(now-last)/1000;last=now;if(play)t+=dt*($('slow').checked?.25:1);
+ const ph=(t*P.tempo/P.cycleFrames)%1,s=Run.pose(P,ph),U=17,gy=380,cx=380,hy=gy-s.H*U,W=cv.width,Hh=cv.height;
+ c.clearRect(0,0,W,Hh);const g=c.createLinearGradient(0,0,0,Hh);g.addColorStop(0,'#15151a');g.addColorStop(1,'#07070a');c.fillStyle=g;c.fillRect(0,0,W,Hh);
+ c.fillStyle='#ffffff10';c.fillRect(0,gy,W,Hh-gy);c.fillStyle='#ffffff55';c.fillRect(0,gy,W,2);
+ const v=Run.speed(P)*U,off=(t*v)%60;c.fillStyle='#ffffff40';for(let x=-off;x<W;x+=60)c.fillRect(x,gy+10,34,3);for(let x=-off*1.0+30;x<W;x+=60)c.fillRect(x,gy+28,14,3);
+ // Shadow (shrinks while airborne)
+ c.fillStyle='#00000066';c.beginPath();c.ellipse(cx,gy+3,70,8,0,0,7);c.fill();
+ const far='#7d8696',near='#e8ecf4',torso='#aab3c4';
+ const legs=(hip,kn,col)=>{const k1=limb(cx,hy,Run.L1*U,hip,22,col);limb(k1[0],k1[1],Run.L2*U,hip-kn,22,col)};
+ const arms=(a,e,sx,sy,col)=>{const k=limb(sx,sy,6*U,a,18,col);limb(k[0],k[1],6*U,a+e,18,col)};
+ const lean=s.lean,sx=cx+Math.sin(lean*Math.PI/180)*12*U,sy=hy-Math.cos(lean*Math.PI/180)*12*U;
+ legs(s.hipL,s.kL,far);arms(s.aL,s.eL,sx,sy,far);
+ c.strokeStyle=torso;c.lineWidth=36;c.lineCap='round';c.beginPath();c.moveTo(cx,hy);c.lineTo(sx,sy);c.stroke();
+ c.fillStyle='#cfd5e2';const hx=sx+Math.sin(lean*Math.PI/180)*4*U,hyy=sy-4*U;c.beginPath();c.roundRect(hx-4*U,hyy-4*U,8*U,8*U,8);c.fill();c.fillStyle='#222';c.fillRect(hx+1.5*U,hyy-1.2*U,10,10);
+ legs(s.hipR,s.kR,near);arms(s.aR,s.eR,sx,sy,near);
+ c.fillStyle='#ffffffb0';c.font='600 13px system-ui';c.fillText('Phase '+(ph*100|0)+' %  ·  Hip '+(s.H).toFixed(1)+' units',16,26);
+ requestAnimationFrame(draw)}
+refresh();requestAnimationFrame(draw);
+</script></body></html>

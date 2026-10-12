@@ -26,6 +26,19 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   type now shows a one-line description of what it does right under the
   radio buttons, so the six modes are self-explanatory without trying
   them one by one
+* **Extras: run-cycle generator + completed walk-cycle generator.** The
+  `extras` folder now holds two offline HTML tools that bake character
+  animation into a .miframes file you import as keyframes: the
+  walk-cycle generator (originally created by Discord user eysnaafo -
+  the file was truncated mid-script and has been completed) and a new
+  run-cycle generator built on the same core (high knee drive, flight
+  phase, pumped arms, stronger lean and bounce). Sliders for everything,
+  a live side-view preview, and the ideal forward speed to move the
+  character at. Also fixed a subtle bug inherited from the original:
+  head and arms used to get their own vertical bob even though the
+  default Steve/Alex rigs attach them to the body (making them bob twice
+  as much as the legs) - they now ride the body, with a Flat rig option
+  for custom rigs that keep every part under the root
 
 ### Fixes
 
