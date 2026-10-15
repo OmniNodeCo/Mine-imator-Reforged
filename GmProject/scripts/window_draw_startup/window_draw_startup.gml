@@ -20,6 +20,10 @@ function window_draw_startup()
 	// Logo
 	draw_sprite(spr_logo, 0, window_width / 2, headersize/2)
 	
+	// Discord
+	if (draw_button_icon("startupdiscord", window_width - 60, headersize / 2 - 14, 28, 28, false, icons.DISCORD, null, false, "startupdiscord"))
+		open_url(link_discord)
+	
 	// Version
 	var trial = (trial_version ? " " + text_get("startuptrial") : "");
 	draw_button_text(text_get("startupversion", mineimator_version_full + trial), (window_width / 2) + 259, floor((headersize/2) + (sprite_get_height(spr_logo)/2)) + 3, popup_switch, popup_about)

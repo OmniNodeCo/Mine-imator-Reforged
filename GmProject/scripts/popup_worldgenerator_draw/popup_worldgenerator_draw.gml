@@ -15,9 +15,12 @@ function popup_worldgenerator_draw()
 	draw_label(text_get("worldgeneratorinfo"), dx, dy + 16, fa_left, fa_middle, c_text_secondary, 1, font_label, 14, dw)
 	tab_next()
 
-	// Seed
+	// Seed: an empty field rolls a fresh random seed on every generate,
+	// the dice button rolls one into the field to keep or share
 	tab_control_textfield(true, 24)
-	draw_textfield("worldgeneratorseed", dx, dy, dw, 24, popup.tbx_seed, null, "worldgeneratorseedtip", "top")
+	draw_textfield("worldgeneratorseed", dx, dy, dw - 36, 24, popup.tbx_seed, null, text_get("worldgeneratorseedplaceholder"), "top")
+	if (draw_button_icon("worldgeneratornewseed", dx + dw - 28, dy - 2, 28, 28, false, icons.RANDOMIZE, null, false, "worldgeneratornewseed"))
+		popup.tbx_seed.text = worldgenerator_mc_seed_string(worldgenerator_mc_random_seed())
 	tab_next()
 
 	// Size presets (like the world import's selection sizes)

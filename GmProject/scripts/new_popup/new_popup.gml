@@ -41,8 +41,7 @@ function new_popup()
 	else
 		popup.closescript = null
 	
-	// Optional icon drawn next to the caption (e.g. the BETA badge for
-	// features that are still being tested)
+	// Optional icon drawn next to the caption (null for none)
 	popup.badge_icon = null
 	
 	popup.custom_height = -4

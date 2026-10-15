@@ -4,6 +4,48 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.9 (2026-10-15)
+
+### New features
+
+* **The world generator now runs on Minecraft's seed engine.** Seeds are
+  read exactly the way Minecraft reads them: a plain (optionally
+  negative) number is used as the world seed, any other text is hashed
+  with Java's String.hashCode, and an empty seed field rolls a fresh
+  random seed every time you generate. A dice button next to the field
+  rolls a random seed into the box so it can be kept or shared, the
+  seed used is shown in the toast and log, and seeds display like
+  Minecraft's (large values as negative numbers). The randomness itself
+  is a faithful port of java.util.Random's 48-bit LCG, seeded per
+  position the way Minecraft's worldgen feature placement seeds its
+  randoms (worldSeed + x * 341873128712 + z * 132897987541 + salt,
+  with real structure-style salts per noise octave and feature) -
+  implemented entirely with small exact double arithmetic so it stays
+  lightweight on Mine-imator's system. The same seed and settings still
+  always produce the same world; note that because the engine changed,
+  a seed used in 1.1.7/1.1.8 now generates a different world
+
+### Changes
+
+* **Discord:** the startup screen has a Discord button in the header,
+  and the About popup's Discord button now opens the Reforged community
+  server (discord.gg/Kw9AGWBbK) instead of Mine-imator's
+* **Loading screen:** the green Mine-imator mascot shown while the
+  Minecraft assets load is replaced by the gold Reforged logo lockup
+* The BETA badges are gone from the popups (Content center, Physics,
+  Performance checker, World generator, Addons browser) - those
+  features have shipped
+
+### Fixes
+
+* **The world generator kept generating the same world.** The seed
+  field only rolled a random seed while it was empty - and after the
+  first roll it never was, so every world generated in a session came
+  out identical. An empty field now rolls a fresh seed on every
+  generate, and the seed field now shows a proper "Random (new seed
+  every time)" placeholder - the old tip text was wired into a field
+  that was never empty
+
 ## Reforged 1.1.8 (2026-10-12)
 
 ### Fixes

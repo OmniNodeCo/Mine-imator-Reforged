@@ -1,10 +1,10 @@
 /// popup_worldgenerator_show()
-/// @desc Opens the world generator popup, rolling a fresh seed when the
-/// seed field is still empty.
+/// @desc Opens the world generator popup. The seed field is left alone:
+/// an empty field rolls a fresh random seed on every generate (like
+/// Minecraft's world creation screen), while a typed seed keeps
+/// reproducing its world.
 
 function popup_worldgenerator_show()
 {
-	if (popup_worldgenerator.tbx_seed.text = "" || popup_worldgenerator.tbx_seed.text = "0")
-		popup_worldgenerator.tbx_seed.text = string(irandom_range(1, 999999))
 	popup_show(popup_worldgenerator)
 }

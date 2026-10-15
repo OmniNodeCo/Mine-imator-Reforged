@@ -53,7 +53,6 @@ function app_startup_interface_popups()
 	// Content center (rigs, shader packs, addons, particles)
 	popup_contentcenter = new_popup("content", popup_contentcenter_draw, 780, 480, true, true, false, true)
 	popup_contentcenter.caption_icon = icons.DOWNLOAD
-	popup_contentcenter.badge_icon = icons.BETA
 	with (popup_contentcenter)
 	{
 		tbx_search = new_textbox(true, 0, "")
@@ -79,7 +78,6 @@ function app_startup_interface_popups()
 	// Timeline physics
 	popup_physics = new_popup("physics", popup_physics_draw, 420, null, true)
 	popup_physics.caption_icon = icons.BEAKER
-	popup_physics.badge_icon = icons.BETA
 	with (popup_physics)
 	{
 		mode = 0
@@ -110,12 +108,10 @@ function app_startup_interface_popups()
 	// Performance checker
 	popup_performance = new_popup("performance", popup_performance_draw, 460, null, true)
 	popup_performance.caption_icon = icons.ROCKETSHIP
-	popup_performance.badge_icon = icons.BETA
 
 	// World generator
 	popup_worldgenerator = new_popup("worldgenerator", popup_worldgenerator_draw, 420, null, true)
 	popup_worldgenerator.caption_icon = icons.WORLD
-	popup_worldgenerator.badge_icon = icons.BETA
 	with (popup_worldgenerator)
 	{
 		tbx_seed = new_textbox(true, 0, "")
@@ -132,7 +128,6 @@ function app_startup_interface_popups()
 	// Addons browser
 	popup_addons = new_popup("addons", popup_addons_draw, 640, 420, true, true, false, true)
 	popup_addons.caption_icon = icons.LIBRARY
-	popup_addons.badge_icon = icons.BETA
 	with (popup_addons)
 	{
 		scroll = 0

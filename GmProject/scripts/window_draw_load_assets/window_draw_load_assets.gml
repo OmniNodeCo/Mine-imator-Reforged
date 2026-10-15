@@ -54,7 +54,11 @@ function window_draw_load_assets()
 	var pattern = (setting_theme = theme_light ? 0 : 1);
 	draw_sprite_ext(spr_pattern_left, pattern, xoff, yoff, 138 / sprite_get_width(spr_pattern_left), screenhei / sprite_get_height(spr_pattern_left), 0, c_white, 1)
 	
-	draw_sprite(spr_load_assets, 0, xoff + 95, yoff + 207)
+	// Reforged logo (replaces the old green Mine-imator mascot; scaled to
+	// fit the left column, same vertical anchor)
+	gpu_set_tex_filter(true)
+	draw_sprite_ext(spr_logo, 0, xoff + 95, yoff + 207, 180 / sprite_get_width(spr_logo), 180 / sprite_get_width(spr_logo), 0, c_white, 1)
+	gpu_set_tex_filter(false)
 	
 	draw_label("Mine-imator " + string(mineimator_version), xoff + 95, yoff + 289, fa_middle, fa_bottom, c_text_secondary, a_text_secondary, font_heading)
 	draw_label(string(string_upper(mineimator_version_sub)), xoff + 95, yoff + 289 + 12, fa_middle, fa_bottom, c_text_secondary, a_text_secondary, font_subheading)
