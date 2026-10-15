@@ -264,7 +264,7 @@ function action_worldgenerator_generate()
 	}
 	
 	toast_new(e_toast.POSITIVE, text_get("worldgeneratorgenerated", size, size, height, worldgenerator_mc_seed_string(seed)))
-	log("World generator: seed", worldgenerator_mc_seed_string(seed), seedstr != "" ? seedstr : "random", "size", string(size) + "x" + string(size) + "x" + string(height))
+	log("World generator: seed", worldgenerator_mc_seed_string(seed), seedstr != "" ? string(seedstr) : "random", "size", string(size) + "x" + string(size) + "x" + string(height))
 	
 	return true
 }
