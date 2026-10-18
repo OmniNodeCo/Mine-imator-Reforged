@@ -205,6 +205,61 @@ namespace CppProject
 
 	RealType lib_json_file_convert_unicode(StringType src, StringType dst)
 	{
-		return lib_file_copy(src, dst);
+		// Rewrite a .milanguage JSON file so the GML JSON parser (which
+		// reads raw bytes and decodes \uXXXX escapes through chr()) can
+		// handle it: every non-ASCII character inside a string becomes a
+		// \uXXXX escape, everything else passes through unchanged. Files
+		// that are already ASCII-escaped (like the bundled ones) come out
+		// byte-identical, so this doubles as the file copy the parser
+		// expects. Non-ASCII outside strings (e.g. a UTF-8 BOM) is
+		// dropped, matching how the parser skipped those bytes before
+		QFile read(src);
+		if (!read.open(QIODevice::ReadOnly))
+			return 0;
+		QString text = QString::fromUtf8(read.readAll());
+		read.close();
+
+		QString out;
+		out.reserve(text.size());
+		bool inString = false;
+		bool escaped = false;
+		for (const QChar& ch : text)
+		{
+			int code = ch.unicode();
+			if (!inString)
+			{
+				if (code < 128)
+				{
+					if (code == '"')
+						inString = true;
+					out += ch;
+				}
+			}
+			else if (escaped)
+			{
+				escaped = false;
+				out += ch;
+			}
+			else if (code == '\\')
+			{
+				escaped = true;
+				out += ch;
+			}
+			else if (code == '"')
+			{
+				inString = false;
+				out += ch;
+			}
+			else if (code < 128)
+				out += ch;
+			else
+				out += "\\u" + QString::number(code, 16).rightJustified(4, '0');
+		}
+
+		QFile write(dst);
+		if (!write.open(QIODevice::WriteOnly))
+			return 0;
+		write.write(out.toUtf8());
+		return 1;
 	}
 }

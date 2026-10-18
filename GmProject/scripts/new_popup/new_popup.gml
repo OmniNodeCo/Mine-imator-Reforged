@@ -44,6 +44,10 @@ function new_popup()
 	// Optional icon drawn next to the caption (null for none)
 	popup.badge_icon = null
 	
+	// Optional version comment drawn right-aligned in the caption bar
+	// (e.g. "Reforged 1.1.7" for a feature menu)
+	popup.version_label = ""
+	
 	popup.custom_height = -4
 	popup.custom_height_goal = 0
 	

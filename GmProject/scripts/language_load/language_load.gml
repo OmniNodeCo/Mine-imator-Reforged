@@ -45,7 +45,8 @@ function language_load(fn, map, reload = false)
 	else
 		language_load_legacy(fn, map)
 	
-	// Check keys
+	// Check keys (missing texts display as English - the list is logged
+	// so translators can complete their file without a wall of popups)
 	if (!reload && map != language_english_map)
 	{
 		var missingkeyslist, key;
@@ -61,14 +62,9 @@ function language_load(fn, map, reload = false)
 		if (ds_list_size(missingkeyslist) > 0)
 		{
 			ds_list_sort(missingkeyslist, true)
-			var msg = "The following texts are missing in the translation and will display as English:\n"
+			log(string(ds_list_size(missingkeyslist)) + " texts are missing in the translation and will display as English:")
 			for (var i = 0; i < ds_list_size(missingkeyslist); i++)
-				msg += missingkeyslist[|i] + ": " + string_replace_all(language_english_map[?missingkeyslist[|i]], "\n", "\\n") + "\n"
-			log(msg)
-			
-			window_set_caption("Error")
-			show_message("Some texts are missing in the translation and will display as English. See the log for details:\n" + log_file)
-			window_set_caption("Mine-imator")
+				log(missingkeyslist[|i] + ": " + string_replace_all(language_english_map[?missingkeyslist[|i]], "\n", "\\n"))
 		}
 	}
 }

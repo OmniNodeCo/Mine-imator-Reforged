@@ -4,6 +4,16 @@
 			"name": "English",
 			"locale": "en-US",
 			"filename": "english.milanguage"
+		},
+		{
+			"name": "Chinese (Simplified)",
+			"locale": "zh-CN",
+			"filename": "chinese.milanguage"
+		},
+		{
+			"name": "Italian",
+			"locale": "it-IT",
+			"filename": "italian.milanguage"
 		}
 	]
 }

@@ -313,6 +313,7 @@
 		"projects": "Recent projects"
 	},
 	"alert/": {
+		"languagerestart": "The new language is saved and will be fully active after restarting Mine-imator.",
 		"newassets": "Minecraft %1 assets are available! Restart to download them.",
 		"projectcreated": "Project created!",
 		"projectcreatedview": "View folder",

@@ -160,6 +160,11 @@ function popup_draw()
 			draw_image(spr_icons, popup.badge_icon, capx + string_width(captext) + 20, dy + 12, 1, 1, c_accent, 1)
 		}
 		
+		// Version comment (e.g. "Reforged 1.1.7" for a feature menu),
+		// right-aligned next to the close button
+		if (popup.version_label != "")
+			draw_label(popup.version_label, dx + dw - 36, dy + 12, fa_right, fa_middle, c_text_tertiary, a_text_tertiary, font_subheading)
+		
 		closex = dx + dw - 24
 		closey = dy
 		

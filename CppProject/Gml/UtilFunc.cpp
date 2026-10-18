@@ -56,7 +56,10 @@ namespace CppProject
 
 	StringType chr(IntType code)
 	{
-		return QString(QChar((char)code));
+		// Keep the full Unicode code point: the old (char) cast truncated
+		// everything above 255, which broke \uXXXX escapes in language
+		// files (Chinese, Japanese, ... displayed as garbage)
+		return QString(QChar((int)(code & 0xFFFF)));
 	}
 
 	RealType clamp(RealType value, RealType val1, RealType val2)

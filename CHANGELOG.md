@@ -4,6 +4,38 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.10 (2026-10-18)
+
+### New features
+
+* **Multiple language support.** The app can now run in languages other
+  than English (Settings > Interface > Language):
+  * Bundled with Simplified Chinese and Italian alongside English.
+    Chinese (by 飒爽师叔, translated for the Continuation Build line)
+    covers about 94% of the texts, Italian (by Lorenzo Giannini) about
+    80% - anything a translation is missing, mostly the newer Reforged
+    features, simply displays in English, and the log lists the
+    missing keys for translators
+  * Any .milanguage file dropped into Data/Languages shows up in the
+    language picker automatically (the + button still imports a file
+    from anywhere on disk)
+  * A Chinese locale automatically switches the interface fonts to
+    bundled Noto Sans SC subsets (~600 KB per weight, subset to just
+    the glyphs the interface needs, so it stays lightweight);
+    switching between Latin and Chinese languages is saved with a
+    restart notice so the right fonts load
+  * The language-file pipeline now loads real-world UTF-8 translation
+    files correctly: non-ASCII text is escaped for the parser (only
+    pre-escaped files worked before), and chr() no longer truncates
+    Unicode code points above 255 (Chinese, Japanese etc. used to
+    decode as garbage)
+  * Loading a translation with missing keys no longer spams a dialog -
+    the missing texts are logged and display as English
+* **Version comments on the menus.** Every Reforged feature popup now
+  shows the version it shipped in, right in its title bar: Content
+  center (Reforged 1.1.3), Timeline physics (1.1.1), Performance
+  checker (1.1.4), World generator (1.1.7) and Addons (1.1.1)
+
 ## Reforged 1.1.9 (2026-10-15)
 
 ### New features
