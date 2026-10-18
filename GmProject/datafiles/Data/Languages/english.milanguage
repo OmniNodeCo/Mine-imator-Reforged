@@ -665,7 +665,7 @@
 		"desc4": "Scenery collapse: floating blocks of the selected sceneries fall, supported blocks keep still.",
 		"desc5": "Ragdoll: the selected rigs fall over as a whole while every body part flops around its joint.",
 		"inforig": "Bakes a ragdoll into %1 selected rig(s): the rig falls to the floor as a whole while every body part flops around its joint, staggered by depth. Works on characters, mobs and model rigs.",
-		"rignone": "No rig selected - add a character, mob or model rig and select it",
+		"rignone": "No rig selected - add a character, mob or model rig and select it (selecting one of its limbs counts too)",
 		"infoscenery": "Bakes gravity into %1 selected scenery/sceneries: blocks in the air fall, blocks on the floor or resting on other blocks keep still.",
 		"scenerynone": "No scenery selected - import a world or schematic and select it",
 		"floorauto": "Leave Floor Z empty to drop blocks onto the scenery's lowest block level.",

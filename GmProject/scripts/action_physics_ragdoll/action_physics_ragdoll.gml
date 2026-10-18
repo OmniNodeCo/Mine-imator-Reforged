@@ -19,13 +19,35 @@
 
 function action_physics_ragdoll(hobj, gravity, floorauto, floorv, amplitude, period, damping, frames, step, marker)
 {
+	// Resolve the rigs to ragdoll: characters, mobs (special blocks) and
+	// ModelBench/model rigs whose root is selected - plus rigs where only
+	// a body part is selected (clicking a limb in the workbench selects
+	// the part, not the root; the whole rig it belongs to is ragdolled).
+	// Scenery has its own mode (collapse).
+	var roots;
+	roots = ds_list_create()
 	with (obj_timeline)
 	{
-		// Rigs only: characters, mobs (mob models are characters) and
-		// ModelBench/model rigs. Scenery has its own mode (collapse).
-		if (!selected || (type != e_tl_type.CHARACTER && type != e_tl_type.MODEL))
+		if (!selected)
 			continue
 		
+		if (type = e_tl_type.CHARACTER || type = e_tl_type.SPECIAL_BLOCK || type = e_tl_type.MODEL)
+		{
+			if (ds_list_find_index(roots, id) < 0)
+				ds_list_add(roots, id)
+		}
+		else if (type = e_tl_type.BODYPART && part_of != null
+			&& (part_of.type = e_tl_type.CHARACTER || part_of.type = e_tl_type.SPECIAL_BLOCK || part_of.type = e_tl_type.MODEL)
+			&& ds_list_find_index(roots, part_of) < 0)
+		{
+			ds_list_add(roots, part_of)
+		}
+	}
+	
+	for (var r = 0; r < ds_list_size(roots); r++)
+	{
+		with (roots[|r])
+		{
 		// ---- Collect the full body-part tree (nested subparts included) ----
 		// Parts are BODYPART timelines parented into tree_list; a flat
 		// part_list only ever holds the direct parts and misses everything
@@ -150,7 +172,10 @@ function action_physics_ragdoll(hobj, gravity, floorauto, floorv, amplitude, per
 		
 		ds_list_destroy(parts)
 		ds_list_destroy(depths)
+		}
 	}
+	
+	ds_list_destroy(roots)
 }
 
 /// physics_ragdoll_collect_tree(timeline, depth, parts, depths)

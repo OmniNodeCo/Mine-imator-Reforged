@@ -4,6 +4,21 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.11 (2026-10-18)
+
+### Fixes
+
+* **Ragdoll refused characters and mobs.** The ragdoll mode's rig check
+  only accepted player characters and model rigs - mobs are their own
+  timeline type in Mine-imator (special blocks), so with a mob
+  selected the popup said "no rig selected" and the Apply button
+  stayed disabled. Mobs now count. Selecting a limb also counts: the
+  workbench selects the body part you click, not the rig root, so
+  ragdolling a character by clicking its arm was refused too - a
+  selected part now resolves to the rig it belongs to, and the whole
+  rig is ragdolled exactly as before (never double-counted, even with
+  the root and several limbs selected at once)
+
 ## Reforged 1.1.10 (2026-10-18)
 
 ### New features

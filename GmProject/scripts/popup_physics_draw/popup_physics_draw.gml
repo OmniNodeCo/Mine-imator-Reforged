@@ -8,14 +8,17 @@
 
 function popup_physics_draw()
 {
-	var halfw, selcount, selscenery;
+	var halfw, selcount, selscenery, selrigs, rigroots;
 	halfw = (dw - 8) / 2
 
 	// Selected timeline objects (sceneries count for collapse, character/
-	// mob/model rigs count for ragdoll)
+	// mob/model rigs count for ragdoll - a selected body part counts as
+	// its rig, because clicking a limb in the workbench selects the part
+	// rather than the rig root)
 	selcount = 0
 	selscenery = 0
 	selrigs = 0
+	rigroots = ds_list_create()
 	with (obj_timeline)
 	{
 		if (selected)
@@ -23,10 +26,24 @@ function popup_physics_draw()
 			selcount++
 			if (type = e_tl_type.SCENERY)
 				selscenery++
-			if (type = e_tl_type.CHARACTER || type = e_tl_type.MODEL)
+			if (type = e_tl_type.CHARACTER || type = e_tl_type.SPECIAL_BLOCK || type = e_tl_type.MODEL)
+			{
+				if (ds_list_find_index(rigroots, id) < 0)
+				{
+					selrigs++
+					ds_list_add(rigroots, id)
+				}
+			}
+			else if (type = e_tl_type.BODYPART && part_of != null
+				&& (part_of.type = e_tl_type.CHARACTER || part_of.type = e_tl_type.SPECIAL_BLOCK || part_of.type = e_tl_type.MODEL)
+				&& ds_list_find_index(rigroots, part_of) < 0)
+			{
 				selrigs++
+				ds_list_add(rigroots, part_of)
+			}
 		}
 	}
+	ds_list_destroy(rigroots)
 
 	// Info line
 	tab_control(20)
