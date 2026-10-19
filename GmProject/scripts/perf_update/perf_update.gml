@@ -63,17 +63,22 @@ function perf_update()
 			if (!perf_test_visible)
 				perf_stress_draw_offscreen()
 			
-			perf_test_frames++
-			if (perf_test_frames > perf_test_warmup)
+			// The offscreen draw can cancel the test (unusable GPU
+			// driver) - stop measuring the moment that happens
+			if (perf_test_state = 1)
 			{
-				perf_test_ms = perf_test_ms + ms
-				if (ms > perf_test_worst)
-					perf_test_worst = ms
-				perf_test_measured++
+				perf_test_frames++
+				if (perf_test_frames > perf_test_warmup)
+				{
+					perf_test_ms = perf_test_ms + ms
+					if (ms > perf_test_worst)
+						perf_test_worst = ms
+					perf_test_measured++
+				}
+				
+				if (perf_test_measured >= perf_test_duration)
+					performance_test_finish()
 			}
-			
-			if (perf_test_measured >= perf_test_duration)
-				performance_test_finish()
 		}
 	}
 	
@@ -139,15 +144,38 @@ function perf_stress_draw(xx, yy, ww, hh)
 /// perf_stress_draw_offscreen()
 /// @desc Draws the stress test load onto an offscreen surface, so the
 /// auto-detection test measures the same load without showing anything.
+/// Defensive by design: the surface carries no depth buffer (the load is
+/// pure fill rate, and depth-stencil renderbuffers are a common failure
+/// point on old low-end GPU drivers), and when the surface cannot be
+/// created or bound the automatic test is cancelled - keeping the
+/// provisional low-end verdict - instead of rendering the load into the
+/// live screen.
 
 function perf_stress_draw_offscreen()
 {
-	perf_test_surface = surface_require(perf_test_surface, 384, 216)
+	perf_test_surface = surface_require(perf_test_surface, 384, 216, false)
 	
-	surface_set_target(perf_test_surface)
+	if (perf_test_surface < 0 || !surface_exists(perf_test_surface))
+	{
+		log("Performance: offscreen surface unavailable, cancelling auto-detect")
+		performance_test_cancel()
+		return 0
+	}
+	
+	var bound;
+	bound = surface_set_target(perf_test_surface)
+	if (bound = -1)
+	{
+		log("Performance: offscreen surface failed to bind, cancelling auto-detect")
+		performance_test_cancel()
+		return 0
+	}
+	
 	{
 		draw_clear_alpha(c_black, 0)
 		perf_stress_draw(0, 0, 384, 216)
 	}
 	surface_reset_target()
+	
+	return 1
 }

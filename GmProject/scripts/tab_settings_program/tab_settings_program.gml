@@ -148,6 +148,8 @@ function tab_settings_program()
 		tab_control(20)
 		if (setting_performance_detected = -1)
 			draw_label(text_get("settingsperformancenotested"), dx, dy + 16, fa_left, fa_middle, c_text_tertiary, a_text_tertiary, font_label, 14, dw)
+		else if (setting_performance_score < 0)
+			draw_label(text_get("settingsperformancefallback"), dx, dy + 16, fa_left, fa_middle, c_text_secondary, 1, font_label, 14, dw)
 		else
 			draw_label(text_get("settingsperformancelast", string(setting_performance_score), text_get(setting_performance_detected = 1 ? "settingsperformancelastlow" : "settingsperformancelastnormal")), dx, dy + 16, fa_left, fa_middle, c_text_secondary, 1, font_label, 14, dw)
 		tab_next()

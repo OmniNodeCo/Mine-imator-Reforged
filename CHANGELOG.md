@@ -4,6 +4,33 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
+## Reforged 1.1.12 (2026-10-19)
+
+### Fixes
+
+* **Startup crash loop on low-end PCs.** The automatic performance
+  detection (which runs once, silently, ~30 frames after the very first
+  start) crashed on machines with weak GPU drivers - and since the crash
+  happened before any verdict was saved, the next start ran the test
+  again and crashed again, trapping a fresh install in a crash loop. The
+  detection now:
+  * saves a provisional low-end verdict to settings **before** the stress
+    load is ever drawn - if the app does not survive the test on a weak
+    driver, the next start skips the test entirely and boots straight
+    into low-end mode instead of crashing again (Settings > Program >
+    Performance shows "low-end mode enabled (the automatic test could
+    not complete)", and running the test manually from the popup still
+    records the real verdict and unlocks the normal mode)
+  * renders the invisible test onto a depthless offscreen surface
+    (depth-stencil renderbuffers are a common failure point on old
+    drivers) - and when the surface cannot be created or bound at all,
+    the test cancels gracefully and keeps the provisional verdict
+    instead of ever drawing the stress load onto the live screen
+  * frees the test surface when it finishes or cancels (it previously
+    leaked for the whole session), and the shorter auto-test (60 frames
+    vs. the visible test's 120) gets measured only while the offscreen
+    draw actually succeeded
+
 ## Reforged 1.1.11 (2026-10-18)
 
 ### Fixes

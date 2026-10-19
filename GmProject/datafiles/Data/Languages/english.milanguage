@@ -4370,6 +4370,7 @@
 		"performancenormal": "Normal",
 		"performancelowend": "Low-end PC",
 		"performancenotested": "No performance test has run yet - it runs automatically on the first start",
+		"performancefallback": "Low-end mode enabled (the automatic test could not complete on this PC)",
 		"performancelast": "Last test: %1 FPS - %2",
 		"performancelastnormal": "capable PC",
 		"performancelastlow": "low-end PC",
