@@ -4,10 +4,43 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
-## Reforged 1.1.12 (2026-10-19)
+## Reforged 1.1.12 (2026-10-24)
+
+### New features
+
+* **World generator: caves and a far richer terrain.** The generator's
+  worlds are no longer plain heightmaps - the same seed and settings
+  now produce:
+  * **Caves** - winding tunnel systems (two independent noise fields,
+    carved where both pass their threshold, Minecraft 1.18's
+    "spaghetti" recipe) plus deeper "cheese" caverns that grow with
+    depth, with occasional entrances breaking through the surface; a
+    new Caves toggle in the popup turns them off for flat building
+    worlds, and caves never carve into or under water (the water is a
+    static fill - no floating lakes)
+  * **A bedrock floor** with Minecraft's noisy 0 - 2 block edge, and
+    **sandstone** under beaches and the sea floor
+  * **Ore veins** - coal, iron, gold, redstone, lapis and diamond,
+    placed as random-walk veins like Minecraft's features, rarer and
+    deeper the more valuable they are (diamond only near the bottom)
+  * **Stone variety** - blobs of gravel, andesite, granite and diorite
+    through the stone layer
+  * **Snow caps with spruces** - the tallest terrain (with enough
+    relief above the water) gets a snow line, and trees on it grow as
+    spruce with conical leaf crowns instead of oak blobs
+  * Blocks the current texture pack does not know simply skip their
+    feature (ores, variants, snow, spruce, bedrock, sandstone), so the
+    generator keeps working with any pack
 
 ### Fixes
 
+* **Nearby seeds generated near-identical worlds** (world generator).
+  The seed entered the generator's position hashes additively, so
+  seeds a few numbers apart (3 and 5, or 1 and -1) survived the
+  scrambling as nearly the same random streams and came out as
+  essentially the same world. The seed now runs through one extra LCG
+  step that decorrelates it. As a side effect, the same seed produces
+  a different layout than in previous versions.
 * **Startup crash loop on low-end PCs.** The automatic performance
   detection (which runs once, silently, ~30 frames after the very first
   start) crashed on machines with weak GPU drivers - and since the crash

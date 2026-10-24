@@ -2229,7 +2229,7 @@
 	},
 	"worldgenerator/": {
 		"caption": "Generate world",
-		"info": "Creates a random blocky landscape (hills, water and trees) and puts it on the workbench as a new scenery.",
+		"info": "Creates a random blocky landscape (layered hills, caves, water and trees) and puts it on the workbench as a new scenery.",
 		"seed": "Seed",
 		"seedplaceholder": "Random (new seed every time)",
 		"newseed": "Roll a random seed",
@@ -2242,6 +2242,7 @@
 		"roughness": "Roughness",
 		"trees": "Trees",
 		"water": "Water",
+		"caves": "Caves",
 		"hint": "Builds a .schematic file next to the project. Big worlds take a moment to load in.",
 		"generate": "Generate world",
 		"generated": "Generated a %1 x %2 x %3 world (seed %4)",

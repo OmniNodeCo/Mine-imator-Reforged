@@ -1,6 +1,6 @@
 /// popup_worldgenerator_draw()
 /// @desc World generator popup: creates a random blocky landscape (hills,
-/// water and trees) from a seed, writes it as a .schematic file and puts
+/// caves, water and trees) from a seed, writes it as a .schematic file and puts
 /// it on the workbench as a new scenery. Same seed and settings always
 /// produce the same world.
 
@@ -42,12 +42,15 @@ function popup_worldgenerator_draw()
 	draw_textfield("worldgeneratorroughness", dx, dy, halfw, 24, popup.tbx_roughness, null, "worldgeneratorroughnesstip", "top")
 	tab_next()
 
-	// Trees and water
+	// Trees, water and caves
 	tab_control(24)
 	draw_switch("worldgeneratortrees", dx, dy, popup.trees, popup_worldgenerator_set_trees)
 	tab_next()
 	tab_control(24)
 	draw_switch("worldgeneratorwater", dx, dy, popup.water, popup_worldgenerator_set_water)
+	tab_next()
+	tab_control(24)
+	draw_switch("worldgeneratorcaves", dx, dy, popup.caves, popup_worldgenerator_set_caves)
 	tab_next()
 
 	// Hint
