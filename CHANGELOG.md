@@ -4,7 +4,7 @@ This repository carries mbanders' Mine-imator 2.0.2 Continuation Build forward
 under the Reforged identity. This changelog covers changes made on top of the
 Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
 
-## Reforged 1.1.12 (2026-10-24)
+## Reforged 1.1.13 (2026-10-26)
 
 ### New features
 
@@ -41,6 +41,11 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   essentially the same world. The seed now runs through one extra LCG
   step that decorrelates it. As a side effect, the same seed produces
   a different layout than in previous versions.
+
+## Reforged 1.1.12 (2026-10-19)
+
+### Fixes
+
 * **Startup crash loop on low-end PCs.** The automatic performance
   detection (which runs once, silently, ~30 frames after the very first
   start) crashed on machines with weak GPU drivers - and since the crash

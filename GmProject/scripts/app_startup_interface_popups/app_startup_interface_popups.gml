@@ -115,7 +115,7 @@ popup_performance.version_label = "Reforged 1.1.4"
 	// World generator
 	popup_worldgenerator = new_popup("worldgenerator", popup_worldgenerator_draw, 420, null, true)
 	popup_worldgenerator.caption_icon = icons.WORLD
-popup_worldgenerator.version_label = "Reforged 1.1.12"
+popup_worldgenerator.version_label = "Reforged 1.1.13"
 	with (popup_worldgenerator)
 	{
 		tbx_seed = new_textbox(true, 0, "")
