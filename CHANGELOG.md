@@ -31,6 +31,23 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   * Blocks the current texture pack does not know simply skip their
     feature (ores, variants, snow, spruce, bedrock, sandstone), so the
     generator keeps working with any pack
+* **World generator: terrain types and structures.** Two new rows of
+  options in the popup, combining freely - an island village or a
+  mountain city work exactly as they sound:
+  * **Terrain: Standard, Island, Mountains or Flat** - Standard is the
+    classic rolling hills; Island is a lone island with a jittered
+    coastline surrounded by ocean; Mountains adds ridged peaks (with
+    the snow line and spruces moving in on them); Flat is one constant
+    ground level above the water - a clean building base
+  * **Buildings: None, Village or City** - a Village scatters houses
+    around a well: cobble foundations, log corners, plank walls with
+    glass windows, a doorway facing the well and a stepped plank roof,
+    each house on its own leveled 7 x 7 pad that fills valleys and
+    shaves bumps; a City flattens a plateau and puts a cobble street
+    grid on it with stone-brick towers (glass window rows, doorways to
+    the street, flat roofs, varied heights) and the occasional park
+    lot with trees between them - caves are kept out from under the
+    plateau so nothing sits over a hole
 
 ### Fixes
 

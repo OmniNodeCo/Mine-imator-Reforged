@@ -1,7 +1,9 @@
 /// action_worldgenerator_generate()
-/// @desc World generator: builds a random blocky landscape (layered hills,
-/// caves with ore veins, optional water and trees) from the seed and
-/// settings in the world generator popup, writes it as an uncompressed
+/// @desc World generator: builds a random blocky world from the seed and
+/// settings in the world generator popup - layered hills, islands,
+/// mountains or flat land, with caves and ore veins, optional water and
+/// trees, and optional villages (houses around a well) or cities (a
+/// street grid with towers on a plateau) - writes it as an uncompressed
 /// Sponge v1 .schematic NBT file next to the project and loads it in as a
 /// new scenery on the workbench. Seeds run through Minecraft's seed engine
 /// (see worldgenerator_mc_seed) plus one decorrelating LCG step, so nearby
@@ -13,7 +15,8 @@
 
 function action_worldgenerator_generate()
 {
-	var size, height, rough, roughpct, trees, water, caves, seedstr, seed, wseed;
+	var size, height, rough, roughpct, trees, water, caves, terrain, buildings, seedstr, seed, wseed;
+	var tname, bname;
 	
 	// Settings (textboxes accept expressions)
 	size = clamp(round(eval(popup_worldgenerator.tbx_size.text, 64)), 8, 96)
@@ -23,6 +26,8 @@ function action_worldgenerator_generate()
 	trees = popup_worldgenerator.trees
 	water = popup_worldgenerator.water
 	caves = popup_worldgenerator.caves
+	terrain = popup_worldgenerator.terrain
+	buildings = popup_worldgenerator.buildings
 	seedstr = popup_worldgenerator.tbx_seed.text
 	seed = worldgenerator_mc_seed(seedstr)
 	// One LCG step before any use: the raw seed enters the position
@@ -38,6 +43,7 @@ function action_worldgenerator_generate()
 	// kept as the origin of the numbering)
 	var salt_hill, salt_bump, salt_detail, salt_tree, salt_treex, salt_treez, salt_trunk, salt_leaf;
 	var salt_cave1, salt_cave2, salt_cave3, salt_bedrock, salt_spruce;
+	var salt_ridge, salt_island, salt_village, salt_city;
 	salt_hill = 14357617
 	salt_bump = 15357617
 	salt_detail = 16357617
@@ -51,6 +57,10 @@ function action_worldgenerator_generate()
 	salt_cave3 = 24357617
 	salt_bedrock = 25357617
 	salt_spruce = 36357617
+	salt_ridge = 37357617
+	salt_island = 38357617
+	salt_village = 39357617
+	salt_city = 50357617
 	var off;
 	off = 1000000
 	
@@ -58,13 +68,14 @@ function action_worldgenerator_generate()
 	// 0 air, 1 stone, 2 dirt, 3 grass, 4 sand, 5 water, 6 oak log, 7 oak leaves,
 	// 8 gravel, 9 andesite, 10 granite, 11 diorite, 12 sandstone, 13 bedrock,
 	// 14 snow, 15 coal, 16 iron, 17 gold, 18 redstone, 19 lapis, 20 diamond,
-	// 21 spruce log, 22 spruce leaves
+	// 21 spruce log, 22 spruce leaves, 23 oak planks, 24 glass, 25 cobblestone,
+	// 26 stone bricks
 	var pal_names, pal, pal_written, nextidx, i;
-	pal_names = array("minecraft:air", "minecraft:stone", "minecraft:dirt", "minecraft:grass_block", "minecraft:sand", "minecraft:water", "minecraft:oak_log", "minecraft:oak_leaves", "minecraft:gravel", "minecraft:andesite", "minecraft:granite", "minecraft:diorite", "minecraft:sandstone", "minecraft:bedrock", "minecraft:snow_block", "minecraft:coal_ore", "minecraft:iron_ore", "minecraft:gold_ore", "minecraft:redstone_ore", "minecraft:lapis_ore", "minecraft:diamond_ore", "minecraft:spruce_log", "minecraft:spruce_leaves")
+	pal_names = array("minecraft:air", "minecraft:stone", "minecraft:dirt", "minecraft:grass_block", "minecraft:sand", "minecraft:water", "minecraft:oak_log", "minecraft:oak_leaves", "minecraft:gravel", "minecraft:andesite", "minecraft:granite", "minecraft:diorite", "minecraft:sandstone", "minecraft:bedrock", "minecraft:snow_block", "minecraft:coal_ore", "minecraft:iron_ore", "minecraft:gold_ore", "minecraft:redstone_ore", "minecraft:lapis_ore", "minecraft:diamond_ore", "minecraft:spruce_log", "minecraft:spruce_leaves", "minecraft:oak_planks", "minecraft:glass", "minecraft:cobblestone", "minecraft:stone_bricks")
 	pal = array()
 	pal_written = array()
 	nextidx = 0
-	for (i = 0; i < 23; i++)
+	for (i = 0; i < 27; i++)
 	{
 		pal[i] = -1
 		pal_written[i] = false
@@ -91,6 +102,12 @@ function action_worldgenerator_generate()
 	pal[4] = max(pal[4], pal[0])
 	trees = trees && pal[6] >= 0 && pal[7] >= 0
 	water = water && pal[5] >= 0
+	// Villages and cities need their building blocks; a pack without
+	// them simply skips the feature
+	if (buildings = 1 && (pal[6] < 0 || pal[23] < 0 || pal[24] < 0 || pal[25] < 0))
+		buildings = 0
+	if (buildings = 2 && (pal[23] < 0 || pal[24] < 0 || pal[25] < 0 || pal[26] < 0))
+		buildings = 0
 	
 	// Heightmap: smooth value noise in three octaves, roughness scales
 	// the amplitude, trees get their headroom reserved
@@ -105,10 +122,76 @@ function action_worldgenerator_generate()
 			h += (worldgenerator_noise(x, z, 16, wseed, salt_hill) - 0.5) * height * 0.5 * rough
 			h += (worldgenerator_noise(x, z, 8, wseed, salt_bump) - 0.5) * height * 0.25 * rough
 			h += (worldgenerator_noise(x, z, 4, wseed, salt_detail) - 0.5) * height * 0.15 * rough
+			// Mountains: ridge noise adds peaked ranges
+			if (terrain = 2)
+				h += (1 - 2 * abs(worldgenerator_noise(x, z, 12, wseed, salt_ridge) - 0.5)) * height * 0.28 * rough
+			// Island: radial falloff into the sea, jittered coastline
+			if (terrain = 1)
+			{
+				var dxn, dzn, dist, f;
+				dxn = (x - (size - 1) / 2) / (size / 2)
+				dzn = (z - (size - 1) / 2) / (size / 2)
+				dist = sqrt(dxn * dxn + dzn * dzn)
+				dist += (worldgenerator_noise(x, z, 8, wseed, salt_island) - 0.5) * 0.4
+				f = 0
+				if (dist > 0.55)
+					f = min(1, (dist - 0.55) / 0.5)
+				h -= f * height * 0.30
+			}
 			h = round(h)
 			if (trees)
 				h = min(h, height - 9)
 			heights[z * size + x] = clamp(h, 2, height - 1)
+		}
+	}
+	
+	// Flat terrain: one constant ground level above the water
+	var fl;
+	if (terrain = 3)
+	{
+		fl = water_level + 3
+		for (i = 0; i < size * size; i++)
+			heights[i] = fl
+	}
+	
+	// City plateau, flattened before the columns are built (the streets
+	// and towers go on top of it later)
+	var city_x0, city_z0, city_w, city_plat, city_on, ce, ring, ex, ez;
+	city_on = false
+	if (buildings = 2)
+	{
+		ce = max(4, min(24, floor(size * 3 / 10)))
+		city_x0 = size div 2 - ce
+		city_z0 = size div 2 - ce
+		city_w = ce * 2
+		city_plat = max(water_level + 4, 6)
+		city_on = true
+		for (x = max(0, city_x0 - 2); x < min(size, city_x0 + city_w + 2); x++)
+		{
+			for (z = max(0, city_z0 - 2); z < min(size, city_z0 + city_w + 2); z++)
+			{
+				if (x >= city_x0 && x < city_x0 + city_w && z >= city_z0 && z < city_z0 + city_w)
+					heights[z * size + x] = city_plat
+				else
+				{
+					// Two blending rings around the plateau edge
+					ex = 0
+					if (x < city_x0)
+						ex = city_x0 - x
+					else if (x >= city_x0 + city_w)
+						ex = x - (city_x0 + city_w) + 1
+					ez = 0
+					if (z < city_z0)
+						ez = city_z0 - z
+					else if (z >= city_z0 + city_w)
+						ez = z - (city_z0 + city_w) + 1
+					ring = max(ex, ez)
+					if (ring = 1)
+						heights[z * size + x] = round((heights[z * size + x] + city_plat) / 2)
+					else
+						heights[z * size + x] = round((heights[z * size + x] * 3 + city_plat) / 4)
+				}
+			}
 		}
 	}
 	
@@ -185,6 +268,12 @@ function action_worldgenerator_generate()
 				// static fill, carving underneath would leave it floating
 				if (h <= water_level + 2)
 					continue
+				// Keep the city plateau solid under its buildings
+				if (city_on)
+				{
+					if (x >= city_x0 - 1 && x < city_x0 + city_w + 1 && z >= city_z0 - 1 && z < city_z0 + city_w + 1)
+						continue
+				}
 				
 				for (y = 1; y < h; y++)
 				{
@@ -235,6 +324,245 @@ function action_worldgenerator_generate()
 					bt = blocks[idx]
 					if (bt = pal[1] || bt = pal[2] || bt = pal[3])
 						blocks[idx] = pal[14]
+				}
+			}
+		}
+	}
+	
+	// Buildings, placed like features on the finished terrain: villages
+	// scatter houses around a well (leveling the ground under each
+	// house), cities put a street grid with towers on their plateau
+	var vcx, vcz, vatt, hpx, hpz, base, doorside, placed_n, placed_x, placed_z, ph, hmin, hmaxc, gt2;
+	var lox, loz, hb, tbx, tbz;
+	if (buildings = 1 && size >= 20)
+	{
+		// The village: houses clustered around a well
+		vcx = 6 + floor(worldgenerator_mc_value(wseed, 1, 0, salt_village) * (size - 12))
+		vcz = 6 + floor(worldgenerator_mc_value(wseed, 0, 1, salt_village) * (size - 12))
+		placed_n = 0
+		placed_x = array()
+		placed_z = array()
+		for (vatt = 0; vatt < 28; vatt++)
+		{
+			hpx = vcx + floor((worldgenerator_mc_value(wseed, vatt, 2, salt_village + off * 2) - 0.5) * size * 0.6)
+			hpz = vcz + floor((worldgenerator_mc_value(wseed, vatt, 3, salt_village + off * 3) - 0.5) * size * 0.6)
+			if (hpx < 4 || hpx > size - 5 || hpz < 4 || hpz > size - 5)
+				continue
+			if (sqrt((hpx - vcx) * (hpx - vcx) + (hpz - vcz) * (hpz - vcz)) > size * 0.32)
+				continue
+			
+			// Keep clear of the other houses
+			ph = true
+			for (i = 0; i < placed_n; i++)
+			{
+				if (sqrt((hpx - placed_x[i]) * (hpx - placed_x[i]) + (hpz - placed_z[i]) * (hpz - placed_z[i])) < 8)
+					ph = false
+			}
+			if (!ph)
+				continue
+			
+			// Flat enough to level a 7 x 7 pad
+			hmin = heights[hpz * size + hpx]
+			hmaxc = hmin
+			for (lx = -3; lx <= 3; lx++)
+			{
+				for (lz = -3; lz <= 3; lz++)
+				{
+					h = heights[(hpz + lz) * size + hpx + lx]
+					hmin = min(hmin, h)
+					hmaxc = max(hmaxc, h)
+				}
+			}
+			if (hmaxc - hmin > 4)
+				continue
+			
+			base = heights[hpz * size + hpx]
+			if (base <= water_level + 1 || base >= snowline || base > height - 8)
+				continue
+			gt2 = blocks[(base - 1) * size * size + hpz * size + hpx]
+			if (!(gt2 = pal[2] || gt2 = pal[3]))
+				continue
+			
+			// The door faces the village center
+			if (abs(hpx - vcx) >= abs(hpz - vcz))
+				doorside = (vcx < hpx ? 0 : 1)
+			else
+				doorside = (vcz < hpz ? 2 : 3)
+			
+			// Level the 7 x 7 pad: fill valleys, shave bumps
+			for (lx = -3; lx <= 3; lx++)
+			{
+				for (lz = -3; lz <= 3; lz++)
+				{
+					hcol = heights[(hpz + lz) * size + hpx + lx]
+					if (hcol < base)
+					{
+						for (y = hcol; y < base; y++)
+							blocks[y * size * size + (hpz + lz) * size + hpx + lx] = pal[2]
+						blocks[(base - 1) * size * size + (hpz + lz) * size + hpx + lx] = pal[3]
+						heights[(hpz + lz) * size + hpx + lx] = base
+					}
+					else if (hcol > base)
+					{
+						for (y = base; y < hcol; y++)
+							blocks[y * size * size + (hpz + lz) * size + hpx + lx] = pal[0]
+						blocks[(base - 1) * size * size + (hpz + lz) * size + hpx + lx] = pal[3]
+						heights[(hpz + lz) * size + hpx + lx] = base
+					}
+				}
+			}
+			
+			// Cobble foundation
+			for (lx = -2; lx <= 2; lx++)
+			{
+				for (lz = -2; lz <= 2; lz++)
+					blocks[(base - 1) * size * size + (hpz + lz) * size + hpx + lx] = pal[25]
+			}
+			
+			// Walls: log corners, plank fill, glass windows and a door
+			// gap facing the village center
+			for (y = base; y <= base + 3; y++)
+			{
+				for (lx = -2; lx <= 2; lx++)
+				{
+					for (lz = -2; lz <= 2; lz++)
+					{
+						idx = y * size * size + (hpz + lz) * size + hpx + lx
+						if (abs(lx) != 2 && abs(lz) != 2)
+							blocks[idx] = pal[0]
+						else if (abs(lx) = 2 && abs(lz) = 2)
+							blocks[idx] = pal[6]
+						else if (y <= base + 1 && ((doorside = 0 && lx = -2 && lz = 0) || (doorside = 1 && lx = 2 && lz = 0) || (doorside = 2 && lx = 0 && lz = -2) || (doorside = 3 && lx = 0 && lz = 2)))
+							blocks[idx] = pal[0]
+						else if ((lx = 0 || lz = 0) && (y = base + 1 || y = base + 2))
+							blocks[idx] = pal[24]
+						else
+							blocks[idx] = pal[23]
+					}
+				}
+			}
+			
+			// Stepped plank roof
+			for (lx = -2; lx <= 2; lx++)
+			{
+				for (lz = -2; lz <= 2; lz++)
+					blocks[(base + 4) * size * size + (hpz + lz) * size + hpx + lx] = pal[23]
+			}
+			for (lx = -1; lx <= 1; lx++)
+			{
+				for (lz = -1; lz <= 1; lz++)
+					blocks[(base + 5) * size * size + (hpz + lz) * size + hpx + lx] = pal[23]
+			}
+			blocks[(base + 6) * size * size + hpz * size + hpx] = pal[23]
+			
+			placed_x[placed_n] = hpx
+			placed_z[placed_n] = hpz
+			placed_n++
+		}
+		
+		// The well: a cobble basin with water, posts and a little roof
+		if (water)
+		{
+			base = heights[vcz * size + vcx]
+			if (base > water_level + 1 && base < snowline && base <= height - 5)
+			{
+				gt2 = blocks[(base - 1) * size * size + vcz * size + vcx]
+				if (gt2 = pal[2] || gt2 = pal[3])
+				{
+					for (lx = -1; lx <= 1; lx++)
+					{
+						for (lz = -1; lz <= 1; lz++)
+						{
+							idx = base * size * size + (vcz + lz) * size + vcx + lx
+							if (lx = 0 && lz = 0)
+							{
+								blocks[idx] = pal[5]
+								blocks[idx - size * size] = pal[25]
+							}
+							else
+								blocks[idx] = pal[25]
+							if (abs(lx) = 1 && abs(lz) = 1)
+							{
+								blocks[idx + size * size] = pal[6]
+								blocks[idx + 2 * size * size] = pal[6]
+							}
+							heights[(vcz + lz) * size + vcx + lx] = base + 4
+						}
+					}
+					for (lx = -1; lx <= 1; lx++)
+					{
+						for (lz = -1; lz <= 1; lz++)
+							blocks[(base + 3) * size * size + (vcz + lz) * size + vcx + lx] = pal[23]
+					}
+				}
+			}
+		}
+	}
+	
+	if (buildings = 2 && city_on)
+	{
+		// Streets: a cobble grid across the plateau
+		for (x = 0; x < city_w; x++)
+		{
+			for (z = 0; z < city_w; z++)
+			{
+				if (x mod 8 = 0 || z mod 8 = 0)
+					blocks[(city_plat - 1) * size * size + (city_z0 + z) * size + city_x0 + x] = pal[25]
+			}
+		}
+		
+		// Towers on the lots between the streets: stone brick with
+		// glass window rows, a door to the street, a flat roof; some
+		// lots stay empty as parks
+		for (lox = 1; lox < city_w - 6; lox += 8)
+		{
+			for (loz = 1; loz < city_w - 6; loz += 8)
+			{
+				if (worldgenerator_mc_value(wseed, lox, loz, salt_city) < 0.15)
+					continue
+				hb = 6 + floor(worldgenerator_mc_value(wseed, lox, loz, salt_city + off) * 9)
+				if (city_plat + hb + 1 >= height)
+					hb = height - city_plat - 2
+				if (hb < 4)
+					continue
+				tbx = city_x0 + lox + 1
+				tbz = city_z0 + loz + 1
+				doorside = floor(worldgenerator_mc_value(wseed, lox, loz, salt_city + off * 2) * 4)
+				
+				// Plank floor
+				for (lx = 0; lx <= 4; lx++)
+				{
+					for (lz = 0; lz <= 4; lz++)
+						blocks[(city_plat - 1) * size * size + (tbz + lz) * size + tbx + lx] = pal[23]
+				}
+				
+				// Walls
+				for (y = city_plat; y < city_plat + hb; y++)
+				{
+					for (lx = 0; lx <= 4; lx++)
+					{
+						for (lz = 0; lz <= 4; lz++)
+						{
+							idx = y * size * size + (tbz + lz) * size + tbx + lx
+							if (lx != 0 && lx != 4 && lz != 0 && lz != 4)
+								blocks[idx] = pal[0]
+							else if ((lx = 0 || lx = 4) && (lz = 0 || lz = 4))
+								blocks[idx] = pal[26]
+							else if (y <= city_plat + 1 && ((doorside = 0 && lx = 0 && lz = 2) || (doorside = 1 && lx = 4 && lz = 2) || (doorside = 2 && lx = 2 && lz = 0) || (doorside = 3 && lx = 2 && lz = 4)))
+								blocks[idx] = pal[0]
+							else if ((lx = 2 || lz = 2) && (y - city_plat) mod 2 = 1)
+								blocks[idx] = pal[24]
+							else
+								blocks[idx] = pal[26]
+						}
+					}
+				}
+				
+				// Flat roof
+				for (lx = 0; lx <= 4; lx++)
+				{
+					for (lz = 0; lz <= 4; lz++)
+						blocks[(city_plat + hb) * size * size + (tbz + lz) * size + tbx + lx] = pal[26]
 				}
 			}
 		}
@@ -366,6 +694,13 @@ function action_worldgenerator_generate()
 				if (blocks[(h - 1) * size * size + tz * size + tx] = pal[0])
 					continue
 				
+				// Only on natural ground (grass, dirt, snow) - never on
+				// the village and city builds
+				var gt;
+				gt = blocks[(h - 1) * size * size + tz * size + tx]
+				if (!(gt = pal[2] || gt = pal[3] || gt = pal[14]))
+					continue
+				
 				snowy = h >= snowline
 				if (snowy && pal[21] >= 0 && pal[22] >= 0)
 				{
@@ -454,7 +789,19 @@ function action_worldgenerator_generate()
 	var folder, fn, bf;
 	folder = project_folder + "/Generated worlds"
 	directory_create_lib(folder)
-	fn = folder + "/generated-world-" + worldgenerator_mc_seed_string(seed) + "-" + string(size) + "x" + string(size) + "x" + string(height) + "-r" + string(roughpct) + (trees ? "-trees" : "") + (water ? "-water" : "") + (caves ? "-caves" : "") + ".schematic"
+	tname = ""
+	if (terrain = 1)
+		tname = "-island"
+	else if (terrain = 2)
+		tname = "-mountains"
+	else if (terrain = 3)
+		tname = "-flat"
+	bname = ""
+	if (buildings = 1)
+		bname = "-village"
+	else if (buildings = 2)
+		bname = "-city"
+	fn = folder + "/generated-world-" + worldgenerator_mc_seed_string(seed) + "-" + string(size) + "x" + string(size) + "x" + string(height) + "-r" + string(roughpct) + (trees ? "-trees" : "") + (water ? "-water" : "") + (caves ? "-caves" : "") + tname + bname + ".schematic"
 	
 	bf = buffer_create(total + 2048, buffer_grow, 1)
 	
@@ -477,7 +824,7 @@ function action_worldgenerator_generate()
 	// Palette compound
 	worldgenerator_write_byte(bf, 10)
 	worldgenerator_write_string_nbt(bf, "Palette")
-	for (i = 0; i < 23; i++)
+	for (i = 0; i < 27; i++)
 	{
 		if (pal_written[i])
 		{

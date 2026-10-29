@@ -1,14 +1,16 @@
 /// popup_worldgenerator_draw()
-/// @desc World generator popup: creates a random blocky landscape (hills,
-/// caves, water and trees) from a seed, writes it as a .schematic file and puts
+/// @desc World generator popup: creates a random blocky world (hills,
+/// islands, mountains or flat land, with caves, water, trees, villages
+/// and cities) from a seed, writes it as a .schematic file and puts
 /// it on the workbench as a new scenery. Same seed and settings always
 /// produce the same world.
 
 function popup_worldgenerator_draw()
 {
-	var halfw, thirdw;
+	var halfw, thirdw, quarterw;
 	halfw = (dw - 8) / 2
 	thirdw = (dw - 16) / 3
+	quarterw = (dw - 24) / 4
 
 	// What this does
 	tab_control(36)
@@ -40,6 +42,25 @@ function popup_worldgenerator_draw()
 	// Roughness
 	tab_control_textfield(true, 24)
 	draw_textfield("worldgeneratorroughness", dx, dy, halfw, 24, popup.tbx_roughness, null, "worldgeneratorroughnesstip", "top")
+	tab_next()
+
+	// Terrain type: standard hills, a lone island, mountain ranges
+	// or flat land
+	tab_control(46)
+	draw_label(text_get("worldgeneratorterrain"), dx, dy - 3, fa_left, fa_top, c_text_secondary, 1, font_label)
+	draw_radiobutton("worldgeneratortstandard", dx, dy + 22, 0, popup.terrain = 0, popup_worldgenerator_set_terrain)
+	draw_radiobutton("worldgeneratortisland", dx + quarterw, dy + 22, 1, popup.terrain = 1, popup_worldgenerator_set_terrain)
+	draw_radiobutton("worldgeneratortmountains", dx + quarterw * 2, dy + 22, 2, popup.terrain = 2, popup_worldgenerator_set_terrain)
+	draw_radiobutton("worldgeneratortflat", dx + quarterw * 3, dy + 22, 3, popup.terrain = 3, popup_worldgenerator_set_terrain)
+	tab_next()
+
+	// Buildings: none, a village of houses around a well, or a city
+	// of towers on streets
+	tab_control(46)
+	draw_label(text_get("worldgeneratorbuildings"), dx, dy - 3, fa_left, fa_top, c_text_secondary, 1, font_label)
+	draw_radiobutton("worldgeneratorbnone", dx, dy + 22, 0, popup.buildings = 0, popup_worldgenerator_set_buildings)
+	draw_radiobutton("worldgeneratorbvillage", dx + thirdw + 8, dy + 22, 1, popup.buildings = 1, popup_worldgenerator_set_buildings)
+	draw_radiobutton("worldgeneratorbcity", dx + (thirdw + 8) * 2, dy + 22, 2, popup.buildings = 2, popup_worldgenerator_set_buildings)
 	tab_next()
 
 	// Trees, water and caves
