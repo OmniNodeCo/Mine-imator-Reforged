@@ -31,6 +31,21 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   * Blocks the current texture pack does not know simply skip their
     feature (ores, variants, snow, spruce, bedrock, sandstone), so the
     generator keeps working with any pack
+
+### Fixes
+
+* **Nearby seeds generated near-identical worlds** (world generator).
+  The seed entered the generator's position hashes additively, so
+  seeds a few numbers apart (3 and 5, or 1 and -1) survived the
+  scrambling as nearly the same random streams and came out as
+  essentially the same world. The seed now runs through one extra LCG
+  step that decorrelates it. As a side effect, the same seed produces
+  a different layout than in previous versions.
+
+## Reforged 1.1.14 (2026-10-29)
+
+### New features
+
 * **World generator: terrain types and structures.** Two new rows of
   options in the popup, combining freely - an island village or a
   mountain city work exactly as they sound:
@@ -48,16 +63,6 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
     the street, flat roofs, varied heights) and the occasional park
     lot with trees between them - caves are kept out from under the
     plateau so nothing sits over a hole
-
-### Fixes
-
-* **Nearby seeds generated near-identical worlds** (world generator).
-  The seed entered the generator's position hashes additively, so
-  seeds a few numbers apart (3 and 5, or 1 and -1) survived the
-  scrambling as nearly the same random streams and came out as
-  essentially the same world. The seed now runs through one extra LCG
-  step that decorrelates it. As a side effect, the same seed produces
-  a different layout than in previous versions.
 
 ## Reforged 1.1.12 (2026-10-19)
 
