@@ -333,6 +333,7 @@ function action_worldgenerator_generate()
 	// scatter houses around a well (leveling the ground under each
 	// house), cities put a street grid with towers on their plateau
 	var vcx, vcz, vatt, hpx, hpz, base, doorside, placed_n, placed_x, placed_z, ph, hmin, hmaxc, gt2;
+	var lx, lz, hcol;
 	var lox, loz, hb, tbx, tbz;
 	if (buildings = 1 && size >= 20)
 	{
@@ -572,7 +573,7 @@ function action_worldgenerator_generate()
 	// attempt per feature per 8 x 8 cell, ellipsoid blobs for gravel /
 	// andesite / granite / diorite and random-walk veins for the ores,
 	// both only ever replacing stone-family blocks
-	var vtypes, vsalts, cx, cz, cellid, vi, vt, bx, bz, by, hcol, rx, ry, rz, dx, dy, dz, px, py, pz;
+	var vtypes, vsalts, cx, cz, cellid, vi, vt, bx, bz, by, rx, ry, rz, dx, dy, dz, px, py, pz;
 	var otypes, oatt, oprob, oymin, oymax, onmin, onmax, osalts, oi, ot, at, vx, vy, vz, n, st, ytop;
 	vtypes = array(8, 9, 10, 11)
 	vsalts = array(26357617, 27357617, 28357617, 29357617)
@@ -672,7 +673,7 @@ function action_worldgenerator_generate()
 	
 	// Trees: one candidate per jittered 6 x 6 cell, never in or near
 	// water, never over a cave entrance; snowy peaks grow spruces
-	var trunk, top, lx, lz;
+	var trunk, top;
 	if (trees)
 	{
 		for (x = 0; x < size; x += 6)
