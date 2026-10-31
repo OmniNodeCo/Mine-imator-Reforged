@@ -69,13 +69,13 @@ function action_worldgenerator_generate()
 	// 8 gravel, 9 andesite, 10 granite, 11 diorite, 12 sandstone, 13 bedrock,
 	// 14 snow, 15 coal, 16 iron, 17 gold, 18 redstone, 19 lapis, 20 diamond,
 	// 21 spruce log, 22 spruce leaves, 23 oak planks, 24 glass, 25 cobblestone,
-	// 26 stone bricks
+	// 26 stone bricks, 27 farmland, 28 wheat, 29 lantern
 	var pal_names, pal, pal_written, nextidx, i;
-	pal_names = array("minecraft:air", "minecraft:stone", "minecraft:dirt", "minecraft:grass_block", "minecraft:sand", "minecraft:water", "minecraft:oak_log", "minecraft:oak_leaves", "minecraft:gravel", "minecraft:andesite", "minecraft:granite", "minecraft:diorite", "minecraft:sandstone", "minecraft:bedrock", "minecraft:snow_block", "minecraft:coal_ore", "minecraft:iron_ore", "minecraft:gold_ore", "minecraft:redstone_ore", "minecraft:lapis_ore", "minecraft:diamond_ore", "minecraft:spruce_log", "minecraft:spruce_leaves", "minecraft:oak_planks", "minecraft:glass", "minecraft:cobblestone", "minecraft:stone_bricks")
+	pal_names = array("minecraft:air", "minecraft:stone", "minecraft:dirt", "minecraft:grass_block", "minecraft:sand", "minecraft:water", "minecraft:oak_log", "minecraft:oak_leaves", "minecraft:gravel", "minecraft:andesite", "minecraft:granite", "minecraft:diorite", "minecraft:sandstone", "minecraft:bedrock", "minecraft:snow_block", "minecraft:coal_ore", "minecraft:iron_ore", "minecraft:gold_ore", "minecraft:redstone_ore", "minecraft:lapis_ore", "minecraft:diamond_ore", "minecraft:spruce_log", "minecraft:spruce_leaves", "minecraft:oak_planks", "minecraft:glass", "minecraft:cobblestone", "minecraft:stone_bricks", "minecraft:farmland", "minecraft:wheat", "minecraft:lantern")
 	pal = array()
 	pal_written = array()
 	nextidx = 0
-	for (i = 0; i < 27; i++)
+	for (i = 0; i < 30; i++)
 	{
 		pal[i] = -1
 		pal_written[i] = false
@@ -250,7 +250,7 @@ function action_worldgenerator_generate()
 	// whole volume costs about as much as the heightmap does
 	if (caves)
 	{
-		var gx, gy, gx2, gy2, lat_a, lat_b, lat_c, cut, va, vb, vc;
+		var gx, gy, gx2, gy2, lat_a, lat_b, lat_c, cut, va, vb, vc, wdepth;
 		gx = ceil(size / 8) + 2
 		gy = ceil(height / 4) + 2
 		gx2 = ceil(size / 16) + 2
@@ -282,11 +282,15 @@ function action_worldgenerator_generate()
 						continue
 					
 					cut = false
+					// Tunnel width grows with depth below the surface: only
+					// dead-center crossings carve at the top block, full width
+					// four blocks down, so caves rarely break the surface
+					wdepth = 0.008 + 0.0105 * min(h - 1 - y, 4)
 					va = worldgenerator_lerp3(lat_a, gx, gy, gx, x, y, z, 8, 4, 8)
-					if (abs(va - 0.5) < 0.05)
+					if (abs(va - 0.5) < wdepth)
 					{
 						vb = worldgenerator_lerp3(lat_b, gx, gy, gx, x, y, z, 8, 4, 8)
-						cut = abs(vb - 0.5) < 0.05
+						cut = abs(vb - 0.5) < wdepth
 					}
 					if (!cut && y <= h - 7)
 					{
@@ -333,6 +337,7 @@ function action_worldgenerator_generate()
 	// scatter houses around a well (leveling the ground under each
 	// house), cities put a street grid with towers on their plateau
 	var vcx, vcz, vatt, hpx, hpz, base, doorside, placed_n, placed_x, placed_z, ph, hmin, hmaxc, gt2;
+	var pcx, pcz, fmx, fmz, fcand, lpx, lpz, lampi, ok2;
 	var lx, lz, hcol;
 	var lox, loz, hb, tbx, tbz;
 	if (buildings = 1 && size >= 20)
@@ -410,6 +415,10 @@ function action_worldgenerator_generate()
 						blocks[(base - 1) * size * size + (hpz + lz) * size + hpx + lx] = pal[3]
 						heights[(hpz + lz) * size + hpx + lx] = base
 					}
+					// A cave pocket right under the pad would leave the
+					// house floating: plug it with dirt
+					if (base >= 2 && blocks[(base - 2) * size * size + (hpz + lz) * size + hpx + lx] = pal[0])
+						blocks[(base - 2) * size * size + (hpz + lz) * size + hpx + lx] = pal[2]
 				}
 			}
 			
@@ -496,6 +505,164 @@ function action_worldgenerator_generate()
 							blocks[(base + 3) * size * size + (vcz + lz) * size + vcx + lx] = pal[23]
 					}
 				}
+			}
+		}
+		
+		// Gravel paths: an L-shaped walk from every house to the well,
+		// replacing grass and dirt along the way
+		if (pal[8] >= 0)
+		{
+			for (i = 0; i < placed_n; i++)
+			{
+				pcx = placed_x[i]
+				pcz = placed_z[i]
+				while (pcx != vcx)
+				{
+					pcx += (vcx > pcx ? 1 : -1)
+					hcol = heights[pcz * size + pcx]
+					gt2 = blocks[(hcol - 1) * size * size + pcz * size + pcx]
+					if (gt2 = pal[2] || gt2 = pal[3])
+					{
+						blocks[(hcol - 1) * size * size + pcz * size + pcx] = pal[8]
+						if (hcol >= 2 && blocks[(hcol - 2) * size * size + pcz * size + pcx] = pal[0])
+							blocks[(hcol - 2) * size * size + pcz * size + pcx] = pal[2]
+					}
+				}
+				while (pcz != vcz)
+				{
+					pcz += (vcz > pcz ? 1 : -1)
+					hcol = heights[pcz * size + pcx]
+					gt2 = blocks[(hcol - 1) * size * size + pcz * size + pcx]
+					if (gt2 = pal[2] || gt2 = pal[3])
+					{
+						blocks[(hcol - 1) * size * size + pcz * size + pcx] = pal[8]
+						if (hcol >= 2 && blocks[(hcol - 2) * size * size + pcz * size + pcx] = pal[0])
+							blocks[(hcol - 2) * size * size + pcz * size + pcx] = pal[2]
+					}
+				}
+			}
+		}
+		
+		// The farm: a 9 x 7 plot with a log border, a water channel
+		// down the middle and wheat on farmland, near the village
+		// center on ground flat enough to level
+		if (water && pal[27] >= 0 && pal[28] >= 0)
+		{
+			for (fcand = 0; fcand < 16; fcand++)
+			{
+				fmx = vcx + floor((worldgenerator_mc_value(wseed, fcand, 5, salt_village + off * 5) - 0.5) * size * 0.5)
+				fmz = vcz + floor((worldgenerator_mc_value(wseed, fcand, 6, salt_village + off * 5) - 0.5) * size * 0.5)
+				if (fmx < 5 || fmx > size - 6 || fmz < 5 || fmz > size - 6)
+					continue
+				hmin = heights[fmz * size + fmx]
+				hmaxc = hmin
+				for (lx = -4; lx <= 4; lx++)
+				{
+					for (lz = -3; lz <= 3; lz++)
+					{
+						h = heights[(fmz + lz) * size + fmx + lx]
+						hmin = min(hmin, h)
+						hmaxc = max(hmaxc, h)
+					}
+				}
+				if (hmaxc - hmin > 4)
+					continue
+				base = heights[fmz * size + fmx]
+				if (base <= water_level + 1 || base + 2 >= height)
+					continue
+				gt2 = blocks[(base - 1) * size * size + fmz * size + fmx]
+				if (!(gt2 = pal[2] || gt2 = pal[3]))
+					continue
+				ok2 = true
+				for (i = 0; i < placed_n; i++)
+				{
+					if (sqrt((fmx - placed_x[i]) * (fmx - placed_x[i]) + (fmz - placed_z[i]) * (fmz - placed_z[i])) < 7)
+						ok2 = false
+				}
+				if (sqrt((fmx - vcx) * (fmx - vcx) + (fmz - vcz) * (fmz - vcz)) < 3)
+					ok2 = false
+				if (!ok2)
+					continue
+				
+				// Level the 9 x 7 pad and keep it supported
+				for (lx = -4; lx <= 4; lx++)
+				{
+					for (lz = -3; lz <= 3; lz++)
+					{
+						hcol = heights[(fmz + lz) * size + fmx + lx]
+						if (hcol < base)
+						{
+							for (y = hcol; y < base; y++)
+								blocks[y * size * size + (fmz + lz) * size + fmx + lx] = pal[2]
+						}
+						else if (hcol > base)
+						{
+							for (y = base; y < hcol; y++)
+								blocks[y * size * size + (fmz + lz) * size + fmx + lx] = pal[0]
+						}
+						heights[(fmz + lz) * size + fmx + lx] = base
+						if (base >= 2 && blocks[(base - 2) * size * size + (fmz + lz) * size + fmx + lx] = pal[0])
+							blocks[(base - 2) * size * size + (fmz + lz) * size + fmx + lx] = pal[2]
+					}
+				}
+				
+				// Border of logs, water channel down the middle column,
+				// farmland with wheat everywhere else
+				for (lx = -4; lx <= 4; lx++)
+				{
+					for (lz = -3; lz <= 3; lz++)
+					{
+						if (abs(lx) = 4 || abs(lz) = 3)
+							blocks[(base - 1) * size * size + (fmz + lz) * size + fmx + lx] = pal[6]
+						else if (lx = 0)
+						{
+							blocks[(base - 1) * size * size + (fmz + lz) * size + fmx + lx] = pal[5]
+							blocks[base * size * size + (fmz + lz) * size + fmx + lx] = pal[0]
+						}
+						else
+						{
+							blocks[(base - 1) * size * size + (fmz + lz) * size + fmx + lx] = pal[27]
+							blocks[base * size * size + (fmz + lz) * size + fmx + lx] = pal[28]
+						}
+					}
+				}
+				break
+			}
+		}
+		
+		// Lamp posts: a cobble foot, three logs and a lantern on
+		// top, scattered around the village center
+		if (pal[29] >= 0)
+		{
+			for (lampi = 0; lampi < 4; lampi++)
+			{
+				lpx = vcx + floor((worldgenerator_mc_value(wseed, lampi, 8, salt_village + off * 6) - 0.5) * size * 0.4)
+				lpz = vcz + floor((worldgenerator_mc_value(wseed, lampi, 9, salt_village + off * 6) - 0.5) * size * 0.4)
+				if (lpx < 2 || lpx > size - 3 || lpz < 2 || lpz > size - 3)
+					continue
+				h = heights[lpz * size + lpx]
+				if (h <= water_level + 1 || h >= snowline || h + 4 >= height)
+					continue
+				gt2 = blocks[(h - 1) * size * size + lpz * size + lpx]
+				if (!(gt2 = pal[2] || gt2 = pal[3]))
+					continue
+				ok2 = true
+				for (i = 0; i < placed_n; i++)
+				{
+					if (sqrt((lpx - placed_x[i]) * (lpx - placed_x[i]) + (lpz - placed_z[i]) * (lpz - placed_z[i])) < 5)
+						ok2 = false
+				}
+				if (sqrt((lpx - vcx) * (lpx - vcx) + (lpz - vcz) * (lpz - vcz)) < 3)
+					ok2 = false
+				if (!ok2)
+					continue
+				blocks[(h - 1) * size * size + lpz * size + lpx] = pal[25]
+				if (h >= 2 && blocks[(h - 2) * size * size + lpz * size + lpx] = pal[0])
+					blocks[(h - 2) * size * size + lpz * size + lpx] = pal[2]
+				blocks[h * size * size + lpz * size + lpx] = pal[6]
+				blocks[(h + 1) * size * size + lpz * size + lpx] = pal[6]
+				blocks[(h + 2) * size * size + lpz * size + lpx] = pal[6]
+				blocks[(h + 3) * size * size + lpz * size + lpx] = pal[29]
 			}
 		}
 	}
@@ -825,7 +992,7 @@ function action_worldgenerator_generate()
 	// Palette compound
 	worldgenerator_write_byte(bf, 10)
 	worldgenerator_write_string_nbt(bf, "Palette")
-	for (i = 0; i < 27; i++)
+	for (i = 0; i < 30; i++)
 	{
 		if (pal_written[i])
 		{

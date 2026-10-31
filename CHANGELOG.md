@@ -58,11 +58,28 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
     around a well: cobble foundations, log corners, plank walls with
     glass windows, a doorway facing the well and a stepped plank roof,
     each house on its own leveled 7 x 7 pad that fills valleys and
-    shaves bumps; a City flattens a plateau and puts a cobble street
-    grid on it with stone-brick towers (glass window rows, doorways to
-    the street, flat roofs, varied heights) and the occasional park
-    lot with trees between them - caves are kept out from under the
-    plateau so nothing sits over a hole
+    shaves bumps; gravel paths walk from every house to the well, a
+    wheat farm (log border, water channel, wheat on farmland) sits
+    near the center where the ground allows, and lamp posts (cobble
+    foot, log post, lantern) light the place - not every village gets
+    a farm or the same lamps, just like the real thing; a City
+    flattens a plateau and puts a cobble street grid on it with
+    stone-brick towers (glass window rows, doorways to the street,
+    flat roofs, varied heights) and the occasional park lot with trees
+    between them - caves are kept out from under the plateau so
+    nothing sits over a hole
+
+### Fixes
+
+* **World generator: caves no longer strip the surface.** Tunnel
+  carving used the same width at every depth, which punched holes in
+  about one in fifty surface blocks (a world full of pits). The
+  tunnel width now grows with depth below the surface: only
+  dead-center crossings carve the top blocks, full width four blocks
+  down - entrances still happen, but rarely and deliberately instead
+  of everywhere. Building pads, paths, farms and lamp posts also plug
+  any cave pocket directly beneath them, so nothing floats over a
+  hole.
 
 ## Reforged 1.1.12 (2026-10-19)
 
