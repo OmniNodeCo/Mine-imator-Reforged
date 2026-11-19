@@ -1,14 +1,14 @@
-**Mine-imator Reforged 1.1.14**
+**Mine-imator Reforged 1.1.15**
 
 based on Mine-imator 2.0.2 (Continuation Build 1.0.15 Alpha 1)
 
-The world generator learns new tricks: **islands, mountains and flat worlds** - and it can build **villages and cities** on them.
+The world generator learns new tricks: **islands, mountains and flat worlds** - and it can build **villages and cities** on them. Villages get their Minecraft look - gravel paths, wheat farms, lamp posts - and caves learn to keep to the underground.
 
 **Download:** [Github Release](https://github.com/OmniNodeCo/Mine-imator-Reforged/releases)
 
 Available for Windows x64, Linux x64, and macOS x86_64.
 
-**New: terrain types and structures in the world generator**
+**New: terrain types, structures and village life in the world generator**
 
 Two new option rows in the popup, combining freely with each other and the Caves / Trees / Water toggles - an island village or a mountain city work exactly as they sound:
 
@@ -36,12 +36,20 @@ Two new option rows in the popup, combining freely with each other and the Caves
 
 [spoiler="Show hidden contents — full changelog"]
 
-[spoiler="Version 1.1.14 (2026-10-29)"]
+[spoiler="Version 1.1.15 (2026-11-19)"]
 [b]New features[/b]
 - World generator: terrain types (Standard / Island / Mountains / Flat) and structures (Village / City) - two new option rows that combine freely; villages scatter leveled-pad houses with glass windows and stepped roofs around a cobble well, cities put a street grid with stone-brick towers and parks on a flattened plateau (kept solid - no caves underneath)
+- World generator: village life - gravel paths from every house to the well, a wheat farm (log border, water channel, farmland rows) near the center, lamp posts (cobble foot, log post, lantern); not every village gets a farm or the same lamps, just like the real thing
+
+[b]Bug fixes[/b]
+- World generator: caves no longer strip the surface - tunnel carving used the same width at every depth, punching holes in about one in fifty surface blocks; the width now grows with depth below the surface, so entrances are rare and deliberate instead of everywhere
+
+[b]Improvements[/b]
+- World generator: house pads, gravel paths, farms and lamp posts plug cave pockets directly beneath them, so nothing floats over a hole
+- World generator: farmland, wheat and lantern are pack-gated - villages keep working with texture packs that don't know them
 
 [b]Versioning[/b]
-- Version bumped to Reforged 1.1.14 (full in-app version 2.0.2 Reforged 1.1.14)
+- Version bumped to Reforged 1.1.15 (full in-app version 2.0.2 Reforged 1.1.15)
 [/spoiler]
 
 [/spoiler]

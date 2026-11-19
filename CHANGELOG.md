@@ -42,7 +42,7 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   step that decorrelates it. As a side effect, the same seed produces
   a different layout than in previous versions.
 
-## Reforged 1.1.14 (2026-10-29)
+## Reforged 1.1.15 (2026-11-19)
 
 ### New features
 
@@ -69,7 +69,7 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
     between them - caves are kept out from under the plateau so
     nothing sits over a hole
 
-### Fixes
+### Bug fixes
 
 * **World generator: caves no longer strip the surface.** Tunnel
   carving used the same width at every depth, which punched holes in
@@ -77,9 +77,16 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   tunnel width now grows with depth below the surface: only
   dead-center crossings carve the top blocks, full width four blocks
   down - entrances still happen, but rarely and deliberately instead
-  of everywhere. Building pads, paths, farms and lamp posts also plug
-  any cave pocket directly beneath them, so nothing floats over a
-  hole.
+  of everywhere.
+
+### Improvements
+
+* **World generator: structures stay grounded.** House pads, gravel
+  paths, farms and lamp posts plug any cave pocket directly beneath
+  them, so nothing floats over a hole.
+* **World generator: village blocks are pack-gated.** Farmland,
+  wheat and lantern skip individually on texture packs that do not
+  know them, so villages keep working with any pack.
 
 ## Reforged 1.1.12 (2026-10-19)
 
