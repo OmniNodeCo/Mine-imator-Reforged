@@ -42,7 +42,7 @@ Continuation Build 1.0.15 Alpha 1 base (2026-08-19).
   step that decorrelates it. As a side effect, the same seed produces
   a different layout than in previous versions.
 
-## Reforged 1.1.15 (2026-11-19)
+## Reforged 1.1.14 (2026-11-19)
 
 ### New features
 

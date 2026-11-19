@@ -1,4 +1,4 @@
-**Mine-imator Reforged 1.1.15**
+**Mine-imator Reforged 1.1.14**
 
 based on Mine-imator 2.0.2 (Continuation Build 1.0.15 Alpha 1)
 
@@ -36,7 +36,7 @@ Two new option rows in the popup, combining freely with each other and the Caves
 
 [spoiler="Show hidden contents — full changelog"]
 
-[spoiler="Version 1.1.15 (2026-11-19)"]
+[spoiler="Version 1.1.14 (2026-11-19)"]
 [b]New features[/b]
 - World generator: terrain types (Standard / Island / Mountains / Flat) and structures (Village / City) - two new option rows that combine freely; villages scatter leveled-pad houses with glass windows and stepped roofs around a cobble well, cities put a street grid with stone-brick towers and parks on a flattened plateau (kept solid - no caves underneath)
 - World generator: village life - gravel paths from every house to the well, a wheat farm (log border, water channel, farmland rows) near the center, lamp posts (cobble foot, log post, lantern); not every village gets a farm or the same lamps, just like the real thing
@@ -49,7 +49,7 @@ Two new option rows in the popup, combining freely with each other and the Caves
 - World generator: farmland, wheat and lantern are pack-gated - villages keep working with texture packs that don't know them
 
 [b]Versioning[/b]
-- Version bumped to Reforged 1.1.15 (full in-app version 2.0.2 Reforged 1.1.15)
+- Version bumped to Reforged 1.1.14 (full in-app version 2.0.2 Reforged 1.1.14)
 [/spoiler]
 
 [/spoiler]
